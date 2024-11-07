@@ -1,0 +1,49 @@
+.graph_container {
+  display: block;
+  width: 1170px;
+}
+.primary_link {
+  color: #000000;
+  font-size: 12px;
+}
+pagination {
+  width: 100%;
+  display: block;
+}
+.chart-info {
+  padding-right: 15x;
+}
+.btn-wrap {
+  flex: 1;
+  justify-content: flex-end;
+  padding-right: 35px;
+}
+.user-wrap {
+  margin-left: 0;
+  margin-right: 0;
+}
+.title-fluid {
+  padding: 10px 0 30px;
+}
+@media (max-width: 767px) {
+  .btn-wrap {
+    flex: 1;
+    justify-content: flex-start;
+    padding: 0 10px;
+    width: 100%;
+    flex: auto;
+  }
+  .chart-info,
+  .priority-list {
+    margin: 10px 0;
+  }
+  .chart-info {
+    .chart-detail {
+      span {
+        span {
+          display: none;
+        }
+      }
+    }
+  }
+}

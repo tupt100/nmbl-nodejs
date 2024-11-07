@@ -1,0 +1,84 @@
+<div *ngIf="hasPagePermission">
+  <div class="task-template-bar">
+    <div class="container">
+      <div class="title-task-template-bar">
+        <h2 class="title-task-template-context" *ngIf="!templateId">Create New Project Template</h2>
+        <h2 class="title-task-template-context" *ngIf="templateId && !inEditModeAndUserDoesNotHaveUpdatePermission">
+          Edit Workflow Template
+        </h2>
+        <h2 class="title-task-template-context" *ngIf="inEditModeAndUserDoesNotHaveUpdatePermission">
+          View Workflow Template
+        </h2>
+        <ul class="template-actions"
+          *ngIf="templateId && permisionList && permisionList.tasktemplate_tasktemplate_destroy">
+          <li class="item-archive-action" (click)="deleteToggle = !deleteToggle">
+            <a class="btn-box text-left" href="javascript:void(0);">
+              <img src="assets/images/more-horizontal.svg" alt="">
+            </a>
+            <div class="nav-dropdown sm-filter r-0" *ngIf="deleteToggle">
+              <button type="button" class="no-btn" (click)="showConfirmModal()">Archive</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal transition" [ngClass]="{'in': showModal}">
+      <app-confirm-modal message1="Remove Workflow Template" message2='Are you sure?' cancelButtonText="Cancel"
+        okButtonText="Delete" (onClose)="archiveTemplate($event)"></app-confirm-modal>
+    </div>
+    <nav mat-nav-bar class="container tab-list-container" *ngIf="!inEditModeAndUserDoesNotHaveUpdatePermission">
+      <div class="steps-number-wrapper">
+
+        <span class="step-number" [ngClass]="{'active':step==='workflow-fields'}">
+          1
+        </span>
+        <div class="line"></div>
+        <span class="step-number" [ngClass]="{'active':step==='custom-field'}">
+          2
+        </span>
+        <div class="line"></div>
+        <span class="step-number" [ngClass]="{'active':step==='tasks'}">
+          3
+        </span>
+        <div class="line"></div>
+        <span class="step-number" [ngClass]="{'active':step==='preview'}">
+          4
+        </span>
+      </div>
+      <div class="steps-text-wrapper">
+        <p>Project Fields</p>
+        <p>Custom Field</p>
+        <p>Add Workflows</p>
+        <p>Save & Review</p>
+      </div>
+    </nav>
+  </div>
+  <div class="container">
+    <ng-container [ngSwitch]="step">
+      <ng-container *ngSwitchCase="'workflow-fields'">
+        <app-custom-template-workflow-fields></app-custom-template-workflow-fields>
+      </ng-container>
+      <ng-container *ngSwitchCase="'custom-field'">
+        <app-custom-template-workflow-custom-field></app-custom-template-workflow-custom-field>
+      </ng-container>
+      <ng-container *ngSwitchCase="'tasks'">
+        <app-custom-template-workflow-tasks></app-custom-template-workflow-tasks>
+      </ng-container>
+      <ng-container *ngSwitchCase="'preview'">
+        <app-preview-template-workflow></app-preview-template-workflow>
+      </ng-container>
+    </ng-container>
+  </div>
+
+</div>
+<div class="block-row pg-not-found" *ngIf="hasPagePermission==false">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Tasks.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>

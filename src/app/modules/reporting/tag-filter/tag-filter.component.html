@@ -1,0 +1,40 @@
+<div class="select-box lg-field" [class.open]="isTagOpen" (click)="isTagOpen = !isTagOpen">
+  Tag(s) Filter: {{selectedTagNames.join()}}
+</div>
+<form [formGroup]='usersForm'>
+  <div class="nav-dropdown" *ngIf="isTagOpen">
+    <input type="text" class="search_input" placeholder="Search Tag" formControlName="assignToSearch">
+    <perfect-scrollbar style="max-width: 100%; max-height: 200px;">
+      <div class="check-list">
+        <span class="fitem-check" *ngIf="arrTags?.length">
+          <div class="list_tags selected pos-relative ck-tags" *ngIf="arrSelectedTags?.length">
+            <div class="float-left" *ngFor="let item of arrSelectedTags">
+              <span class="tag">
+                <div class="selected">
+                  <input type="checkbox" class="ck-input" [checked]="true" (change)="removeTag(item)" />
+                  {{ item && item.name ? item.name: item.tag }}
+                  <a href="javascript:void(0)" class="plus-close">
+                    <img alt="" src="assets/images/close.svg" style="pointer-events: none">
+                  </a>
+                </div>
+              </span>
+            </div>
+          </div>
+          <div class="list_tags ck-tags">
+            <div class="float-left" *ngFor="let item of arrTags">
+              <span class="tag" *ngIf="!item.checked">
+                <div>
+                  <input type="checkbox" class="ck-input" [checked]="item.checked" (change)="selectTag(item)" />
+                  {{ item && item.name ? item.name: item.tag }}
+                  <a href="javascript:void(0)" class="plus-close">
+                    <img alt="" src="assets/images/btn-plus.png" style="pointer-events: none">
+                  </a>
+                </div>
+              </span>
+            </div>
+          </div>
+        </span>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</form>

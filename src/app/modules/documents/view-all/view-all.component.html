@@ -1,0 +1,338 @@
+<app-menu class="m-header"></app-menu>
+<div class="search-bar mb-0">
+  <div class="container flex ai-center">
+    <img src="/assets/images/search-icon-dark.svg" *ngIf="!searchText" />
+    <img src="/assets/images/btn-close.png" *ngIf="searchText" (click)="clearSearch()" />
+    <input type="text" class="in-search" placeholder="Search Documents..." [(ngModel)]="searchText"
+      (ngModelChange)="searchDocument($event)" />
+  </div>
+</div>
+<div class="sm-block-row doc-list">
+  <div class="container no-pad">
+    <app-notifier></app-notifier>
+    <div class="sm-visible-tab">
+      <div class="flex sm-head">
+        <a href="javascript:void(0)" class="flex-start" (click)="openFilter = !openFilter;"><img
+            src="assets/images/filter-ico.svg" class="mr-10 ml-0" width="16" alt="" />Filter Documents</a>
+        <a href="javascript:void(0)" class="flex-end bg-text">
+          <div class="doc-upld-wrap pos-relative">
+            <input type="file" id="files" (change)="uploadFile($event)" /><span>Upload new document</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="flex aside-area inline-row-col row-inline ai-stretch">
+      <div class="aside-full-block">
+        <div class="flex title-row ai-center">
+          <div class="left-cap-area flex ai-center flex-start">
+            <h5 class="mb-0">Documents</h5>
+            <div class="tabs tab-hide">
+              <a href="javascript:void(0)" class="active tname" [routerLink]="['/main/documents']">View all</a>
+              <a href="javascript:void(0)" class="tname tab-hide"
+                [routerLink]="['/main/documents-directory']">Directory</a>
+            </div>
+          </div>
+          <div class="flex-width right-cap-area">
+            <div class="form-group">
+              <div class="fitem half-fitem flex-end">
+                <div class="fitem lg-half-fitem mr-0 pos-relative">
+                  <app-tag-filter (selectionChanged)="selectionChanged($event)">
+                  </app-tag-filter>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--View all section starts here-->
+        <div class="card">
+          <div class="ttable-row">
+            <div class="titem-row-head titem-bg">
+              <span class="titem  ttable-full">Document Name
+                <a href="javascript:void(0)" (click)="displaySortBy = !displaySortBy">
+                  <img src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt="sort">
+                </a>
+                <div class="doc-namr-sort" *ngIf="displaySortBy">
+                  <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+                    <div class="check-list">
+                      <span class="fitem-check" *ngFor="let item of sortByList">
+                        <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input"
+                          [checked]="item.checked" (change)="orderByChange($event, item)" />
+                        <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                          {{ item.name }}
+                        </label>
+                      </span>
+                    </div>
+                  </perfect-scrollbar>
+                </div>
+
+              </span>
+              <span class="titem ttable-date pos-relative">DATE CREATED
+                <a href="javascript:void(0)" (click)="displayUserFilter = false;calenderOpen = !calenderOpen;">
+                  <img src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="sort">
+                </a>
+                <app-daterange-picker *ngIf="calenderOpen" [start]="defaultParams.created_at_after"
+                  [end]="defaultParams.created_at_before" [visibleApplyBtn]="true" [isDateSelected]="isDateSelected"
+                  (onSelectDate)="onSelectDate($event)" (apply)="apply()" (clear)="clear($event)"
+                  class="daterange_picker">
+                </app-daterange-picker>
+              </span>
+              <span class="titem ttable-assign">UPLOADED BY
+                <a href="javascript:void(0)" (click)="calenderOpen = false;displayUserFilter = !displayUserFilter">
+                  <img src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="sort">
+                </a>
+                <app-search-filter *ngIf="displayUserFilter" searchPlaceholder="Search users" [isMultiSelect]="true"
+                  [selectedId]="selectedId" [displaySubItem]="usersList" (onSearch)="listUsers($event)"
+                  (onSelectionChanged)="onSelectionChanged($event)"></app-search-filter>
+              </span>
+            </div>
+            <div class="flex-ttable-item" *ngFor="let document of arrDocuments">
+              <div class="ttable-full">
+                <a href="javascript:void(0)" (click)="getDocumentDetails(document.id)" [title]="document?.document_name"
+                  [class.locked]="document?.uploaded_to?.is_private"> <img width="11px" height="11px"
+                    src="assets/images/Private-Lock.png" alt="" *ngIf="document?.uploaded_to?.is_private" />
+                  {{document?.document_name}} </a>
+                <a href="javascript:void(0)" class="doc-head"> {{document?.uploaded_to?.name}} </a>
+              </div>
+              <div class="ttable-date"> {{document?.created_at | utcTime }}</div>
+              <div class="ttable-assign">
+                <div class="profile-wrap" *ngIf="document?.created_by?.first_name">
+                  <figure>
+                    <img *ngIf="document?.created_by?.user_avatar_thumb" [src]="document?.created_by?.user_avatar_thumb"
+                      alt="">
+                    <span class="no-img" *ngIf="!document?.created_by?.user_avatar_thumb">
+                      {{ sharedService.displayInitial(document?.created_by?.first_name, document?.created_by?.last_name)
+                      }}
+                    </span>
+                  </figure>
+                  <p [title]="document?.created_by?.first_name + ' '+ document?.created_by?.last_name">
+                    {{ document?.created_by?.first_name }} {{ document?.created_by?.last_name }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="block-row pg-not-found" *ngIf="!arrDocuments.length">
+              <div class="sm-container">
+                <div class="pg-type pos-relative">
+                  <img src="assets/images/Documents.png" alt="">
+                </div>
+                <div class="not-found-msg flex mt-30">
+                  <span><strong> You have no documents to view</strong></span>
+                  <span class="mt-20 text-center">Once a document is uploaded to project, workflow or task that is
+                    assigned to you, it will appear here.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <pagination *ngIf="totalRecords > 10" [viewBy]="defaultParams.limit" [totalRecords]="totalRecords"
+          type="Document" (changePerPage)="setPerPage($event)" (getPageCount)="loadMoreDocument($event)">
+        </pagination>
+        <!--View all section ends here-->
+      </div>
+
+      <aside>
+        <div class="card side-card " [class.fix-bg]="isopen">
+          <div class="card-bdr card-title sm-hidden">
+            <h5>Upload & View</h5>
+          </div>
+          <div class="card-body no-pad" *ngIf="!objDocument">
+            <div class="doc-scroll">
+              <div class="sm-visible-tab">
+                <div class="flex sm-head">
+                  <a href="" class="flex-start ai-center" (click)="isopen=false">
+                    <img src="assets/images/bk-arrow.svg" class="mr-10 ml-0" alt="" />Back to All Documents
+                  </a>
+                  <div class="upload-wrap pos-relative flex-end bg-text">
+                    <input type="file" id="files" (change)="uploadFileForSmallDevice($event)" /><span class="m-0">Upload
+                      new
+                      document</span>
+                  </div>
+                </div>
+              </div>
+              <div class="file-wrap sm-hidden" DragDrop (onFileDropped)="uploadFile($event)">
+                <input type="file" id="files" (change)="uploadFile($event)">
+                <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center sm-hidden">
+                  <p>Drag & drop your files here<strong> or <b>Browse</b> </strong></p>
+                </label>
+                <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center sm-visible">
+                  Upload Document
+                </label>
+              </div>
+              <div class="doc-detail">
+                <div class="associate-docs" *ngIf="myFileArray.length > 0">
+                  <blockquote class="flex flex-start"> <span title="{{displayTitle}}">{{displayTitle}}</span> <a
+                      (click)="displayPWT = !displayPWT" href="javascript:void(0)"
+                      class="secondary-link active">Associate
+                      <img src="assets/images/ProxyAssets/TasksAssets/Chevron-Icon.svg" alt="">
+                    </a>
+                    <app-select-pwt *ngIf="displayPWT" (onValueSelected)="onValueSelected($event)"></app-select-pwt>
+                  </blockquote>
+                </div>
+
+                <div class="view-doc-list flex ai-center mb-10" *ngFor="let doc of myFileArray; let i = index;">
+                  <div class="doc-info">
+                    <figure><img [src]="doc?.name | image" alt="FileExtension" /></figure>
+                    <input type="text" name="inputField" [ngModel]="doc.name" class="name-box ml-10 locked" />
+                  </div>
+                  <a class="m-0" href="javascript:void(0)" (click)="removeLocalDocument(i)"> <img
+                      src="assets/images/Trash-Icon-active.SVG" /> </a>
+                </div>
+
+                <div class="filter-docs form-group" *ngIf="myFileArray.length > 0">
+                  <div class="fitem half-fitem flex flex-start">
+                    <div class="doc-tag-filter ddown-item half-fitem">
+                      <div class="flex flex-column" *ngIf="!isStandAloneTag">
+                        <label>Tag(s)</label>
+                        <app-multiselect-dropdown searchPlaceholder="Search Tags" [isTag]="true" [isFilter]="false"
+                          [title]="tagTitle" [displaySubItem]="tagsList" (search)="$event && listTags($event)"
+                          (selectionChanged)="setFilterTitle($event)">
+                        </app-multiselect-dropdown>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="btn-group flex ai-center mt-10" *ngIf="myFileArray.length > 0">
+              <button type="button" class="btn btn-bdr btn-md" (click)="cancelUpload();">Cancel</button>
+              <button type="button" class="btn btn-md" (click)="uploadDoc()">Update</button>
+            </div>
+          </div>
+          <div class="card-body no-pad" *ngIf="objDocument">
+            <div class="doc-scroll">
+              <div class="sm-head sm-visible"><a href="" class="flex flex-start ai-center" (click)="isopen=false"><img
+                    src="assets/images/bk-arrow.svg" class="mr-10 ml-0" alt="" />Back to All Documents</a></div>
+              <div class="file-wrap main-full-head-task" DragDrop (onFileDropped)="uploadFile($event)">
+                <input type="file" id="files" (change)="uploadFile($event)">
+                <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center sm-hidden">
+                  <p>Drag & drop your files here<strong> or <b>Browse</b> </strong></p>
+                </label>
+                <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center sm-visible">
+                  Upload Document
+                </label>
+              </div>
+              <div class="doc-detail">
+                <div class="associate-docs">
+                  <blockquote class="flex flex-start"> <span title="{{displayTitle}}">{{displayTitle}}</span> <a
+                      (click)="displayPWT = !displayPWT" href="javascript:void(0)"
+                      class="secondary-link active">Associate
+                      <img src="assets/images/ProxyAssets/TasksAssets/Chevron-Icon.svg" alt="">
+                    </a>
+                    <app-select-pwt *ngIf="displayPWT" (onValueSelected)="updatePWT($event)" [selected]="objDocument">
+                    </app-select-pwt>
+                  </blockquote>
+                </div>
+                <div>
+                  <div class="view-doc-list flex ai-center mb-10" *ngIf="objDocument && objDocument.document_name">
+                    <div class="doc-info">
+                      <figure><img [src]="objDocument?.document_name | image" alt="FileExtension" /></figure>
+                      <span class="name-box locked" [title]="objDocument?.document_name"> <img width="11px"
+                          height="11px" src="assets/images/Private-Lock.png" alt=""
+                          *ngIf="objDocument?.uploaded_to?.is_private" /> {{objDocument?.document_name}} </span>
+                      <span>{{document?.created_at | utcTime }}</span>
+                    </div>
+                    <figure class="nmb-thumb-dp">
+                      <img src="{{objDocument?.created_by?.user_avatar_thumb}}"
+                        *ngIf="objDocument?.created_by?.user_avatar_thumb" [title]="objDocument?.created_by" />
+                      <span class="no-img" *ngIf="!objDocument?.created_by?.user_avatar_thumb"
+                        [title]="objDocument?.created_by">
+                        {{
+                        sharedService.displayInitialFull(objDocument?.created_by?.first_name,objDocument?.created_by?.last_name)
+                        }}
+                      </span>
+                    </figure>
+                  </div>
+                </div>
+
+                <div class="filter-docs form-group">
+                  <div class="fitem flex flex-start">
+                    <div class="doc-tag-filter ddown-item">
+                      <div class="flex flex-column" *ngIf="!isStandAloneTag">
+                        <label>Tag(s)</label>
+                        <app-multiselect-dropdown searchPlaceholder="Search Tags" [isTag]="true" [isFilter]="false"
+                          [title]="tagTitle" [displaySubItem]="tagsList" (search)="$event && listTags($event)"
+                          (selectionChanged)="setFilterTitleUpdate($event)">
+                        </app-multiselect-dropdown>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <app-audit-trail-history *ngIf="idDisplayDetail" [list]="arrAuditTrail"></app-audit-trail-history>
+            </div>
+            <div class="btn-group flex ai-center mt-10" *ngIf="myFileArray.length === 0 && objDocument">
+              <button type="button" class="btn btn-md" *ngIf="!isExternalDocument(objDocument)"
+                (click)="downloadFile(objDocument);">Download</button>
+              <button type="button" class="btn btn-md" *ngIf="isExternalDocument(objDocument)"
+                (click)="viewAttach(objDocument);">View</button>
+              <button type="button" class="btn-box pos-relative text-left action-dropdown visible"
+                (click)="isOpen = !isOpen;" *ngIf="objDocument && objDocument.id > 0"><img
+                  src="assets/images/more-horizontal.svg" alt="">
+                <div class="nav-dropdown sm-filter" *ngIf="isOpen">
+                  <button type="button" class="no-btn" (click)="showModal.isShareDocument=true;">Share</button>
+                  <button type="button" class="no-btn" (click)="showModal.isCopyDocument = true">Copy</button>
+                  <button type="button" class="no-btn" (click)="showModal.isRemoveDocument=true;">Delete</button>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+<div class="filter-bar" [class.fbar]="openFilter">
+
+  <div class="flex sm-head">
+    <a href="javascript:void(0)" class="ai-center flex-start flex" (click)="openFilter=false;">
+      <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90"> Back to All Documents
+    </a>
+  </div>
+  <span class="filter-item">
+    <label>Uploaded By:</label>
+    <a href="javascript:void(0)" class="multiselect-text"
+      (click)="calenderOpen = false; displayUserFilter = !displayUserFilter">
+      <span>All </span></a>
+
+    <app-search-filter *ngIf="displayUserFilter" searchPlaceholder="Search users" [isMultiSelect]="true"
+      [selectedId]="selectedId" [displaySubItem]="usersList" (onSearch)="listUsers($event)"
+      (onSelectionChanged)="onSelectionChanged($event)"></app-search-filter>
+  </span>
+  <span class="filter-item">
+    <label>Date Range:</label>
+    <a href="javascript:void(0)" class="multiselect-text"
+      (click)="displayUserFilter = false;calenderOpen = !calenderOpen;">
+      <span>All </span></a>
+    <app-daterange-picker *ngIf="calenderOpen" [start]="defaultParams.created_at_after"
+      [end]="defaultParams.created_at_before" [visibleApplyBtn]="true" [isDateSelected]="isDateSelected"
+      (onSelectDate)="onSelectDate($event)" (apply)="apply()" (clear)="clear($event)" class="daterange_picker">
+    </app-daterange-picker>
+  </span>
+  <div class="btn-group plr-10"><button type="button" class="btn btn-full" (click)="openFilter=false;">Filter
+      Documents</button></div>
+</div>
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveDocument}">
+  <app-confirm-modal message1="Delete Document"
+    message2="Once you have deleted this document, this action cannot be reversed." cancelButtonText="Cancel"
+    okButtonText="Remove" (onClose)="removeDocumentConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isShareDocument}">
+  <app-share-document [isPrivate]="objDocument?.uploaded_to?.is_private" (onClose)="shareDocument($event)">
+  </app-share-document>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isCopyDocument}">
+  <app-copy-document (onValueSelected)="onPWTSelection($event)" (onClose)="copyDocument($event)"></app-copy-document>
+</div>
+
+<div class="modal transition intro-slide-modal" [ngClass]="{'in': showModal?.isIntro}">
+  <app-intro-slides [module]="module" [slides]="slides" (onClose)="onClose($event)">
+  </app-intro-slides>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isDocumentUpload}">
+  <app-document-upload-popup [file]="file" (cancel)="onCancel($event)" (upload)="onUpload($event)">
+  </app-document-upload-popup>
+</div>

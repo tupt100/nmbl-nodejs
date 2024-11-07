@@ -1,0 +1,9 @@
+<div class="hover-text action-dropdown pos-relative">
+  <a href="javascript:void(0)" class="more" (click)="isOpen = !isOpen"><span></span><span></span><span></span></a>
+  <div class="nav-dropdown sm-filter" *ngIf="isOpen">
+    <button type="button" class="no-btn" (click)="remove()">Remove Notification</button>
+  </div>
+  <a class="read-un" title="Mark as Read" (click)="maskAsRead(2)" *ngIf="status == 1"></a>
+  <a class="read-un" title="Mark as Unread" (click)="maskAsUnread(1)" *ngIf="status == 2"></a>
+</div>
+<a class="sm-visible" (click)="remove()"><img src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg" alt="" /></a>

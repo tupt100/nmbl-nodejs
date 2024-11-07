@@ -1,0 +1,167 @@
+.chart-legend li span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+}
+.pie-labels {
+  div {
+    font-size: 11px;
+    span {
+      height: 8px;
+      width: 8px;
+      border-radius: 0;
+      margin: 0 5px 0;
+    }
+  }
+}
+
+body {
+  padding: 4rem 2rem;
+  margin: 0;
+  background: dodgerblue;
+  text-align: center;
+}
+
+#chart_div svg {
+  background: white;
+  max-width: 1000px;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin: 0 auto;
+  box-shadow: 0 2px 1rem rgba(0, 0, 0, 0.2);
+
+  /*Background Color*/
+  g:nth-child(2) {
+    rect {
+      fill: transparent;
+    }
+  }
+
+  /* Chart Settings */
+  g:nth-child(3) {
+    rect:nth-child(odd) {
+      fill: transparent;
+    } /* Rows Odd */
+    rect:nth-child(even) {
+      fill: transparent;
+    } /* Rows Even */
+    text {
+      /* Hotizontal Labels */
+      fill: dodgerblue;
+      font-family: "stolzl regular" !important;
+      font-weight: normal !important;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+    }
+    line {
+      /* Row Lines */
+      stroke: transparent;
+      stroke-width: 0;
+    }
+  }
+
+  /* Arrows */
+  g:nth-child(4) {
+    path {
+      stroke-width: 1;
+      stroke: dodgerblue;
+    }
+  }
+
+  /* Shadow */
+  g:nth-child(6) {
+    rect {
+      fill: dodgerblue;
+    }
+  }
+
+  /* Bars */
+  g:nth-child(7) {
+    rect {
+      fill: dodgerblue;
+    }
+  }
+
+  /* Percent Complete */
+  g:nth-child(8) {
+    path {
+      fill: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  /* Side Labels */
+  g:nth-child(9) {
+    text {
+      fill: dodgerblue;
+    }
+  }
+
+  /* Tooltips */
+  g:nth-child(9) {
+    rect {
+      stroke: white;
+    }
+    text {
+      fill: rgba(0, 0, 0, 0.6);
+      font-size: 40px !important;
+      letter-spacing: -0.5px;
+      font-family: "stolzl regular" !important;
+    }
+    text:nth-child(2) {
+      fill: dodgerblue;
+    }
+  }
+}
+svg g:last-child {
+  display: none;
+}
+
+/*Empty dashboard UI*/
+.empty-dash-card {
+  height: 375px;
+  display: flex;
+  justify-content: flex-start;
+  &:first-child {
+    background-image: url("/assets/images/Dash-SampleChart1.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+  &:last-child {
+    background-image: url("/assets/images/Dash-SampleChart2.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom -10px;
+    .card-title {
+      max-width: 70%;
+      img {
+        margin-top: 75px;
+      }
+    }
+  }
+  .card-title {
+    text-align: left;
+    padding-top: 90px;
+    p {
+      color: #151f2b;
+    }
+    h5 {
+      font-family: "stolzl medium";
+    }
+  }
+}
+.emp-pr {
+  margin-bottom: 30px;
+  h5 {
+    margin-bottom: 15px;
+  }
+  h5,
+  p,
+  .card-body {
+    text-align: center;
+  }
+  button {
+    margin-top: 20px;
+  }
+}

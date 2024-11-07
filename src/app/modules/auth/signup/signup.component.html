@@ -1,0 +1,90 @@
+<section class="auth-page">
+  <div class="auth-aside">
+    <app-sidebar></app-sidebar>
+  </div>
+  <div class="sm-visible m-header"><img src="assets/images/white-proxy.png" alt="" width="87"></div>
+
+  <div class="container">
+    <div class="actionmsgs">
+      <span *ngIf="errorMessage" class="errormsg action-alert">{{errorMessage}}</span>
+    </div>
+    <div class="sheight auth-block">
+      <div class="card">
+        <div class="wrap">
+          <div class="card-bdr card-title">
+            <h5 class="mb-0">Team Member Signup</h5>
+          </div>
+          <form [formGroup]="signupForm" #userSingup="ngForm" (ngSubmit)="signUp()" class="mt-30">
+            <div class="form-group">
+              <div class="fitem">
+                <input type="text" formControlName="email" placeholder="Email" />
+              </div>
+              <div class="fitem">
+                <input type="text" formControlName="first_name" placeholder="First Name"
+                  (keypress)="allowAlphaNumeric($event)" autocomplete="off"
+                  [ngClass]="{'error': userSingup.submitted && f.first_name.errors }" />
+                <label for="" class="error"
+                  *ngIf="userSingup.submitted && f.first_name.errors && f.first_name.errors.required ">First name is
+                  required </label>
+              </div>
+              <div class="fitem">
+                <input type="text" formControlName="last_name" placeholder="Last Name"
+                  (keypress)="allowAlphaNumeric($event)" autocomplete="off"
+                  [ngClass]="{'error': userSingup.submitted && f.last_name.errors }" />
+                <label for="" class="error"
+                  *ngIf="userSingup.submitted && f.last_name.errors && f.last_name.errors.required ">Last name is
+                  required
+                </label>
+              </div>
+              <div class="fitem flex warn-text">
+                <strong>Your new password must: </strong>
+                <span
+                  [ngClass]="!f.password.errors?.required ? (f.password.hasError('minlength') ? 'error' : 'success'): 'warning'"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/{{ !f.password.errors?.required ? f.password.hasError('minlength') ? 'CrossRed-Icon.svg': 'CheckGreen-Icon.svg' : 'Cross-Icon-60.svg'}}"
+                    alt="" /> Minimum of 8 characters</span>
+                <span
+                  [ngClass]="!f.password.errors?.required ? (f.password.errors?.hasOwnProperty('camelCase') ? 'error' : 'success'): 'warning'"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/{{ !f.password.errors?.required ? f.password.errors?.hasOwnProperty('camelCase') ? 'CrossRed-Icon.svg': 'CheckGreen-Icon.svg' : 'Cross-Icon-60.svg'}}"
+                    alt="" /> Include both upper and lower case</span>
+                <span
+                  [ngClass]="!f.password.errors?.required ? (f.password.errors?.hasOwnProperty('specialCharacter') ? 'error' : 'success'): 'warning'"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/{{ !f.password.errors?.required ? f.password.errors?.hasOwnProperty('specialCharacter') ? 'CrossRed-Icon.svg': 'CheckGreen-Icon.svg' : 'Cross-Icon-60.svg'}}"
+                    alt="" /> Include 1 symbol - !@£$%^&*()</span>
+              </div>
+              <div class="fitem pass-field">
+                <input [type]="showPwd ? 'text' : 'password'" formControlName="password" placeholder="Your Password"
+                  autocomplete="off" [ngClass]="{'error': userSingup.submitted && f.password.errors }" />
+                <div class="flex" (click)="showPwd = !showPwd">
+                  <img class="display"
+                    [src]="!showPwd ? 'assets/images/ProxyAssets/UserManagementAssets/Eye-Icon-30.svg' : 'assets/images/ProxyAssets/UserManagementAssets/Eye-Icon-Active.svg'" />
+                </div>
+                <label for="" class="error"
+                  *ngIf="userSingup.submitted && f.password.errors && f.password.errors.required ">Password is required
+                </label>
+              </div>
+              <div class="fitem pass-field">
+                <input type="password" formControlName="confirmPassword" placeholder="Confirm Password"
+                  autocomplete="off" [ngClass]="{'error': userSingup.submitted && f.confirmPassword.errors }" />
+                <label for="" class="error"
+                  *ngIf="userSingup.submitted && f.confirmPassword.errors && f.confirmPassword.errors.required ">
+                  Confirm password is required </label>
+                <label for="" class="error"
+                  *ngIf="userSingup.submitted && f.confirmPassword.errors && f.confirmPassword.errors.pattern ">Confirm
+                  password is not as per pattern</label>
+                <label for="" class="error"
+                  *ngIf="userSingup.submitted && f.confirmPassword.errors && f.confirmPassword.errors.passwordsNotMatching && !f.confirmPassword.errors.pattern">Password
+                  and confirm password do not match</label>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button type="submit" class="btn btn-success btn-lg btn-block" [disabled]="requestLoader"
+                [ngClass]="{'btn-gray': requestLoader}">
+                Create Account
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

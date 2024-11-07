@@ -1,0 +1,66 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content alert-cont">
+    <div class="modal-header text-center">
+      <h5>Download Report: Efficiency Report</h5>
+      <a href="javascript:void(0);" class="close" (click)="close()">esc</a>
+    </div>
+    <div class="modal-body">
+      <div class="rwrap flex">
+        <div class="rcol">
+          <span class="sm-text"><b>layout:</b></span>
+          <div class="flex flex-start">
+            <div class="print-mode">
+              <span class="portrait pmode"></span>
+              <div class="fitem-check">
+                <input type="radio" class="fitem-ck-input" id="rado1" name="rptType" [checked]="true"
+                  (change)="onTypeSelect('Portrait');reportType='Portrait'" />
+                <label for="rado1" class="fitem-ck-txt">Portrait</label>
+              </div>
+            </div>
+            <div class="print-mode">
+              <span class="landscape pmode"></span>
+              <div class="fitem-check">
+                <input type="radio" class="fitem-ck-input" id="rdio1" name="rptType"
+                  (change)="onTypeSelect('Landscape');reportType='Landscape'" />
+                <label for="rdio1" class="fitem-ck-txt">Landscape</label>
+              </div>
+            </div>
+          </div>
+          <div class="file-format">
+            <span class="sm-text"><b>Fromat:</b></span>
+            <div class="fimg flex ai-center flex-start">
+              <figure><img src="assets/images/file/f-pdf.svg" alt="" /></figure>
+              <div class="fitem-check m-0">
+                <input type="radio" class="fitem-ck-input" [checked]="true" id="rado2" name="test"
+                  (change)="reportFormat='PDF'" />
+                <label for="rado2" class="fitem-ck-txt">.PDF</label>
+              </div>
+            </div>
+            <div class="fimg flex ai-center flex-start">
+              <figure><img src="assets/images/file/f-htm.svg" alt="" /></figure>
+              <div class="fitem-check m-0">
+                <input type="radio" class="fitem-ck-input" id="rado3" name="test" (change)="reportFormat='HTML'" />
+                <label for="rado3" class="fitem-ck-txt">.HTML</label>
+              </div>
+            </div>
+            <div class="fimg flex ai-center flex-start">
+              <figure><img src="assets/images/file/f-csv.svg" alt="" /></figure>
+              <div class="fitem-check m-0">
+                <input type="radio" class="fitem-ck-input" id="rado4" name="test" (change)="reportFormat='CSV'" />
+                <label for="rado4" class="fitem-ck-txt">.CSV</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rcol rpreview">
+          <span class="sm-text"><b>Preview:</b></span>
+          <img *ngIf="reportType === 'Portrait'" src="assets/images/portrait.png" alt="" width="245" height="350" />
+          <img *ngIf="reportType === 'Landscape'" src="assets/images/landscape.png" alt="" width="300" height="" />
+        </div>
+      </div>
+      <div class="btn-group text-right">
+        <button type="button" class="btn btn-md" (click)="download()">Download</button>
+      </div>
+    </div>
+  </div>
+</div>

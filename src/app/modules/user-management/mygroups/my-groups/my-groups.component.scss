@@ -1,0 +1,15 @@
+.card {
+  overflow: auto;
+}
+.table {
+  margin-bottom: 0;
+}
+.card-row {
+  &.info-card-list {
+    .card {
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+    }
+  }
+}

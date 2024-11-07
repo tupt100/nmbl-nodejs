@@ -1,0 +1,242 @@
+<div class="logowraps" [class.openBar]="isshow">
+  <a (click)="openmenu()" href="javascript:void(0)" id="mobile-menu">
+    <span></span>
+  </a>
+  <a class="logo" [routerLink]="['/main/dashboard']" href="javascript:void(0);"><img src="assets/images/logo2.png"
+      alt=""></a>
+  <div class="page-nm">{{ appTitle }}</div>
+</div>
+<div class="container">
+  <nav class="">
+    <ul class="main-menu">
+      <li class="cnew-btn"
+        *ngIf="permissionList?.project_project_create || permissionList?.task_task_create || permissionList?.workflow_workflow_create">
+        <a class="plus-icon" href="javascript:void(0);">
+          <img src="assets/images/plus-square.svg" alt="" />
+        </a>
+        <div class="cnew-content">
+          <p
+            *ngIf="permissionList?.project_project_create && permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+            What would you like to create?
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/project']">Project</a>, <a
+                href="javascript:void(0);" [routerLink]="['/main/projects/create/workflow']">Workflow</a> or <a
+                href="javascript:void(0);" [routerLink]="['/main/projects/create/task']">Task</a>?
+            </span>
+          </p>
+          <p
+            *ngIf="permissionList?.project_project_create && !permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+            What would you like to create?
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/project']">Project</a> or <a
+                href="javascript:void(0);" [routerLink]="['/main/projects/create/workflow']">Workflow</a>?
+            </span>
+          </p>
+          <p
+            *ngIf="permissionList?.project_project_create && permissionList?.task_task_create && !permissionList?.workflow_workflow_create">
+            What would you like to create?
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/project']">Project</a> or <a
+                href="javascript:void(0);" [routerLink]="['/main/projects/create/task']">Task</a>?
+            </span>
+          </p>
+          <p
+            *ngIf="!permissionList?.project_project_create && permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+            What would you like to create?
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/workflow']">Workflow</a> or <a
+                href="javascript:void(0);" [routerLink]="['/main/projects/create/task']">Task</a>?
+            </span>
+          </p>
+          <p
+            *ngIf="!permissionList?.project_project_create && !permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+            You like to create
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/workflow']">Workflow</a>?
+            </span>
+          </p>
+          <p
+            *ngIf="!permissionList?.project_project_create && permissionList?.task_task_create && !permissionList?.workflow_workflow_create">
+            You like to create
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/task']">Task</a>?
+            </span>
+          </p>
+          <p
+            *ngIf="permissionList?.project_project_create && !permissionList?.task_task_create && !permissionList?.workflow_workflow_create">
+            You like to create
+            <span> A
+              <a href="javascript:void(0);" [routerLink]="['/main/projects/create/project']">Project</a>?
+            </span>
+          </p>
+        </div>
+      </li>
+      <li *ngIf="permissionList?.project_project_view || permissionList?.project_project_view_all">
+        <a [routerLink]="['/main/projects']" href="javascript:void(0);">PROJECTS</a>
+      </li>
+      <li *ngIf="permissionList?.workflow_workflow_view || permissionList?.workflow_workflow_view_all">
+        <a [routerLink]="['/main/projects/list-workflow']" href="javascript:void(0);">WORKFLOWS</a>
+      </li>
+      <li *ngIf="permissionList?.task_task_view || permissionList?.task_task_view_all">
+        <a [routerLink]="['/main/projects/tasks']" href="javascript:void(0);">TASKS</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+<div class="right-header-wrap">
+  <ul class="flex right-main-nav">
+    <li (click)="isSearching = !isSearching">
+      <a [routerLink]="[isSearching ? '/main/dashboard' : '/main/search']" href="javascript:void(0);">
+        <img src="assets/images/search_close.svg" alt="" *ngIf="isSearching">
+        <img src="assets/images/search-Icon.svg" alt="" *ngIf="!isSearching">
+      </a>
+    </li>
+    <li class="notify-view sm-hidden" (click)="showNotifications();"> <a href="javascript:void(0);">
+        <img src="assets/images/ProxyAssets/DashboardAssets/Bell-Icon.svg" alt="notification">
+        <span class="unread-ping" *ngIf="unreadMessagegCount > 0">{{unreadMessagegCount}}</span>
+      </a>
+      <div class="notify-wrap notification-list" [class.show]="showNotification" *ngIf="arrNotifications.length > 0">
+        <div class="notify-list" *ngIf="totalNotifications">
+          <div class="notify-item notification" *ngFor="let notification of arrNotifications"
+            [class.unread]="notification.status == 1">
+            <figure><img src="assets/images/n-task.svg" alt=""></figure>
+            <div class="notify-caption flex" (click)="readNotification(notification)">
+              <p><a> {{ notification?.title | titlecase}} </a></p>
+              <div class="flex ai-center m-0 sm-div">
+                <span class="noti-prior-box low"></span>
+                <span class="time opacity6"> {{validateTime(notification.created_at)}} </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notify-list" *ngIf="arrNotifications.length === 0">
+          <div class="pg-type pos-relative">
+            <img src="assets/images/Notifications.png" alt="">
+          </div>
+          <div class="not-found-msg flex mt-30">
+            <span><strong> You have no Notifications.</strong></span>
+            <span class="mt-20 text-center"> Once you have been assigned a Project, Workflow, Task or become a member of
+              any group, you will begin receiving notifications.
+            </span>
+          </div>
+        </div>
+        <button type="button" class="see-all" (click)="notifications()" *ngIf="arrNotifications.length > 0">See
+          all</button>
+      </div>
+      <div class="notify-wrap notification-list" [class.show]="showNotification" *ngIf="!totalNotifications">
+        <span>No data found.</span>
+      </div>
+    </li>
+    <li class="notify-view sm-visible">
+      <a href="javascript:void(0);"> <img (click)="notifications()"
+          src="assets/images/ProxyAssets/DashboardAssets/Bell-Icon.svg" alt="notification"> </a>
+    </li>
+    <li class="cnew-btn">
+      <a class="plus-icon" href="javascript:void(0);"
+        *ngIf="permissionList?.project_project_create || permissionList?.task_task_create || permissionList?.workflow_workflow_create"
+        (click)="isshow = !isshow">
+        <img src="assets/images/plus-square.svg" alt="" />
+      </a>
+      <div class="cnew-content" [class.openBar]="isshow">
+        <p
+          *ngIf="permissionList?.project_project_create && permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>What would you like to create? </span>
+            <a href="" class="mlr-0"><img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg"
+                alt=""></a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/project')">Project</a>,
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/workflow')">Workflow</a> or
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/task')">Task</a>?
+          </span>
+        </p>
+        <p
+          *ngIf="permissionList?.project_project_create && !permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>What would you like to create? </span>
+            <a href="" class="mlr-0">
+              <img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg" alt="">
+            </a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/project')">Project</a> or
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/workflow')">Workflow</a>?
+          </span>
+        </p>
+        <p
+          *ngIf="permissionList?.project_project_create && permissionList?.task_task_create && !permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>What would you like to create? </span>
+            <a href="" class="mlr-0">
+              <img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg" alt="">
+            </a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/project')">Project</a> or
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/task')">Task</a>?
+          </span>
+        </p>
+        <p
+          *ngIf="!permissionList?.project_project_create && permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>What would you like to create? </span>
+            <a href="" class="mlr-0">
+              <img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg" alt="">
+            </a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/workflow')">Workflow</a> or
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/task')">Task</a>?
+          </span>
+        </p>
+        <p
+          *ngIf="!permissionList?.project_project_create && !permissionList?.task_task_create && permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>you like to create</span>
+            <a href="" class="mlr-0">
+              <img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg" alt="">
+            </a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/workflow')">Workflow</a>?
+          </span>
+        </p>
+        <p
+          *ngIf="!permissionList?.project_project_create && permissionList?.task_task_create && !permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>You like to create</span>
+            <a href="" class="mlr-0">
+              <img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg" alt="" />
+            </a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/task')">Task</a>?
+          </span>
+        </p>
+        <p
+          *ngIf="permissionList?.project_project_create && !permissionList?.task_task_create && !permissionList?.workflow_workflow_create">
+          <span class="flex ai-center">
+            <span>You like to create</span>
+            <a href="" class="mlr-0">
+              <img (click)="isshow=false" class="mlr-0" src="assets/images/white-btn-close.svg" alt="">
+            </a>
+          </span>
+          <span class="type-creation"> A
+            <a href="javascript:void(0);" (click)="openLink('/main/projects/create/project')">Project</a>?
+          </span>
+        </p>
+      </div>
+    </li>
+    <li class="profile-view">
+      <a class="user-icon" href="javascript:void(0);" [routerLink]="['/main/account-settings']">
+        <figure *ngIf="userAvatar.length">
+          <img src="{{userAvatar}}" alt="" [title]="fullName">
+        </figure>
+        <div class="user-img no-img" *ngIf="!userAvatar.length">
+          <span class="mt-0" [title]="fullName"> {{nameInitial}} </span>
+        </div>
+      </a>
+    </li>
+  </ul>
+</div>

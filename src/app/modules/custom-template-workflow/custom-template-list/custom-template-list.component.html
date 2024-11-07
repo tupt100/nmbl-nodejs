@@ -1,0 +1,125 @@
+<div class="main-filter-head flist"
+  *ngIf="permisionList && (permisionList.tasktemplate_tasktemplate_view || permisionList.tasktemplate_tasktemplate_view_all)">
+  <div class="container flex ai-center">
+    <div class="tabs tab-hide">
+      <a class="tname tab-hide" routerLink="/main/custom-template-project">Projects</a>
+      <a class="active tname " routerLink="/main/custom-template-workflow">Workflows</a>
+      <a class="tname tab-hide" routerLink="/main/custom-template-task">Tasks</a>
+    </div>
+  </div>
+  <div class="container flex ai-center">
+    <div class="flex form-group" style="width: 80%">
+      <p style="margin:.5rem auto 0 0;font-size: 1.2rem">Manage Templates</p>
+    </div>
+    <div class="bg-text flex-end" *ngIf="permisionList?.tasktemplate_tasktemplate_create">
+      <button (click)="createNew()" class="btn btn-md"><strong class="m-0">Add New Custom Template</strong></button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <div class="container  flex ai-center">
+      <img src="/assets/images/search-icon-dark.svg" *ngIf="!searchText" />
+      <img src="/assets/images/btn-close.png" *ngIf="searchText" (click)="clearSearch()" />
+      <input type="text" class="in-search" placeholder="Search Templates..." [(ngModel)]="searchText"
+        (ngModelChange)="onSearch($event)" />
+    </div>
+  </div>
+</div>
+<div class="sm-block-row task-main-pg"
+  *ngIf="permisionList && (permisionList.tasktemplate_tasktemplate_view || permisionList.tasktemplate_tasktemplate_view_all)">
+  <div class="container">
+    <div class="cdk-drop-list ttable-row">
+      <div class="titem-row-head titem-bg ph-row" cdk-scrollable>
+        <span class="titem ttable-full title-label ttable-label" (click)="orderByChange('title')"
+          [ngClass]="{ 'active': defaultParam.ordering === 'title' }">template name
+          <a href="javascript:void(0)">
+            <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+            <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+          </a>
+        </span>
+        <span class="titem ttable-user">template creator
+          <a href="javascript:void(0)"><img src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+              alt="sort" (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')"></a>
+          <app-multiselect-dropdown *ngIf="showUserAssignedFilter" class="rbtn" [showTitle]="false" [isAssignTo]="true"
+            [title]="userTitle" [displaySubItem]="usersList" searchPlaceholder="Search Users"
+            (search)="$event && getLists('user', $event)" (allClear)="clearSelections('created_by', 'userTitle')"
+            (selectionChanged)="onFilterSelected($event, 'created_by')">
+          </app-multiselect-dropdown>
+        </span>
+        <span class="titem ttable-date" (click)="orderByChange('created_at')"
+          [ngClass]="{ 'active': defaultParam.ordering === 'task__due_date' }">created at date
+          <a href="javascript:void(0)">
+            <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+            <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+          </a>
+        </span>
+        <span class="titem ttable-date" (click)="orderByChange('update_at')"
+          [ngClass]="{ 'active': defaultParam.ordering === 'task__due_date' }">updated at date
+          <a href="javascript:void(0)">
+            <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+            <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+          </a>
+        </span>
+        <span class="titem title-actions ttable-actions"></span>
+      </div>
+      <div class="flex-ttable-item prow" *ngFor="let item of templates;let i=index">
+        <div class="ttable-label ttable-full" (click)="updateTemplate(item)">{{item['title']}}</div>
+        <div class="ttable-user" (click)="updateTemplate(item)">
+          <div class="profile-wrap">
+            <figure *ngIf="item?.created_by?.user_avatar_thumb">
+              <img *ngIf="item?.created_by?.user_avatar_thumb" [src]="item?.created_by?.user_avatar_thumb" alt="">
+            </figure>
+            <span class="no-img" *ngIf="item.created_by?.first_name && !item.created_by?.user_avatar_thumb">
+              {{sharedService.displayInitial(item.created_by?.first_name, item.created_by?.last_name)}}</span>
+            <p>{{item.created_by?.first_name + ' ' + item.created_by?.last_name}}</p>
+          </div>
+        </div>
+        <div class="ttable-date" (click)="updateTemplate(item)">{{item.created_at | utcTime}}</div>
+        <div class="ttable-date" (click)="updateTemplate(item)">{{item.update_at | utcTime}}</div>
+        <div class="ttable-actions flex-center">
+          <span class="flex-start">&nbsp;
+            <a title="Edit" (click)="updateTemplate(item)" class="mr-10"
+              *ngIf="permisionList.tasktemplate_tasktemplate_update || permisionList.tasktemplate_tasktemplate_updae_all">
+              <img src="assets/images/ProxyAssets/UserManagementAssets/edit-square.svg" />
+            </a>
+            <a title="Delete" (click)="showConfirmModal(item.pk)"
+              *ngIf="permisionList && permisionList.tasktemplate_tasktemplate_destroy">
+              <img src="assets/images/ProxyAssets/UserManagementAssets/trash-square.svg" />
+            </a>
+          </span>
+
+
+        </div>
+      </div>
+      <div class="block-row pg-not-found" *ngIf="!templates?.length">
+        <div class="sm-container">
+          <div class="pg-type pos-relative">
+            <img src="assets/images/Projects.png" alt="">
+          </div>
+          <div class="not-found-msg flex mt-30">
+            <span><strong> There is no custom workflow template with details.</strong></span>
+            <span class="mt-20 text-center">please create custom workflow templates, <br /> they will show here.</span>
+          </div>
+        </div>
+      </div>
+      <pagination [viewBy]="defaultParam.limit" [totalRecords]="tasksCount" (changePerPage)="setPerPage($event)"
+        (getPageCount)="getData($event)">
+      </pagination>
+    </div>
+  </div>
+</div>
+<div class="block-row pg-not-found"
+  *ngIf="permisionList && !permisionList.tasktemplate_tasktemplate_view && !permisionList.tasktemplate_tasktemplate_view_all">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Tasks.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>
+<div class="modal transition" [ngClass]="{'in': showModal}">
+  <app-confirm-modal message1="Remove Workflow Template" message2='Are you sure?' cancelButtonText="Cancel"
+    okButtonText="Delete" (onClose)="archiveTemplate($event)"></app-confirm-modal>
+</div>

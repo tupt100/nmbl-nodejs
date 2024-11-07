@@ -1,0 +1,294 @@
+<div class="bg-brand-line dash-main">
+  <div class="container">
+    <div class="dash-main-title">
+      <h4>Welcome back, {{firstName || ''}}!</h4>
+    </div>
+    <div class="dash-aside-area flex ai-start">
+      <div class="dash-aside mtm-profile">
+        <div class="profile-thumb">
+          <figure *ngIf="userAvatar.length > 0"><img src="{{userAvatar}}" alt="{{userName}}" title="{{title}}">
+          </figure>
+          <div class="user-img no-img" *ngIf="userAvatar.length === 0">
+            <span class="mt-0"> {{nameInitial}} </span>
+          </div>
+          <p><strong> {{userName || ''}} </strong> {{title || ''}} </p>
+        </div>
+        <app-menu></app-menu>
+      </div>
+      <div class="dash-main">
+        <div class="flex title-row dash-overview-row">
+          <h3>Overview</h3>
+          <div class="right-cap-area">
+            <a class="active" href="javascript:void(0);" [class.active]="chartView" (click)="chartView=true">Week
+              View</a>
+            <a href="javascript:void(0);" [class.active]="!chartView" (click)="chartView=false">Task View</a>
+          </div>
+        </div>
+        <div class="card-row flex dash-cardrow">
+          <div class="card card-full weekview" *ngIf="!isEmptyUpcomingGraph" [class.hideview]="chartView">
+            <div class="card-title text-center">
+              <h6>Your Upcoming Week
+              </h6>
+              <p>Projects, Workflows & Tasks due each day</p>
+            </div>
+            <div class="card-body">
+              <div id="container">
+                <canvas id="bar-chart"></canvas>
+              </div>
+              <div id="js-legend" class="chart-legend"></div>
+              <div class="flex flex-center mt-20 pie-labels">
+                <div class="pr">
+                  <span></span> Projects
+                </div>
+                <div class="wf">
+                  <span></span> Workflows
+                </div>
+                <div class="ts">
+                  <span></span> Tasks
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card card-full weekview empty-dash-card" *ngIf="isEmptyUpcomingGraph"
+            [class.hideview]="chartView">
+            <div class="card-title text-center">
+              <h5>You have nothing due this week.</h5>
+              <p>Way to go! Either you're way ahead of schedule, or</p>
+              <p>this is your first time using Proxy. Probably the latter.</p> <br />
+              <p>Any Projects, Workflows, or Tasks with a Due Date in</p>
+              <p>the next seven days will appear in this graph.</p>
+              <img src="assets/images/Dash-Icon2.png" width="50" class="mt-30" alt="" />
+            </div>
+          </div>
+          <div class="card taskview" *ngIf="isTaskAssigned" [class.hideview]="!chartView">
+            <div class="card-title text-center">
+              <h6>Assigned Tasks </h6>
+              <p>Tasks that are assigned to you and other users</p>
+
+            </div>
+            <div class="card-body">
+              <div class="doughnut-block">
+                <canvas id="doughnut-chart" width="400" height="250"></canvas>
+              </div>
+              <div class="flex flex-center mt-20 pie-labels">
+                <div class="ts">
+                  <span></span> My tasks
+                </div>
+                <div class="wf">
+                  <span></span> Our tasks
+                </div>
+                <div class="pr">
+                  <span></span> Their tasks
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card empty-dash-card taskview" *ngIf="!isTaskAssigned" [class.hideview]="!chartView">
+            <div class="card-title text-center">
+              <h6>You have not been assigned any tasks </h6>
+              <p>All of your assigned Tasks will be shown here. So, get on it!</p>
+              <img src="assets/images/Dash-Icon3.png" width="50" class="mt-30" alt="" />
+            </div>
+          </div>
+        </div>
+        <div class="" *ngIf="permisionList.project_project_view || permisionList.project_project_view_all">
+          <div class="flex title-row ai-center">
+            <h5 class="mb-0"> My Projects</h5>
+            <div class="right-cap-area">
+              <a class="txtd-btn" href="javascript:void(0);" [routerLink]="['/main/projects']">See all Projects</a>
+              <p class="sm-visible" (click)="toggleProject = !toggleProject;"><span>
+                  <span [class.hidden]="toggleProject">Expand</span>
+                  <span [class.hidden]="!toggleProject">Collapse</span> Projects</span>
+              </p>
+            </div>
+          </div>
+          <div class="" *ngIf="toggleProject">
+            <div class="card-row flex info-card-list" *ngIf="arrProjects">
+              <div class="card no_prior" *ngFor="let project of arrProjects"
+                [class.low_prior]="project.project?.importance === 1"
+                [class.medium_prior]="project.project?.importance === 2"
+                [class.high_prior]="project.project?.importance === 3">
+                <div class="card-title mb-0 ">
+                  <h6 class="mb-0 cpointer" (click)="goToProjectDetail(project.project.id)"> {{project.project?.name}}
+                  </h6>
+                  <div class="flex ai-center">
+                    <span class="ml-0"><b>Due:</b> {{project?.project?.due_date | utcTime }} </span>
+                    &nbsp;&nbsp;&nbsp;&nbsp; <span class="uname mr-0"> {{project.project?.owner?.first_name}}
+                      {{project.project?.owner?.last_name}} </span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart-info">
+                    <app-pie-chart [properties]="project.chartProperties"></app-pie-chart>
+                    <div class="chart-detail">
+                      <span><strong>{{project.project?.task?.completed_task || 0}} /
+                          {{project.project?.task?.total_task || 0}}</strong> tasks complete</span>
+                      <span><strong>{{completePercentOfProject(project?.project?.task?.completed_task, project?.project?.task?.total_task)}}%
+                          complete</strong></span>
+                      <span class="overdue" *ngIf="project.project?.task?.passed_due>0">
+                        {{project.project?.task?.passed_due || 0}} overdue &nbsp;<img
+                          src="assets/images/arrow-down-right.svg" alt="" height="15" width="6" class="m-0"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-foot flex ai-center">
+                  <a [routerLink]="['/main/projects/', project.project.id]" class="m-0 sm-text"
+                    href="javascript:void(0)">View all &nbsp; <img class="m-0" src="assets/images/arrow-icon.svg"
+                      alt="view all" /></a>
+                  <div class="profile-wrap m-0">
+                    <ng-container *ngFor="let user of project.project.assigned_to_users | slice:0:3; let i = index;">
+                      <figure>
+                        <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                          title="{{user?.first_name}} {{user?.last_name}}">
+                          {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                        <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                          title="{{user?.first_name}} {{user?.last_name}}" />
+                      </figure>
+                    </ng-container>
+                    <div class="tooltip userlist" *ngIf="project?.project?.assigned_to_users?.length > 3">
+                      <span class="tt_text">
+                        <span class="tt_text" *ngFor="let user of project.project.assigned_to_users | slice:3">
+                          {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                        </span>
+                      </span>
+                      <figure class="more-user">
+                        <span>+{{project.project.assigned_to_users.length - 3}}</span>
+                      </figure>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="emp-pr" *ngIf="arrProjects && arrProjects.length === 0">
+                <div class="card-title mb-0">
+                  <img src="assets/images/Dash-Icon1.png" width="50" class="mt-30" alt="" />
+                  <h5>You have no projects.</h5>
+                  <p>Click below to create a Project, or wait to be</p>
+                  <p>added to a Project from another user.</p>
+                </div>
+                <div class="card-body">
+                  <button type="button" [routerLink]="['/main/projects/create/project']" class="btn btn-md"
+                    *ngIf="permisionList?.project_project_create">Create Project</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="" *ngIf="permisionList.task_task_view || permisionList.task_task_view_all">
+          <div class="flex title-row ai-center">
+            <h5 class="mb-0"> My Tasks</h5>
+            <div class="right-cap-area">
+              <div class="inline-flex toggle-switch" [class.disable]="!isGanttView && arrTasks && arrTasks.length == 0">
+                Table View
+                <div class="btn-switch-wrap">
+                  <input type="checkbox" class="btn-switch" id="chart" (change)="changeView($event.target.checked)"
+                    [disabled]="arrTasks.length === 0" />
+                  <label for="chart"> Gantt Chart </label>
+                </div>
+              </div>
+              <p class="sm-visible" (click)="toggleTask = !toggleTask;"><span>
+                  <span [class.hidden]="toggleTask">Expand</span>
+                  <span [class.hidden]="!toggleTask">Collapse</span> Tasks</span>
+              </p>
+              <a class="txtd-btn" href="javascript:void(0);" [routerLink]="['/main/projects/tasks']">See all Tasks</a>
+            </div>
+          </div>
+          <div class="" *ngIf="toggleTask">
+            <div class="card-row" *ngIf="isGanttView">
+              <div class="card">
+                <div class="card-body">
+                  <div class="not-found ie-msg">Gantt chart is not supported in IE browser</div>
+                  <div id="chart_div"></div>
+                  <!-- <span id='result'></span> -->
+                </div>
+              </div>
+            </div>
+            <div class="ttable-row mb-30" *ngIf="!isGanttView && arrTasks && arrTasks.length > 0">
+              <div class="titem-row-head titem-bg">
+                <span class="titem ttable-rank" (click)="orderByChange('rank')"
+                  [ngClass]="{ 'active': taskDefaultParams.ordering === 'rank' }">Rank
+                  <a href="javascript:void(0)">
+                    <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                    <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                  </a>
+                </span>
+                <span class="titem ttable-full" (click)="orderByChange('task__name')"
+                  [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__name' }">Task Name
+                  <a href="javascript:void(0)">
+                    <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                    <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                  </a>
+                </span>
+                <span class="titem ttable-date" (click)="orderByChange('task__due_date')"
+                  [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__due_date' }">Due Date
+                  <a href="javascript:void(0)">
+                    <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                    <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                  </a>
+                </span>
+                <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                      (click)="handleFilterShow('showStatusFilter', 'showUserAssignedFilter')" alt="sort"></a>
+                  <app-select-task-status *ngIf="showStatusFilter" [isFilter]="true" [checkedStatus]="arrCheckedStatus"
+                    (selectedStatus)="selectTaskStatus($event)"></app-select-task-status>
+                </span>
+                <span class="titem ttable-assign pos-relative">Assigned To <a href="javascript:void(0)"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="sort"
+                      (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')"></a>
+                  <app-multiselect-dropdown *ngIf="showUserAssignedFilter" [title]="userTitle"
+                    [displaySubItem]="usersList" searchPlaceholder="Search Users"
+                    (search)="$event && getLists('user', $event)"
+                    (allClear)="clearSelections('user', 'selectedUsersList', 'userTitle')"
+                    (selectionChanged)="onFilterSelected($event, 'user')" [showTitle]="false">
+                  </app-multiselect-dropdown>
+                </span>
+              </div>
+              <div *ngFor="let task of arrTasks" class="flex-ttable-item "
+                [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+                <div class="ttable-rank">
+                  <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank"
+                    resourceType="my-task" [isDisabled]="true">
+                  </app-rank-number>
+                </div>
+                <div class="ttable-full"> <a [routerLink]="['/main/projects/tasks/', task.task.id]">
+                    {{task?.task?.name}}
+                  </a> </div>
+                <div class="ttable-date"> {{task?.task?.due_date | utcTime}}</div>
+                <div class="ttable-status">{{sharedService.taskStatus(task?.task?.status)}}</div>
+                <div class="ttable-assign">
+                  <div class="profile-wrap">
+                    <figure *ngIf="task?.task?.user_avatar_thumb">
+                      <img [src]="task?.task?.user_avatar_thumb" alt=""
+                        [title]="task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name">
+                    </figure>
+                    <span class="no-img" *ngIf="task.task.assigned_to?.first_name"
+                      [title]="task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name">{{sharedService.displayInitial(task.task.assigned_to?.first_name, task.task.assigned_to?.last_name)}}</span>
+                    <p *ngIf="task.task.assigned_to?.first_name">
+                      {{task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="emp-pr" *ngIf="arrTasks && arrTasks.length === 0">
+          <div class="card-title mb-0">
+            <img src="assets/images/Dash-Icon1.png" width="50" class="mt-30" alt="" />
+            <h5>You have no tasks.</h5>
+            <p>Click below to create a Task, or wait to be</p>
+            <p>added to a Task from another user.</p>
+          </div>
+          <div class="card-body">
+            <button type="button" [routerLink]="['/main/projects/create/task']" class="btn btn-md"
+              *ngIf="permisionList?.task_task_create || permisionList?.project_project_create">Create Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition intro-slide-modal" [ngClass]="{'in': showModal?.isIntro}">
+  <app-intro-slides [module]="module" [slides]="slides" (onClose)="onClose($event)">
+  </app-intro-slides>
+</div>

@@ -1,0 +1,11 @@
+.field-check-wrapper{
+  display: flex !important;
+  align-items: flex-end;
+  label{
+    margin-left: 0;
+  }
+}
+.remove-btn{
+  background: #fff;
+  color: red;
+}

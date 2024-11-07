@@ -1,0 +1,137 @@
+.main-full-head .btn-switch-wrap {
+  display: none;
+}
+.aside-full-block {
+  width: 100%;
+}
+.user-wrap .profile-wrap.fig-lg .no-img {
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  line-height: 32px;
+}
+.main-filter-head {
+  &.twp-filter {
+    border-bottom: 2px solid #d4d7f0;
+  }
+}
+button.add-btn {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .task-header-wrap {
+    background: #fff;
+    padding: 10px;
+  }
+  .wf-chart {
+    background: #fff;
+    padding: 10px;
+    text-align: left;
+    .chart-info {
+      padding-right: 5px;
+      margin: 0;
+      &:last-child {
+        padding: 0;
+      }
+    }
+  }
+  .main-filter-head {
+    .filter-group-wrap {
+      .form-group {
+        .ddown-item {
+          max-width: 33.33%;
+        }
+      }
+    }
+  }
+  .sm-block-row {
+    .container {
+      > a {
+        padding: 0 10px;
+      }
+    }
+    .title-row {
+      padding: 0 10px;
+    }
+  }
+  app-discussions,
+  app-documents,
+  app-audit-trail-history {
+    display: none;
+    &.display {
+      display: block;
+    }
+  }
+  .detail-pg {
+    .main-filter-head + .sm-block-row {
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+  }
+  .ttable-row {
+    .flex-ttable-item {
+      > div {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
+      .ttable-full {
+        padding-left: 5px;
+      }
+      .ttable-assign {
+        width: 45%;
+        .profile-wrap {
+          p {
+            margin-left: 5px;
+            font-size: 11px;
+          }
+        }
+      }
+      .ttable-status,
+      .ttable-date {
+        font-size: 11px;
+        padding-top: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  button.btn-md {
+    display: none;
+  }
+  button.add-btn {
+    display: inline-block;
+  }
+  .task-header-wrap .btn-group li:last-child {
+    display: inline-block;
+  }
+  .ttable-row {
+    .flex-ttable-item {
+      .ttable-btn {
+        display: none;
+      }
+    }
+  }
+}
+
+.main-filter-head {
+  .filter-group-custom-fields {
+    margin-top: 10px;
+    justify-content: flex-start;
+    .form-group {
+      margin: 0;
+
+      .ddown-item {
+        margin-bottom: 0;
+        margin-right: 30px;
+        .edit_name {
+          min-height: 30px;
+          .editCustomFieldInput {
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+}

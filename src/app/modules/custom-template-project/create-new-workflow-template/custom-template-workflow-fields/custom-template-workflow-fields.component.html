@@ -1,0 +1,106 @@
+<div class="card">
+  <div class="card-title card-bdr">
+    <h5 *ngIf="!templateId">New Project Template</h5>
+    <h5 *ngIf="templateId">Project Template</h5>
+  </div>
+  <div class="card-body">
+    <p>Would you like to set any default values for the existing project attributes?</p>
+    <div class="aside-full-block" style="max-width: unset">
+      <form [formGroup]='projectForm'>
+        <div class="form-group ">
+          <div class="fitem partition-items">
+            <div class="fitem">
+              <label>Project Name</label>
+              <input type="text" class="" name="project_name" formControlName="name" placeholder="Name your Project" />
+            </div>
+            <div class="fitem">
+              <label>Importance</label>
+              <div class=" flex pt-0">
+                <div class="prty-wrap">
+                  <app-importance [checkedImportance]="importance"
+                    (selectedImportance)="updateImportance($event,'projectForm')">
+                  </app-importance>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fitem half-fitem">
+            <div class="fitem half-fitem twp-create">
+              <label class="flex ai-center">Assign Project To
+              </label>
+              <div class="select-box select-box-multibox">
+                <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="userTitle"
+                  [isDisabled]="isSelfAssign" [displaySubItem]="usersList" searchPlaceholder="Assign to"
+                  (search)="$event && getLists('user', $event)" (selectionChanged)="onFilterSelected($event, 'user')">
+                </app-multiselect-dropdown>
+              </div>
+            </div>
+            <div class="fitem half-fitem twp-create">
+              <label>Add Your Team</label>
+              <div class="select-box select-box-multibox">
+                <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="groupTitle"
+                  [displaySubItem]="workGroupList" (allClear)="clearGT(true)" [canEmpty]="true"
+                  searchPlaceholder="Search Groups" (search)="$event && getLists('group',$event)"
+                  (selectionChanged)="onFilterSelected($event, 'group')">
+                </app-multiselect-dropdown>
+              </div>
+            </div>
+          </div>
+          <div class="fitem half-fitem">
+            <div class="fitem half-fitem">
+              <label class="field-with-description">Due Date
+                <a onclick="this.blur();" class="btn-box tooltip"
+                  href="javascript:void(0);">
+                  <span class="tt_text">Set a due date based on when the project is created. For example, 30 will automatically set a due date of 30 days after a project is created from this template.</span>
+                  <img src="assets/images/info-icon.png" alt="">
+                </a>
+              </label>
+              <input type="number" class="date-input create-date" [(ngModel)]="dueDate" [ngModelOptions]="{standalone: true}" />
+            </div>
+            <div class="fitem half-fitem">
+              <label class="field-with-description">Start Date if known
+                <a onclick="this.blur();" class="btn-box tooltip"
+                  href="javascript:void(0);">
+                  <span class="tt_text">Set a start date based on when the project is created. For example, 30 will automatically set a start date of 30 days after a project is created from this template.</span>
+                  <img src="assets/images/info-icon.png" alt="">
+                </a>
+              </label>
+              <input type="number" class="date-input create-date" [(ngModel)]="startDate" [ngModelOptions]="{standalone: true}" />
+            </div>
+          </div>
+          <div class="ddown-item">
+            <label>Note</label>
+            <textarea name="description" formControlName="description"> </textarea>
+          </div>
+
+          <div class="fitem half-fitem priv-block">
+            <div class="fitem lg-half-fitem">
+              <label>Privilege</label>
+              <div class="fitem inline-check-list">
+                <div *ngFor="let choice of arrPrivilege; let i=index" class="fitem-check eq-fitem">
+                  <input id="checkbox_{{i}}" type="checkbox" [(ngModel)]="arrPrivilege[i].checked"
+                    [ngModelOptions]="{standalone: true}" (change)="updatePrivilege($event,choice.id)"
+                    class="fitem-ck-input">
+                  <label for="checkbox_{{i}}" class="fitem-ck-txt">{{choice.title}}</label>
+                </div>
+              </div>
+            </div>
+            <div class="fitem sub-half-fitem ">
+              <label _ngcontent-fwr-c91="">Privacy</label>
+              <div class="btn-switch-wrap">
+                <input type="checkbox" class="btn-switch" id="switch" [(ngModel)]="isPrivate"
+                  [ngModelOptions]="{standalone: true}">
+                <label for="switch" *ngIf="isPrivate"> Private</label>
+                <label for="switch" *ngIf="!isPrivate"> Public</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="btn-group text-right fx-btm" style="padding-bottom: 5rem">
+  <button type="button" (click)="createProject()" class="btn btn-md">Continue
+  </button>
+</div>

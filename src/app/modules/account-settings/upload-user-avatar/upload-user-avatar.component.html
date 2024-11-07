@@ -1,0 +1,16 @@
+<div class="modal-dialog ">
+  <div class="alert-cont modal-content">
+    <div class="modal-header text-center">
+      <h5>Reposition your photo</h5>
+      <a href="javascript:void(0);" class="close">esc</a>
+    </div>
+    <!-- Crop Container -->
+    <div class="modal-body">
+      <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="4 / 3" [resizeToWidth]="128" format="png" (imageCropped)="imageCropped($event)" croppedWidth="300"></image-cropper>
+      <div class="btn-group flex mt-30">
+        <button type="button" class="btn btn-half btn-lg" (click)="setProfileImage()">SAVE</button>
+        <button type="button" class="btn btn-bdr btn-half btn-lg" (click)="closeDialog()">CANCEL</button>
+      </div>
+    </div>
+  </div>
+</div>

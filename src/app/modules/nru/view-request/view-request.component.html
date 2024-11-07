@@ -1,0 +1,125 @@
+<div class="nru-main-wrap">
+  <div class="m-header sm-visible">
+    <img src="assets/images/white-proxy.png" alt="" width="87" />
+  </div>
+</div>
+<div class="sdesk-header-wrap flex pt-20">
+  <div class="container m-0">
+    <div class="flex header-wrap">
+      <div class="prty-wrap">
+        <app-importance [checkedImportance]="response | importance" [isDisabled]="true">
+        </app-importance>
+      </div>
+      <div class="title-row">
+        <div class="active">
+          <h2 class="test-class">
+            {{response | requestName }}
+          </h2>
+        </div>
+        <div class="title-btm-wrap flex ai-center">
+          <div class="req-date-wrap">
+            <div class="due-date">
+              <span class="date-btn disable" href="javascript:void(0);">
+                <strong>Client Requested Date:</strong> 01/26/2019
+              </span>
+            </div>
+            <div class="req-no-wrap">
+              <span class="req-no" href="javascript:void(0);">
+                <strong>Req No:</strong> {{response.service_desk_request}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="nru-main-wrap pt-0 view-req-pg">
+  <app-sidebar></app-sidebar>
+  <div class="sm-block-row pt-0">
+    <app-notifier class="mb-20"></app-notifier>
+    <div class="container ml-0">
+      <div class="auth-block">
+        <div class="btn-row">
+          <a class="btn-back" href="javascript:void(0);" (click)="goToPendingRequestsList()">View My Pending
+            Requests</a>
+        </div>
+        <div class="">
+          <app-discussions class="aside-full-block" modalType="submitrequest" [modalId]="userId" [token]="userToken"
+            [detail]="response" (refresh)="refreshPage()" style="width: 100%"></app-discussions>
+          <div class="card doc-page">
+            <div class="card-title card-bdr mb-0">
+              <div class="flex">
+                <h5>Documents ({{ response?.task?.attachments?.length }})</h5>
+                <div class="right-cap-area" (click)="openUploadDoc = true">
+                  <a href="javascript:void(0);" class="plus-icon grayblue-icon">
+                    <img src="/assets/images/ProxyAssets/TasksAssets/Plus-Icon.svg" alt=""></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body no-pad" *ngIf="!response?.task?.attachments?.length">
+              <div class="file-list">
+                <div class="not-found">
+                  No record found
+                </div>
+              </div>
+            </div>
+            <perfect-scrollbar style="max-width: 100%; max-height: 330px;">
+              <div class="file-list flex flex-start">
+                <div class="file-item" *ngFor="let attachment of response?.task?.attachments; let i = index;"
+                  (click)="downloadFile(attachment)">
+                  <figure>
+                    <img [src]="attachment?.document_name | image" alt="">
+                  </figure>
+                  <p>
+                    <strong>{{ attachment?.document_name }}</strong>
+                    <small>by <a href="javascript:void(0);"> {{ attachment?.created_by }}</a>
+                      {{ momentObj(attachment?.created_at).format('MM/DD/YYYY') }}
+                    </small>
+                  </p>
+                </div>
+              </div>
+            </perfect-scrollbar>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': openUploadDoc}">
+  <div class="modal-dialog modal-md">
+    <div class="alert-cont modal-content">
+      <div class="modal-header text-center">
+        <h5>Upload Documents </h5>
+        <a href="javascript:void(0);" class="close" (click)="cancel()">esc</a>
+      </div>
+      <div class="modal-body">
+        <div class="file-wrap">
+          <ngx-dropzone (change)="dropped($event)" [accept]="allowedFormats"
+            class="align-items-center d-flex justify-content-center upload-file-lbl">
+            <ngx-dropzone-label class="sm-hidden">Drag & drop your files here <br /> or <b>Browse</b>
+            </ngx-dropzone-label>
+            <ngx-dropzone-label class="sm-visible"><b>Upload Documents</b></ngx-dropzone-label>
+          </ngx-dropzone>
+        </div>
+        <div *ngIf="uploadedFile && uploadedFile.length">
+          <div class="ai-center flex view-doc-list mt-20" *ngFor="let file of uploadedFile; let idx = index;">
+            <div class="doc-info">
+              <figure>
+                <img [src]="file?.name | image" alt="file type">
+              </figure>
+              <span class="sm-text name-box" [title]="file?.name"> {{ file?.name }} </span>
+            </div>
+            <a href="javascript:void(0)" class="m-0" (click)="removeFile(idx)"><img height="18"
+                src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg"></a>
+          </div>
+        </div>
+        <div class="btn-group text-right mt-30">
+          <a href="javascript:void(0)" class="btn btn-bdr" (click)="cancel()">Cancel</a>
+          <a href="javascript:void(0)" class="btn" (click)="upload()">Upload</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

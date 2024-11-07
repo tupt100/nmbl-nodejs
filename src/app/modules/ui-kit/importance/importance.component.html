@@ -1,0 +1,16 @@
+<div [ngClass]="displayName" [class.open]="showDropdown" (click)="!isDisabled && show()">
+  <a href="javascript:void(0);" class="prty-btn" [ngClass]="{ 'disable': isDisabled }">
+    {{ displayName }}
+  </a>
+</div>
+<div class="nav-dropdown" *ngIf="showDropdown">
+  <div class="check-list">
+    <span class="fitem-check" *ngFor="let item of arrImportance">
+      <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input" [checked]="item.checked"
+        (change)="select(item)" />
+      <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+        {{ item.title }}
+      </label>
+    </span>
+  </div>
+</div>

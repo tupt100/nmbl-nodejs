@@ -1,0 +1,243 @@
+<app-notifier></app-notifier>
+
+<div class="block-row new_permission sm-hidden">
+  <div class="container">
+    <div class="card-row flex">
+      <div class="card">
+        <div class="card-bdr card-title">
+          <h5>Edit Permissions for {{groupName}}</h5>
+        </div>
+        <div class="card-body">
+          <span class="subtitle">Changing these permissions will change the abilities and access of all users currently
+            assigned to this permission set. Please be aware when modifying these permissions.</span>
+          <div class="form-group">
+            <div class="fitem half-fitem">
+              <div class="fitem half-fitem">
+                <label for="">Group Name<sup>*</sup></label>
+                <input type="text" class="lg-field" placeholder="Enter Group name" [(ngModel)]="groupName" />
+              </div>
+            </div>
+          </div>
+          <div class="card-md-row" *ngIf="arrRequestPermission.length">
+            <div class="flex title-row">
+              <span class="md-text">Requests</span>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let request of arrRequestPermission">
+                <div class="fitem-check">
+                  <input id="request-{{request.id}}" type="checkbox" class="fitem-ck-input" [checked]="request.checked"
+                    (change)="requestPermissionSettings($event, request)" />
+                  <label for="request-{{request.id}}" class="fitem-ck-txt">
+                    {{request.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-md-row" *ngIf="arrTaskPermission.length">
+            <div class="flex title-row flex ai-center">
+              <span class="md-text">Tasks</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="task-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllTask($event)" />
+                    <label for="task-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let task of arrTaskPermission">
+                <div class="fitem-check">
+                  <input id="task-{{task.id}}" type="checkbox" class="fitem-ck-input" [checked]="task.checked"
+                    (change)="taskPermissionSettings($event, task)" />
+                  <label for="task-{{task.id}}" class="fitem-ck-txt">
+                    {{task.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-md-row" *ngIf="arrWorkflowPermission.length">
+            <div class="flex title-row flex ai-center">
+              <span class="md-text">Workflows</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="workflow-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllWorkflow($event)" />
+                    <label for="workflow-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let workflow of arrWorkflowPermission">
+                <div class="fitem-check">
+                  <input id="workflow-{{workflow.id}}" type="checkbox" class="fitem-ck-input"
+                    [checked]="workflow.checked" (change)="workflowPermissionSettings($event, workflow)" />
+                  <label for="workflow-{{workflow.id}}" class="fitem-ck-txt">
+                    {{workflow.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-md-row" *ngIf="arrProjectPermission.length">
+            <div class="flex title-row flex ai-center">
+              <span class="md-text">Projects</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="project-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllProject($event)" />
+                    <label for="project-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let project of arrProjectPermission">
+                <div class="fitem-check">
+                  <input id="project-{{project.id}}" type="checkbox" class="fitem-ck-input" [checked]="project.checked"
+                    (change)="projectPermissionSettings($event, project)" />
+                  <label for="project-{{project.id}}" class="fitem-ck-txt">
+                    {{project.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Template Permissions -->
+          <div class="card-md-row" *ngIf="arrTaskTemplatePermission.length">
+            <div class="flex title-row flex ai-center" *ngIf="templateFeatureIsOn">
+              <span class="md-text">Task Templates</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="taskTemplate-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllTaskTemplate($event)" />
+                    <label for="taskTemplate-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let taskTemplate of arrTaskTemplatePermission">
+                <div class="fitem-check">
+                  <input id="taskTemplate-{{taskTemplate.id}}" type="checkbox" class="fitem-ck-input"
+                    [checked]="taskTemplate.checked" (change)="taskTemplatePermissionSettings($event, taskTemplate)" />
+                  <label for="taskTemplate-{{taskTemplate.id}}" class="fitem-ck-txt">
+                    {{taskTemplate.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-md-row" *ngIf="arrWorkflowTemplatePermission.length">
+            <div class="flex title-row flex ai-center" *ngIf="templateFeatureIsOn">
+              <span class="md-text">Workflow Templates</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="workflowTemplate-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllWorkflowTemplate($event)" />
+                    <label for="workflowTemplate-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let workflowTemplate of arrWorkflowTemplatePermission">
+                <div class="fitem-check">
+                  <input id="workflowTemplate-{{workflowTemplate.id}}" type="checkbox" class="fitem-ck-input"
+                    [checked]="workflowTemplate.checked" (change)="workflowTemplatePermissionSettings($event, workflowTemplate)" />
+                  <label for="workflowTemplate-{{workflowTemplate.id}}" class="fitem-ck-txt">
+                    {{workflowTemplate.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-md-row" *ngIf="arrProjectTemplatePermission.length">
+            <div class="flex title-row flex ai-center" *ngIf="templateFeatureIsOn">
+              <span class="md-text">Project Templates</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="projectTemplate-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllProjectTemplate($event)" />
+                    <label for="projectTemplate-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let projectTemplate of arrProjectTemplatePermission">
+                <div class="fitem-check">
+                  <input id="projectTemplate-{{projectTemplate.id}}" type="checkbox" class="fitem-ck-input"
+                    [checked]="projectTemplate.checked" (change)="projectTemplatePermissionSettings($event, projectTemplate)" />
+                  <label for="projectTemplate-{{projectTemplate.id}}" class="fitem-ck-txt">
+                    {{projectTemplate.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-md-row" *ngIf="arrFieldPermission.length">
+            <div class="flex title-row flex ai-center" *ngIf="templateFeatureIsOn">
+              <span class="md-text">Global Custom Fields</span>
+              <div class="right-cap-area">
+                <div class="fitem inline-check-list">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="field-all" name="checkboxs" class="fitem-ck-input"
+                      (change)="selectAllField($event)" />
+                    <label for="field-all" class="fitem-ck-txt mb-0">Select All</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="fitem inline-check-list" *ngFor="let field of arrFieldPermission">
+                <div class="fitem-check">
+                  <input id="field-{{field.id}}" type="checkbox" class="fitem-ck-input"
+                    [checked]="field.checked" (change)="fieldPermissionSettings($event, field)" />
+                  <label for="field-{{field.id}}" class="fitem-ck-txt">
+                    {{field.name}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn- text-right">
+            <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+            <button type="button" class="btn btn-lg btn-gray" *ngIf="!isValidForm()">Update Permission</button>
+            <button type="button" class="btn btn-lg" *ngIf="isValidForm()" (click)="updatePermission();">Update
+              Permission</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

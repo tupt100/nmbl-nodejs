@@ -1,0 +1,109 @@
+<app-notifier></app-notifier>
+<div class="sm-block-row sm-hidden">
+  <div class="container">
+    <div class="title-row ">
+      <div class="flex">
+        <h5>Tags Manager
+          <sub>Select a tag to see options</sub>
+        </h5>
+        <div class="right-cap-area mr-0 flex">
+          <form [formGroup]='tagSearchForm'>
+            <input class="bg_input" type="text" placeholder="Search by tag" formControlName="assignToSearch" />
+          </form>
+          <a href="javascript:void(0)" (click)="showModal.isAddTag = true;" class="btn btn-plus"><span>+</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="card ptb-10">
+      <ng-container>
+        <div class="tags-list-row show" *ngFor="let tag of tags">
+          <a class="toggle-tags" href="javascript:void(0);"> {{tag.group}}{{tag.group.toLowerCase()}} </a>
+          <div class="tags-list list_tags">
+            <div class="tags-item" *ngFor="let groupTag of tag.tags" (click)="openTagPopup(groupTag)">
+              <label class="tag" for="">{{groupTag.tag}}</label>
+              <app-tag-popup *ngIf="groupTag.isTagDisplay === true" (viewTag)="viewTag()"
+                (editTag)="showModal.isEditTag = true;" (deleteTag)="showModal.isDeleteTag = true;"></app-tag-popup>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isDeleteTag}">
+  <app-confirm-modal message1="Delete Tag"
+    message2="Are you sure you want to delete this tag will be removed from every item that it has been added to, this is irreversable."
+    cancelButtonText="Cancel" okButtonText="Delete" (onClose)="removeTagConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isAddTag}">
+  <div class="modal-dialog modal-sm">
+    <div class="alert-cont modal-content">
+      <div class="modal-header text-center">
+        <h5>Create Tag </h5>
+        <a href="javascript:void(0);" class="close">esc</a>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-20">
+          <div class="fitem">
+            <input type="text" placeholder="Add Tag Name" [(ngModel)]="tagName" />
+          </div>
+        </div>
+        <div class="btn-group flex">
+          <a class="btn btn-half btn-bdr btn-lg" href="javascript:void(0);" (click)="showModal.isAddTag = false;"> No,
+            Cancel</a>
+          <a class="btn btn-half btn-lg" href="javascript:void(0);" (click)="addTag()">Save</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isEditTag}">
+  <div class="modal-dialog modal-sm">
+    <div class="alert-cont modal-content">
+      <div class="modal-header text-center">
+        <h5>Edit Tag </h5>
+        <a href="javascript:void(0);" class="close" (click)="showModal.isEditTag = false;">esc</a>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-20">
+          <div class="fitem">
+            <input type="text" value="Tag Name" [(ngModel)]="tagName" />
+          </div>
+        </div>
+        <div class="btn-group flex">
+          <a class="btn btn-half btn-bdr btn-lg" href="javascript:void(0);" (click)="showModal.isEditTag = false;"> No,
+            Cancel</a>
+          <a class="btn btn-half btn-lg" href="javascript:void(0);"
+            (click)="showModal.isEditTag = false;showModal.isEditTagConfirm = true;">Yes, Replace</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal transition" [ngClass]="{'in': showModal?.isEditTagConfirm}">
+  <app-confirm-modal message1="Edit Tag"
+    message2="This tag will be replaced across all items and your team members will have to search for the new name in order to find related items."
+    cancelButtonText="No, Cancel" okButtonText="Yes, Replace" (onClose)="updateTagConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+
+<!--not accessible in mobile-->
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Tag Manager.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

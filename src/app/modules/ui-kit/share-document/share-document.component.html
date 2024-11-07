@@ -1,0 +1,22 @@
+<div class="modal-dialog modal-sm">
+  <div class="alert-cont modal-content">
+    <div class="modal-header text-center">
+      <h5>Share Document </h5>
+      <a href="javascript:void(0);" class="close" (click)="cancel()">esc</a>
+    </div>
+    <div class="modal-body">
+      <!--Content for private document share-->
+      <p *ngIf="isPrivate"><b>This document is private.</b> You can only share this document with assigned users. please specify the emails you would like to share this document with below. You can separate email address with commas.</p>
+      <p *ngIf="!isPrivate"> Please specify the emails you would like to share this document with below. You can separate email addresses
+        with commas.</p>
+      <input type="email" placeholder="Email Address" [(ngModel)]="email" />
+      <span *ngIf="submitted && email === ''" class="error">Please enter email address.</span>
+      <span *ngIf="submitted && email != '' && isInvalidEmail" class="error">Please enter valid email address.</span>
+      <br /><br />
+      <div class="btn-group flex">
+        <a class="btn btn-half btn-bdr btn-lg" href="javascript:void(0);" (click)="cancel()">Cancel</a>
+        <a class="btn btn-half btn-lg" href="javascript:void(0);" (click)="onSubmit()">Share</a>
+      </div>
+    </div>
+  </div>
+</div>

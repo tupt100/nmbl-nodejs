@@ -1,0 +1,576 @@
+<div class="block-row twp-create" *ngIf="!noPermission">
+  <div class="container">
+    <app-notifier></app-notifier>
+    <div class="aside-area">
+      <!-- Task Form Starts -->
+      <div class="aside-full-block" *ngIf="formType === 'task'">
+        <div class="card">
+          <div class="card-title card-bdr sm-hidden ">
+            <div class="flex">
+              <h5>Create New Task</h5>
+
+              <div class="form-group m-0" *ngIf="taskTemplateList.length">
+                <div class="fitem half-fitem template-select-container">
+                  <label>Template:</label>
+                  <div class="select-box select-box-multibox">
+                    <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="taskTemplateTitle"
+                      [displaySubItem]="taskTemplateList" searchPlaceholder="Task Template"
+                      (search)="$event && getLists('taskTemplates', $event)"
+                      (selectionChanged)="onFilterSelected($event, 'taskTemplates')">
+                    </app-multiselect-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="card-body">
+            <form [formGroup]='taskForm'>
+              <div class="form-group ">
+                <div class="fitem partition-items">
+                  <div class="fitem">
+                    <label>Task Name<sup>*</sup></label>
+                    <input type="text" class="" name="task_name" formControlName="name" placeholder="Name your Task" />
+                  </div>
+                  <div class="fitem">
+                    <label>Importance</label>
+                    <div class=" flex pt-0">
+                      <div class="prty-wrap">
+                        <app-importance [checkedImportance]="importance"
+                          (selectedImportance)="updateImportance($event,'taskForm')">
+                        </app-importance>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ddown-item">
+                  <label>Associate Task with Workflow</label>
+                  <div class="select-box select-box-multibox">
+                    <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="workflowTitle"
+                      (allClear)="clearPW(true)" [canEmpty]="true" [displaySubItem]="workFlowList"
+                      searchPlaceholder="Search Workflows" (search)="$event && getLists('workflows', $event)"
+                      (selectionChanged)="onFilterSelected($event, 'workflows')">
+                    </app-multiselect-dropdown>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Assign Task To
+                      <div class="fitem inline-check-list m-0">
+                        <div class="fitem-check">
+                          <input type="checkbox" (change)="checkSelfAssign($event)" id="checkbox18" name="selfAssign"
+                            class="fitem-ck-input" [(ngModel)]="isSelfAssign" [ngModelOptions]="{standalone: true}">
+                          <label for="checkbox18" class="fitem-ck-txt">Assign to myself</label>
+                        </div>
+                      </div>
+                    </label>
+                    <div class="select-box select-box-multibox">
+                      <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="userTitle"
+                        [isDisabled]="isSelfAssign" [displaySubItem]="usersList" searchPlaceholder="Assign to"
+                        (search)="$event && getLists('user', $event)"
+                        (selectionChanged)="onFilterSelected($event, 'user')">
+                      </app-multiselect-dropdown>
+                    </div>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label>Add Your Team</label>
+                    <div class="select-box select-box-multibox">
+                      <app-multiselect-dropdown [isFilter]="false" [title]="groupTitle" [displaySubItem]="workGroupList"
+                        searchPlaceholder="Search Groups" (search)="$event && getLists('group',$event)"
+                        (selectionChanged)="onFilterSelected($event, 'group')">
+                      </app-multiselect-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Due Date</label>
+                    <input [minDate]="getMinDate()" [(ngModel)]="dueDate" [ngModelOptions]="{standalone: true}" readonly
+                      type="text" placeholder="" class="date-input create-date" bsDatepicker
+                      [bsConfig]=" { showWeekNumbers: false }" (onShown)="onOpenCalendar()">
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Start Date if known
+                      <div class="fitem inline-check-list m-0">
+                        <div class="fitem-check">
+                          <input type="checkbox" (change)="setCurrentDate($event)" id="checkbox15"
+                            [(ngModel)]="setStartToday" [ngModelOptions]="{standalone: true}" name="selfAssign"
+                            class="fitem-ck-input">
+                          <label for="checkbox15" class="fitem-ck-txt">Set as today</label>
+                        </div>
+                      </div>
+                    </label>
+                    <input [minDate]="minDate" readonly type="text" placeholder="" [(ngModel)]="startDate"
+                      [ngModelOptions]="{standalone: true}" [maxDate]="dueDate"
+                      (bsValueChange)="updateStartDateCheckbox($event)" class="date-input create-date" bsDatepicker
+                      [bsConfig]=" { showWeekNumbers: false }">
+                  </div>
+                </div>
+                <div class="ddown-item">
+                  <label>Note</label>
+                  <textarea name="description" formControlName="description"> </textarea>
+                </div>
+
+                <div class="fitem half-fitem priv-block" *ngIf="permisionList?.task_create_edit_privilege_selector">
+                  <div class="fitem lg-half-fitem">
+                    <label>Privilege</label>
+                    <div class="fitem inline-check-list">
+                      <div *ngFor="let choice of arrPrivilege; let i=index" class="fitem-check eq-fitem">
+                        <input id="checkbox_{{i}}" type="checkbox" [(ngModel)]="arrPrivilege[i].checked"
+                          [ngModelOptions]="{standalone: true}" (change)="updatePrivilege($event,choice.id)"
+                          class="fitem-ck-input">
+                        <label for="checkbox_{{i}}" class="fitem-ck-txt">{{choice.title}}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="fitem sub-half-fitem ">
+                    <label _ngcontent-fwr-c91="">Privacy</label>
+                    <div class="btn-switch-wrap">
+                      <input type="checkbox" class="btn-switch" id="switch" [(ngModel)]="isPrivate"
+                        [ngModelOptions]="{standalone: true}"
+                        [disabled]="task?.task?.status == 3 || task?.task?.status == 4">
+                      <label for="switch" *ngIf="isPrivate"> Private</label>
+                      <label for="switch" *ngIf="!isPrivate"> Public</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- custom fields from task template -->
+                <div formArrayName="fields" *ngFor="let item of taskForm.get('fields')['controls']; let i = index;">
+                  {{item.controls['isRequired'.value] | json}}
+                  <div [formGroupName]="i">
+                    <div class="form-group" *ngIf="item.get('label')">
+                      <div class="fitem">
+                        <label class="field-with-description">{{item.controls['label'].value}}<sup
+                            style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                          <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                            href="javascript:void(0);">
+                            <!-- <span class="field-description">i</span> -->
+                            <span class="tt_text">{{item.controls['description'].value}}</span>
+                            <img src="assets/images/info-icon.png" alt="">
+                          </a>
+                        </label>
+                        <input [type]="item.controls['controlType'].value" class="" formControlName="value"
+                          name="field_name" [required]="item.controls['isRequired'].value" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- global custom fields -->
+                <div formArrayName="globalFields" *ngFor="let item of taskForm.get('globalFields')['controls']; let i = index;">
+                  {{item.controls['isRequired'.value] | json}}
+                  <div [formGroupName]="i">
+                    <div class="form-group" *ngIf="item.get('label')">
+                      <div class="fitem">
+                        <label class="field-with-description">{{item.controls['label'].value}}<sup
+                            style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                          <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                            href="javascript:void(0);">
+                            <!-- <span class="field-description">i</span> -->
+                            <span class="tt_text">{{item.controls['description'].value}}</span>
+                            <img src="assets/images/info-icon.png" alt="">
+                          </a>
+                        </label>
+                        <input [type]="item.controls['controlType'].value" class="" formControlName="value"
+                          name="field_name" [required]="item.controls['isRequired'].value" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <app-task-prior [workflow]="workflowTitle && workflowTitle.length ? workflowTitle[0]?.id : ''"
+                  [workflowChanged]="workFlowUpdated"> </app-task-prior>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="btn-group text-right fx-btm">
+          <button type="button" class="btn btn-bdr btn-md" [routerLink]="['/main/projects/tasks']">Cancel</button>
+          <button type="button" [disabled]="taskForm?.invalid" [ngClass]="{'btn-gray':taskForm?.invalid}"
+            (click)="createTask()" class="btn btn-md">Create New Task</button>
+          <app-template-add-dropdown (addNewTaskTemplate)="addNewTaskTemplate()">
+          </app-template-add-dropdown>
+        </div>
+      </div>
+      <!-- Task Form Ends -->
+      <!-- Workflow Form Starts -->
+      <div class="aside-full-block" *ngIf="formType === 'workflow'">
+        <div class="card">
+          <div class="card-title card-bdr sm-hidden">
+            <div class="flex">
+              <h5>Create New Workflow</h5>
+
+              <div class="form-group m-0" *ngIf="workflowTemplateList.length">
+                <div class="fitem half-fitem template-select-container">
+                  <label>Template:</label>
+                  <div class="select-box select-box-multibox">
+                    <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="workflowTemplateTitle"
+                      [displaySubItem]="workflowTemplateList" searchPlaceholder="Workflow Template"
+                      (search)="$event && getLists('workflowTemplates', $event)"
+                      (selectionChanged)="onFilterSelected($event, 'workflowTemplates')">
+                    </app-multiselect-dropdown>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="card-body">
+            <form [formGroup]='workflowForm'>
+              <div class="form-group ">
+                <div class="fitem partition-items">
+                  <div class="fitem">
+                    <label>Worflow Name<sup>*</sup></label>
+                    <input type="text" class="" name="task_name" formControlName="name"
+                      placeholder="Name your Workflow" />
+                  </div>
+                  <div class="fitem">
+                    <label>Importance</label>
+                    <div class="task-header-wrap flex pt-0">
+                      <div class="prty-wrap">
+                        <app-importance [checkedImportance]="importance"
+                          (selectedImportance)="updateImportance($event,'workflowForm')">
+                        </app-importance>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ddown-item">
+                  <label>Associate Workflow with Project</label>
+                  <div class="select-box select-box-multibox">
+                    <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="projectTitle"
+                      [canEmpty]="true" [displaySubItem]="projectsList" (allClear)="clearPW()"
+                      searchPlaceholder="Assign to" (search)="$event && getLists('projects', $event)"
+                      (selectionChanged)="onFilterSelected($event, 'projects')">
+                    </app-multiselect-dropdown>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Assign Workflow To
+                      <div class="fitem inline-check-list m-0">
+                        <div class="fitem-check">
+                          <input type="checkbox" (change)="checkSelfAssign($event)" id="checkbox18" name="selfAssign"
+                            class="fitem-ck-input" [(ngModel)]="isSelfAssign" [ngModelOptions]="{standalone: true}">
+                          <label for="checkbox18" class="fitem-ck-txt">Assign to myself</label>
+                        </div>
+                      </div>
+                    </label>
+                    <div class="select-box select-box-multibox">
+                      <app-multiselect-dropdown [isFilter]="false" [title]="userTitle" [isDisabled]="isSelfAssign"
+                        [displaySubItem]="usersList" searchPlaceholder="Assign to"
+                        (search)="$event && getLists('user', $event)"
+                        (selectionChanged)="onFilterSelected($event, 'user')">
+                      </app-multiselect-dropdown>
+                    </div>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label>Add Your Team</label>
+                    <div class="select-box select-box-multibox">
+                      <app-multiselect-dropdown [isFilter]="false" [title]="groupTitle" [displaySubItem]="workGroupList"
+                        searchPlaceholder="Search Groups" (search)="$event && getLists('group',$event)"
+                        (selectionChanged)="onFilterSelected($event, 'group')">
+                      </app-multiselect-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Due Date</label>
+                    <input [minDate]="getMinDate()" readonly type="text" placeholder="Enter or Select from calendar"
+                      [(ngModel)]="dueDate" [ngModelOptions]="{standalone: true}" class="date-input create-date"
+                      bsDatepicker [bsConfig]=" { showWeekNumbers: false }" (onShown)="onOpenCalendar()" />
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Start Date if known
+                      <div class="fitem inline-check-list m-0">
+                        <div class="fitem-check">
+                          <input type="checkbox" (change)="setCurrentDate($event)" id="checkbox15"
+                            [(ngModel)]="setStartToday" [ngModelOptions]="{standalone: true}" name="selfAssign"
+                            class="fitem-ck-input">
+                          <label for="checkbox15" class="fitem-ck-txt">Set as today</label>
+                        </div>
+                      </div>
+                    </label>
+                    <input [minDate]="minDate" readonly type="text" placeholder="Enter or Select from Calendar"
+                      [(ngModel)]="startDate" [ngModelOptions]="{standalone: true}" [maxDate]="dueDate"
+                      class="date-input create-date" bsDatepicker (bsValueChange)="updateStartDateCheckbox($event)"
+                      [bsConfig]=" { showWeekNumbers: false }" />
+                  </div>
+                </div>
+
+                <div class="ddown-item">
+                  <label>Note</label>
+                  <textarea name="description" formControlName="description"> </textarea>
+                </div>
+
+                <div class="fitem  priv-block" *ngIf="permisionList?.workflow_create_edit_privilege_selector">
+                  <label class="sm-visible">Privilege</label>
+                  <div class="fitem inline-check-list">
+                    <div *ngFor="let choice of arrPrivilege; let i=index" class="fitem-check eq-fitem">
+                      <input id="checkbox_{{i}}" type="checkbox" [(ngModel)]="arrPrivilege[i].checked"
+                        [ngModelOptions]="{standalone: true}" (change)="updatePrivilege($event,choice.id)"
+                        class="fitem-ck-input">
+                      <label for="checkbox_{{i}}" class="fitem-ck-txt">{{choice.title}}</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- custom fields from workflow template -->
+                <div formArrayName="fields" *ngFor="let item of workflowForm.get('fields')['controls']; let i = index;">
+                  {{item.controls['isRequired'.value] | json}}
+                  <div [formGroupName]="i">
+                    <div class="form-group" *ngIf="item.get('label')">
+                      <div class="fitem">
+                        <label class="field-with-description">{{item.controls['label'].value}}<sup
+                            style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                          <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                            href="javascript:void(0);">
+                            <!-- <span class="field-description">i</span> -->
+                            <span class="tt_text">{{item.controls['description'].value}}</span>
+                            <img src="assets/images/info-icon.png" alt="">
+                          </a>
+                        </label>
+                        <input [type]="item.controls['controlType'].value" class="" formControlName="value"
+                          name="field_name" [required]="item.controls['isRequired'].value" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- global custom fields -->
+                <div formArrayName="globalFields" *ngFor="let item of workflowForm.get('globalFields')['controls']; let i = index;">
+                  {{item.controls['isRequired'.value] | json}}
+                  <div [formGroupName]="i">
+                    <div class="form-group" *ngIf="item.get('label')">
+                      <div class="fitem">
+                        <label class="field-with-description">{{item.controls['label'].value}}<sup
+                            style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                          <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                            href="javascript:void(0);">
+                            <!-- <span class="field-description">i</span> -->
+                            <span class="tt_text">{{item.controls['description'].value}}</span>
+                            <img src="assets/images/info-icon.png" alt="">
+                          </a>
+                        </label>
+                        <input [type]="item.controls['controlType'].value" class="" formControlName="value"
+                          name="field_name" [required]="item.controls['isRequired'].value" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="btn-group text-right fx-btm">
+          <button type="button" class="btn btn-bdr btn-md"
+            [routerLink]="['/main/projects/list-workflow']">Cancel</button>
+          <button type="button" [ngClass]="{'btn-gray': workflowForm?.invalid}" [disabled]="workflowForm?.invalid"
+            (click)="createWorkflow()" class="btn btn-md">Create New Workflow</button>
+          <app-workflow-template-add-dropdown (addNewWorkflowTemplate)="addNewWorkflowTemplate()">
+          </app-workflow-template-add-dropdown>
+        </div>
+      </div>
+      <!-- Workflow Form Ends -->
+      <!-- Project Form Starts -->
+      <div class="aside-full-block" *ngIf="formType === 'project'">
+        <div class="card">
+          <div class="card-title card-bdr sm-hidden">
+            <div class="flex">
+              <h5>Create New Project</h5>
+
+              <div class="form-group m-0" *ngIf="projectTemplateList.length">
+                <div class="fitem half-fitem template-select-container">
+                  <label>Template:</label>
+                  <div class="select-box select-box-multibox">
+                    <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="projectTemplateTitle"
+                      [displaySubItem]="projectTemplateList" searchPlaceholder="Project Template"
+                      (search)="$event && getLists('projectTemplates', $event)"
+                      (selectionChanged)="onFilterSelected($event, 'projectTemplates')">
+                    </app-multiselect-dropdown>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="card-body">
+            <form [formGroup]='projectForm'>
+              <div class="form-group ">
+                <div class="fitem partition-items">
+                  <div class="fitem">
+                    <label>Project Name<sup>*</sup></label>
+                    <input type="text" class="" name="task_name" formControlName="name"
+                      placeholder="Name your Project" />
+                  </div>
+                  <div class="fitem">
+                    <label>Importance</label>
+                    <div class="task-header-wrap flex pt-0">
+                      <div class="prty-wrap">
+                        <app-importance [checkedImportance]="importance"
+                          (selectedImportance)="updateImportance($event,'projectForm')">
+                        </app-importance>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Assign Project To
+                      <div class="fitem inline-check-list m-0">
+                        <div class="fitem-check">
+                          <input type="checkbox" (change)="checkSelfAssign($event)" id="checkbox18" name="selfAssign"
+                            class="fitem-ck-input" [(ngModel)]="isSelfAssign" [ngModelOptions]="{standalone: true}">
+                          <label for="checkbox18" class="fitem-ck-txt">Assign to myself</label>
+                        </div>
+                      </div>
+                    </label>
+                    <div class="select-box select-box-multibox">
+                      <app-multiselect-dropdown [isFilter]="false" [title]="userTitle" [isDisabled]="isSelfAssign"
+                        [displaySubItem]="usersList" searchPlaceholder="Assign to"
+                        (search)="$event && getLists('user', $event)"
+                        (selectionChanged)="onFilterSelected($event, 'user')">
+                      </app-multiselect-dropdown>
+                    </div>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label>Add Your Team</label>
+                    <div class="select-box select-box-multibox">
+                      <app-multiselect-dropdown [isFilter]="false" [title]="groupTitle" [displaySubItem]="workGroupList"
+                        searchPlaceholder="Search Groups" (search)="$event && getLists('group',$event)"
+                        (selectionChanged)="onFilterSelected($event, 'group')">
+                      </app-multiselect-dropdown>
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Due Date<sup>*</sup></label>
+                    <input [minDate]="getMinDate()" readonly type="text" placeholder="Enter or Select from calendar"
+                      [(ngModel)]="dueDate" [ngModelOptions]="{standalone: true}" class="date-input create-date"
+                      bsDatepicker [bsConfig]=" { showWeekNumbers: false }" (onShown)="onOpenCalendar()" />
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Start Date if known
+                      <div class="fitem inline-check-list m-0">
+                        <div class="fitem-check">
+                          <input type="checkbox" (change)="setCurrentDate($event)" id="checkbox15"
+                            [(ngModel)]="setStartToday" [ngModelOptions]="{standalone: true}" name="selfAssign"
+                            class="fitem-ck-input">
+                          <label for="checkbox15" class="fitem-ck-txt">Set as today</label>
+                        </div>
+                      </div>
+                    </label>
+                    <input [minDate]="minDate" readonly type="text" placeholder="Enter or Select from Calendar"
+                      [(ngModel)]="startDate" [ngModelOptions]="{standalone: true}" [maxDate]="dueDate"
+                      class="date-input create-date" bsDatepicker (bsValueChange)="updateStartDateCheckbox($event)"
+                      [bsConfig]=" { showWeekNumbers: false }" />
+                  </div>
+                </div>
+                <div class="ddown-item">
+                  <label>Note</label>
+                  <textarea name="description" formControlName="description"> </textarea>
+                </div>
+                <div class="fitem priv-block" *ngIf="permisionList?.project_create_edit_privilege_selector">
+                  <label class="sm-visible">Privilege</label>
+                  <div class="fitem inline-check-list">
+                    <div *ngFor="let choice of arrPrivilege; let i=index" class="fitem-check eq-fitem">
+                      <input id="checkbox_{{i}}" type="checkbox" [(ngModel)]="arrPrivilege[i].checked"
+                        [ngModelOptions]="{standalone: true}" (change)="updatePrivilege($event,choice.id)"
+                        class="fitem-ck-input">
+                      <label for="checkbox_{{i}}" class="fitem-ck-txt">{{choice.title}}</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- custom fields from project template -->
+                <div formArrayName="fields" *ngFor="let item of projectForm.get('fields')['controls']; let i = index;">
+                  {{item.controls['isRequired'.value] | json}}
+                  <div [formGroupName]="i">
+                    <div class="form-group" *ngIf="item.get('label')">
+                      <div class="fitem">
+                        <label class="field-with-description">{{item.controls['label'].value}}<sup
+                            style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                          <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                            href="javascript:void(0);">
+                            <!-- <span class="field-description">i</span> -->
+                            <span class="tt_text">{{item.controls['description'].value}}</span>
+                            <img src="assets/images/info-icon.png" alt="">
+                          </a>
+                        </label>
+                        <input [type]="item.controls['controlType'].value" class="" formControlName="value"
+                          name="field_name" [required]="item.controls['isRequired'].value" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- global custom fields -->
+                <div formArrayName="globalFields" *ngFor="let item of projectForm.get('globalFields')['controls']; let i = index;">
+                  {{item.controls['isRequired'.value] | json}}
+                  <div [formGroupName]="i">
+                    <div class="form-group" *ngIf="item.get('label')">
+                      <div class="fitem">
+                        <label class="field-with-description">{{item.controls['label'].value}}<sup
+                            style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                          <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                            href="javascript:void(0);">
+                            <!-- <span class="field-description">i</span> -->
+                            <span class="tt_text">{{item.controls['description'].value}}</span>
+                            <img src="assets/images/info-icon.png" alt="">
+                          </a>
+                        </label>
+                        <input [type]="item.controls['controlType'].value" class="" formControlName="value"
+                          name="field_name" [required]="item.controls['isRequired'].value" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="btn-group text-right fx-btm">
+          <button type="button" class="btn btn-bdr btn-md" [routerLink]="['/main/projects/']">Cancel</button>
+          <button type="button" [ngClass]="{'btn-gray': projectForm?.invalid}" [disabled]="projectForm?.invalid"
+            (click)="createProject()" class="btn btn-md">Create New Project</button>
+          <app-project-template-add-dropdown (addNewProjectTemplate)="addNewProjectTemplate()">
+          </app-project-template-add-dropdown>
+        </div>
+      </div>
+      <!-- Project Form Ends -->
+      <aside class="side_card">
+        <h6 class="text-left ml-0"> Tag
+          {{ formType === 'task' ? 'Task' : formType === 'workflow' ? 'Workflow' : 'Project' }}</h6>
+
+        <div class="card no-pad bdr-box" style="position: relative;">
+          <app-multiselect-dropdown [isTag]="true" [isFilter]="false" [title]="tagTitle" [displaySubItem]="tagsList"
+            [showTitle]="false" [isStandAloneTag]="true" searchPlaceholder="Search Tags"
+            (search)="$event && getLists('tag', $event)" (selectionChanged)="onFilterSelected($event, 'tag')">
+          </app-multiselect-dropdown>
+        </div>
+
+        <app-documents [modalType]="formType" [modalId]="123" [attachments]="uploadedFile"
+          (updateModal)="addDocuments('documents', $event)" [createOrUpdate]="'create'"
+          [class.display]="activeTab === 'documents'">
+        </app-documents>
+
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div class="block-row pg-not-found" *ngIf="noPermission">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Projects.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>

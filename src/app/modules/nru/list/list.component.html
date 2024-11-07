@@ -1,0 +1,117 @@
+<div class="nru-main-wrap">
+  <div class="auth-aside">
+    <div class="auth-aside-inner">
+      <a class="nru-logo" href="javascript:void(0)"><img src="assets/images/white-proxy.png" alt=""></a>
+      <h1>Service Desk</h1>
+      <p>Whether you are a client or a member of Proxy, you can create requests for the legal team through the
+        service desk portal. </p>
+      <p>You’ll be emailed notifications of all updates on your task.</p>
+    </div>
+  </div>
+  <div class="sm-visible m-header"><img src="assets/images/white-proxy.png" alt="" width="87"></div>
+  <div class="sm-block-row">    
+    <div class="container ml-0">
+      <div class="auth-block">
+        <app-notifier class="mb-20"></app-notifier>
+        <div class="title-row flex">
+          <h2>Pending Requests
+            <sub> {{userEmail}} </sub>
+          </h2>
+          <div class="right-cap-area">
+            <a href="javascript:void(0);" class="btn btn-brand" (click)="submitRequest()">Submit New Request</a>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="title-row">
+            <h5>In Progress</h5>
+          </div>
+          <div class="card">
+            <div class="ttable-row">
+              <div class="titem-row-head titem-bg">
+                <span class="titem  ttable-reqno">REQ NO</span>
+                <span class="titem  ttable-full">REQUEST NAME</span>
+                <div class="titem ttable-status">STATUS</div>
+                <span class="titem ttable-assign">ASSIGNEE </span>
+              </div>
+              <div class="flex-ttable-item" *ngFor="let request of currentList">
+                <div class="ttable-reqno">
+                  {{request.service_desk_request}}
+                </div>
+                <div class="ttable-full" (click)="viewRequestDetail(request.id)">
+                  <a href="javascript:void(0)"><i class="count-val" *ngIf="request.replies > 0">{{request.replies}}</i>
+                    {{request | requestName}} </a>
+                </div>
+                <div class="titem ttable-status">In Progress</div>
+                <div class="ttable-assign">
+                  <div class="profile-wrap">
+                    <p *ngIf="request?.task?.assigned_to">{{request | assignedTo}}</p>
+                    <p *ngIf="!request?.task?.assigned_to">{{request | assignedToGroup}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="title-row">
+            <h5>Submitted</h5>
+          </div>
+          <div class="card">
+            <div class="ttable-row">
+              <div class="titem-row-head titem-bg">
+                <span class="titem  ttable-reqno">REQ NO</span>
+                <span class="titem  ttable-full">REQUEST NAME</span>
+                <div class="titem ttable-status">STATUS</div>
+                <span class="titem ttable-assign">ASSIGNEE </span>
+              </div>
+              <div class="flex-ttable-item" *ngFor="let request of submittedtList">
+                <div class="ttable-reqno">
+                  {{request.id}}
+                </div>
+                <div class="ttable-full">
+                  <a href="javascript:void(0)"> {{request.subject}} </a>
+                </div>
+                <div class="titem ttable-status"> {{request.status}} </div>
+                <div class="ttable-assign">
+                  <div class="profile-wrap">
+                    <p> {{request.assigned_to}} </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="title-row">
+            <h5>Completed</h5>
+          </div>
+          <div class="card">
+            <div class="ttable-row">
+              <div class="titem-row-head titem-bg">
+                <span class="titem  ttable-reqno">REQ NO</span>
+                <span class="titem  ttable-full">REQUEST NAME</span>
+                <div class="titem ttable-status">STATUS</div>
+                <span class="titem ttable-assign">ASSIGNEE </span>
+              </div>
+              <div class="flex-ttable-item" *ngFor="let request of completedList">
+                <div class="ttable-reqno">
+                  {{request.service_desk_request}}
+                </div>
+                <div class="ttable-full">
+                  <a href="javascript:void(0)" (click)="viewRequestDetail(request.id)"> {{request | requestName}} </a>
+                </div>
+                <div class="titem ttable-status">Completed</div>
+                <div class="ttable-assign">
+                  <div class="profile-wrap">
+                    <p *ngIf="request?.task?.assigned_to">{{request | assignedTo}}</p>
+                    <p *ngIf="!request?.task?.assigned_to">{{request | assignedToGroup}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

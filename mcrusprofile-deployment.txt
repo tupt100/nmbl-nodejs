@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcrusprofile
+  namespace: iface-uat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcrusprofile
+      version: 'v1'
+  template:
+    metadata:
+      labels:
+        app: mcrusprofile
+        version: 'v1'
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - mcrusprofile
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/capacityType
+                    operator: In
+                    values:
+                      - SPOT
+      securityContext:
+        runAsUser: 0
+      containers:
+        - name: mcrusprofile-app
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+          image: 315150302741.dkr.ecr.ap-southeast-1.amazonaws.com/mcrusprofile:1.0.0-UAT-build-ecb50f2a-6d57-4e2e-bde9-11c9567ee5e2
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: uat,api-docs
+            - name: SPRING_APPLICATION_NAME
+              value: mcrusprofile
+            - name: SPRING_CLOUD_CONSUL_DISCOVERY_IP_ADDRESS # Add
+              value: 'mcrusprofile.iface-uat.svc.cluster.local'
+            - name: SPRING_CLOUD_CONSUL_DISCOVERY_SERVICE-NAME
+              value: mcrusprofile
+            - name: SPRING_CLOUD_CONSUL_HOST
+              # servicename.namespace.svc.cluster.local
+              value: consul.consul.svc.cluster.local
+            - name: SPRING_CLOUD_CONSUL_PORT
+              value: '8500'
+            - name: SPRING_CLOUD_CONSUL_ENABLED
+              value: 'true'
+            - name: SPRING_CLOUD_VAULT_ENABLED
+              value: 'false'
+            - name: SPRING_CLOUD_VAULT_HOST
+              value: vault.consul.svc.cluster.local
+            - name: SPRING_CLOUD_VAULT_PORT
+              value: '8200'
+            - name: SPRING_CLOUD_VAULT_TOKEN
+              value: 'value-change-for-prod'
+            - name: JHIPSTER_METRICS_LOGS_ENABLED
+              value: 'false'
+            - name: JHIPSTER_LOGGING_LOGSTASH_ENABLED
+              value: 'false'
+            - name: JHIPSTER_LOGGING_LOGSTASH_HOST
+              value: jhipster-logstash
+            - name: SPRING_ZIPKIN_ENABLED
+              value: 'false'
+            - name: SPRING_ZIPKIN_BASE_URL
+              value: http://jhipster-zipkin
+            - name: SPRING_SLEUTH_PROPAGATION_KEYS
+              value: 'x-request-id,x-ot-span-context'
+            - name: JAVA_OPTS
+              value: ' -Duser.timezone=Asia/Ho_Chi_Minh -Xmx768m -Xms768m -XX:+AlwaysPreTouch -XX:+UseNUMA -XX:-UseBiasedLocking -XX:+DisableExplicitGC  -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:+UseShenandoahGC -Dcom.sun.jndi.ldap.object.disableEndpointIdentification=true'
+            - name: SERVER_PORT
+              value: '8082'
+            - name: SPRING_CLOUD_CONSUL_CONFIG_WATCH_ENABLED
+              value: 'false'
+            - name: SPRING_CLOUD_CONSUL_CONFIG_ENABLED
+              value: 'true'
+            - name: TZ
+              value: 'Asia/Ho_Chi_Minh'
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: APP_NAME
+              value: '/mcrusprofile/'
+            - name: AWS_XRAY_DAEMON_ADDRESS
+              value: 'xray-service.default.svc.cluster.local:2000'
+          resources:
+            requests:
+         #     memory: '768Mi'
+              memory: '1280Mi'
+              cpu: '100m'
+            limits:
+              memory: '1280Mi'
+              #              cpu: '1'
+          ports:
+            - name: http
+              containerPort: 8082
+          readinessProbe:
+            httpGet:
+              path: /management/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /management/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          volumeMounts:
+            - name: data-efs-claim
+              mountPath: /data/app/appdata/uat/
+      volumes:
+        - name: data-efs-claim
+          persistentVolumeClaim:
+            claimName: efs-claim

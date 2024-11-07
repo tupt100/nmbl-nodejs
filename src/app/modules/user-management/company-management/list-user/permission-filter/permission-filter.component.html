@@ -1,0 +1,32 @@
+<form [formGroup]='usersForm'>
+  <div class="nav-dropdown fix-filter no-scroll">
+    <input type="text" class="search_input" placeholder="Search permissions" formControlName="assignToSearch">
+    <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+      <div class="checked_list" *ngIf="isExist()">
+          <div class="check-list">
+            <span class="fitem-check" *ngFor="let group of arrGroups | isTrue"> 
+              <input type="checkbox" id="{{group.id}}" [checked]="group.checked" (change)="selectGroup($event, group)" class="fitem-ck-input">
+              <label class="fitem-ck-txt" for="{{group.id}}">
+                {{group.name}}
+              </label>            
+            </span>
+          </div>  
+      </div>
+      <div class="check-list mscroll-height">
+        <span class="fitem-check" *ngFor="let group of arrGroups | isFalse">
+          <input type="checkbox" id="{{group.id}}" [checked]="group.checked" (change)="selectGroup($event, group)"
+            class="fitem-ck-input" />
+          <label class="fitem-ck-txt" for="{{group.id}}">
+            {{group.name}}
+          </label>
+        </span>
+        <span class="fitem-check" *ngIf="arrGroups.length === 0">
+          <label class="fitem-ck-txt text-center">No data found</label>
+        </span>
+      </div>
+    </perfect-scrollbar>
+    <div class="footbtns">
+      <button type="button" class="btn fbtn" (click)="clear()">Clear Status</button>
+    </div>
+  </div>
+</form>

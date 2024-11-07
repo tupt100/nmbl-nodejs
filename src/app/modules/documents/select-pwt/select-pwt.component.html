@@ -1,0 +1,54 @@
+<form [formGroup]='myForm'>
+  <div class="nav-dropdown mt-10">
+    <input type="text" class="search_input" placeholder="Search List" formControlName="assignToSearch" />
+    <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+      <div class="check-list rbtn">
+
+        <!-- Projects -->
+        <span class="xs-text" (click)="notCollapsed['projects'] = !notCollapsed['projects']">
+          <strong class="flex flex-start ai-center">Projects
+            <img src="assets/images/down_arrow.svg" alt="" />
+          </strong>
+        </span>
+        <div *ngIf="notCollapsed['projects']">
+          <span class="fitem-check" *ngFor="let project of arrProjects; let i = index;">
+            <input type="checkbox" class="fitem-ck-input" id="porject-{{i}}" (change)="selectProject(project)"
+              [checked]="selected?.uploaded_to?.name === project?.project?.name"
+              [disabled]="selected?.uploaded_to?.name === project?.project?.name" />
+            <label class="fitem-ck-txt" for="porject-{{i}}"> {{project?.project?.name}} </label>
+          </span>
+        </div>
+
+        <!-- Workflows -->
+        <span class="xs-text" (click)="notCollapsed['workflows'] = !notCollapsed['workflows']">
+          <strong class="flex flex-start ai-center">Workflows
+            <img src="assets/images/down_arrow.svg" alt="" />
+          </strong>
+        </span>
+        <div *ngIf="notCollapsed['workflows']">
+          <span class="fitem-check" *ngFor="let workflow of arrWorkflow; let i = index;">
+            <input type="checkbox" class="fitem-ck-input" id="workflow-{{i}}" (change)="selectWorkflow(workflow)"
+              [checked]="selected?.uploaded_to?.name === workflow?.workflow?.name"
+              [disabled]="selected?.uploaded_to?.name === workflow?.workflow?.name" />
+            <label class="fitem-ck-txt" for="workflow-{{i}}"> {{workflow?.workflow?.name}} </label>
+          </span>
+        </div>
+
+        <!-- Tasks -->
+        <span class="xs-text" (click)="notCollapsed['tasks'] = !notCollapsed['tasks']">
+          <strong class="flex flex-start ai-center">Tasks
+            <img src="assets/images/down_arrow.svg" alt="" />
+          </strong>
+        </span>
+        <div *ngIf="notCollapsed['tasks']">
+          <span class="fitem-check" *ngFor="let task of arrTask; let i = index;">
+            <input type="checkbox" class="fitem-ck-input" id="task-{{i}}" (change)="selectTask(task)"
+              [checked]="selected?.uploaded_to?.name === task?.task?.name"
+              [disabled]="selected?.uploaded_to?.name === task?.task?.name" />
+            <label class="fitem-ck-txt" for="task-{{i}}"> {{task?.task?.name}} </label>
+          </span>
+        </div>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</form>

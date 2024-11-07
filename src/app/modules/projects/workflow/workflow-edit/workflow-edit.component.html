@@ -1,0 +1,473 @@
+<app-menu class="m-header"></app-menu>
+<div class="detail-pg wf-detail" *ngIf="permisionList?.workflow_workflow_view || permisionList?.workflow_workflow_view_all">
+  <div class="main-full-head">
+    <div class="container">    
+      <ul class="breadcrumbs-wrap">
+        <li class="pos-relative" *ngIf="projectTitle?.length">
+          <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="projectTitle"
+            [canEmpty]="true"
+            [displaySubItem]="projectsList" (allClear)="clearPW()"
+            searchPlaceholder="Assign to" (search)="$event && getLists('projects', $event)"
+            (selectionChanged)="onFilterSelected($event, 'projects')">
+          </app-multiselect-dropdown>
+        </li>
+        
+        <li class="pos-relative" *ngIf="!projectTitle?.length">
+          No Project Associated
+          <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="projectTitle"
+            [canEmpty]="true"
+            [displaySubItem]="projectsList" (allClear)="clearPW()"
+            searchPlaceholder="Assign to" (search)="$event && getLists('projects', $event)"
+            (selectionChanged)="onFilterSelected($event, 'projects')" class="rbtn">
+          </app-multiselect-dropdown>
+        </li>
+      </ul>
+      <div class="modal transition" [ngClass]="{'in': showModal?.deleteDoc}">
+        <app-confirm-modal [message1]="deleteObj?.message1" [message2]="deleteObj?.message2" cancelButtonText="Cancel"
+          [okButtonText]="deleteObj?.buttonText" (onClose)="confirmationDone($event)"></app-confirm-modal>
+      </div>
+      <div class="task-header-wrap flex pt-20">
+        <div class="prty-wrap">
+          <app-importance [checkedImportance]="importance" (selectedImportance)="updateWorkflow('importance', $event)"
+            [isDisabled]="!permisionList?.workflow_set_importance || workflow?.workflow?.status != 1">
+          </app-importance>
+        </div>
+        <div class="title-row">
+          <div class="edit_name active">
+            <h2 class="test-class" *ngIf="!showWorkFlowNameEdit"
+              [ngStyle]="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status == 1 && {'cursor': 'pointer'}"
+              [title]="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status == 1 ? 'Double click to edit' : workflow?.workflow?.name"
+              (dblclick)="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status == 1 && showWorkFlowNameInput()">
+              {{ workflow?.workflow?.name | splitText }}</h2>
+            <div class="input-wrap"
+              *ngIf="showWorkFlowNameEdit && permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status == 1">
+              <input type="text" placeholder="Enter task name" [(ngModel)]="workFlowName"
+                (keyup.enter)="reNameFlowTitle()" class="reNameInput" />
+              <a href="javascript:void(0);" class="close" (click)="workFlowName = ''"><img
+                  src="assets/images/btn-close-icon.png" alt=""></a>
+            </div>
+          </div>
+          <div class="title-btm-wrap flex ai-center">
+            <div class="due-startdate-wrap">
+              <div class="due-date pos-relative">
+                <a class="date-btn" href="javascript:void(0);"
+                  (click)="showCalendar = []; showCalendar['due'] = !showCalendar['due'];"
+                  [ngClass]="{'disable': !permisionList?.workflow_set_due_date || workflow?.workflow?.status != 1}"><strong>Due:</strong>
+                  {{workflow?.workflow?.due_date | utcTime }}
+                </a>
+                <span *ngIf="showCalendar['due'] && permisionList?.workflow_set_due_date &&  workflow?.workflow?.status == 1">
+                  <bs-datepicker-inline [(bsValue)]="dueDate" (bsValueChange)="updateWorkflow('dueDate', $event)"
+                    [minDate]="startDate" [bsConfig]=" { showWeekNumbers:false }">
+                  </bs-datepicker-inline>
+                </span>
+              </div>
+              <div class="start-date pos-relative">
+                <a class=" date-btn" href="javascript:void(0);"
+                  (click)="showCalendar = []; showCalendar['start'] = !showCalendar['start']"
+                  [ngClass]="{'disable': workflow?.workflow?.status != 1}"><strong>Start:</strong>
+                  {{ workflow?.workflow?.start_date ? 
+                    momentObj(workflow?.workflow?.start_date).format('MM/DD/YYYY') : '--'
+                  }}
+                </a>
+                <span *ngIf="showCalendar['start'] && workflow?.workflow?.status == 1">
+                  <bs-datepicker-inline [(bsValue)]="startDate" (bsValueChange)="updateWorkflow('startDate', $event)"
+                    [maxDate]="dueDate" [bsConfig]=" { showWeekNumbers:false }">
+                  </bs-datepicker-inline>
+                </span>
+              </div>
+            </div>
+            <div class="btn-switch-wrap">
+              <input type="checkbox" class="btn-switch" id="switch" [checked]="workflow?.workflow?.is_private"
+                [disabled]="workflow?.workflow?.status != 1" [(ngModel)]="isPrivate"
+                (change)="updateWorkflow('private')" />
+              <label for="switch"> Private </label>
+            </div>
+          </div>
+        </div>
+        <div class="btn-wrap flex">
+          <div class="user-wrap pos-relative md-filter">
+            <div class="profile-wrap fig-lg">
+              <div class="wf-owner">
+                <div class="tooltip">
+                  <span class="tt_text">Owner, {{workflow?.workflow?.owner.first_name}}
+                    {{workflow?.workflow?.owner.last_name}}</span>
+                  <figure>
+                    <img [src]="workflow?.workflow?.owner?.user_avatar_thumb" alt=""
+                      *ngIf="workflow?.workflow?.owner?.user_avatar_thumb">
+                    <span *ngIf="!workflow?.workflow?.owner?.user_avatar_thumb"
+                      class="no-img">{{sharedService.displayInitial(workflow?.workflow?.owner?.first_name, workflow?.workflow?.owner?.last_name)}}</span>
+                  </figure>
+                </div>
+                <a (click)="assignedUser = false; changeOwner = !changeOwner" href="javascript:void(0);" class="add-user-btn" *ngIf="permisionList?.workflow_assign_owner && workflow?.workflow?.status == 1">+</a>
+              </div>
+              <div *ngIf="changeOwner">
+                  <div class="nav-dropdown mt-10">
+                    <input type="text" class="search_input" placeholder="Search User" (keyup)="getLists('user', $event)">
+                    <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+                      <div class="check-list">
+                        <span class="fitem-check" *ngFor="let item of usersList | orderBy">
+                          <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input" [checked]="item?.id === workflow?.workflow?.owner?.id" [disabled]="item?.id === workflow?.workflow?.owner?.id" (change)="changeWorkflowOwner(item)" />
+                          <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                            {{ item.name }}
+                          </label>
+                        </span>
+                        <span class="fitem-check" *ngIf="!usersList?.length">No record found</span>
+                      </div>
+                    </perfect-scrollbar>
+                  </div>
+                </div>
+              <ng-container *ngFor="let user of assignedTo | slice:0:3; let i = index;">
+                <figure>
+                  <span class="no-img" *ngIf="!user.user_avatar_thumb" title="{{user?.first_name}} {{user?.last_name}}">
+                    {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                  <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                    title="{{user?.first_name}} {{user?.last_name}}" />
+                </figure>
+              </ng-container>
+              <div class="tooltip userlist" *ngIf="assignedTo?.length > 3">
+                <span class="tt_text">
+                  <span class="tt_text" *ngFor="let user of assignedTo | slice:3">
+                    {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                  </span>
+                </span>
+                <figure class="more-user">
+                  <span>+{{assignedTo.length - 3}}</span>
+                </figure>
+              </div>
+              <a *ngIf="permisionList?.workflow_add_team_members && workflow?.workflow?.status == 1"
+                class="add-user-btn" href="javascript:void(0);" (click)="changeOwner = false;assignedUser = !assignedUser">+</a>
+            </div>
+            <div *ngIf="assignedUser">
+              <div class="nav-dropdown mt-10">
+                <input type="text" class="search_input" placeholder="Search User" (keyup)="getLists('user', $event)">
+                <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+                  <div class="check-list">
+                    <span class="fitem-check" *ngFor="let item of usersList | orderBy">
+                      <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input"
+                        [checked]="isUserAssigned(item.id)" (change)="changeAssignUser($event, item)" />
+                      <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                        {{ item.name }}
+                      </label>
+                    </span>
+                    <span class="fitem-check" *ngIf="!usersList?.length">No record found</span>
+                  </div>
+                </perfect-scrollbar>
+              </div>
+            </div>
+          </div>
+          <ul class="btn-group">
+            <li class="sm-hidden"
+              *ngIf="permisionList?.workflow_mark_as_completed && workflow?.workflow?.status == 1"
+              (click)="updateWorkflow('status',2);"><a class="btn-box tooltip" href="javascript:void(0);"><span
+                  class="tt_text">Mark as Done</span><img src="assets/images/check-icon-b.svg" alt=""></a></li>
+            <li class="pos-relative action-dropdown" (click)="deleteToggle = !deleteToggle"
+              *ngIf="!isMobile && permisionList?.workflow_workflow_delete && workflow?.workflow?.status == 1">
+              <a class="btn-box text-left" href="javascript:void(0);">
+                <img src="assets/images/more-horizontal.svg" alt="">
+              </a>
+              <div class="nav-dropdown sm-filter mt-10 r-0" *ngIf="deleteToggle">
+                <button type="button" class="no-btn" (click)="updateWorkflow('status',3)">Archive</button>
+              </div>
+            </li>
+
+            <li class="pos-relative action-dropdown" (click)="deleteToggle = !deleteToggle"
+              *ngIf="isMobile">
+              <a class="btn-box text-left" href="javascript:void(0);">
+                <img src="assets/images/more-horizontal.svg" alt="">
+              </a>
+              <div class="nav-dropdown sm-filter mt-10 r-0" *ngIf="deleteToggle">
+                <button type="button" class="no-btn" [ngClass]="{'sm-disable': !permisionList?.workflow_mark_as_completed || workflow?.workflow?.status != 1}" (click)="permisionList?.workflow_mark_as_completed && workflow?.workflow?.status == 1 && updateWorkflow('status',2);">Mark as Done</button>
+                <button type="button" class="no-btn" [ngClass]="{'sm-disable': !permisionList?.workflow_workflow_delete || workflow?.workflow?.status != 1}" (click)="permisionList?.workflow_workflow_delete && workflow?.workflow?.status == 1 && updateWorkflow('status',3)">Archive</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main-filter-head">    
+    <div class="container">
+      <div class="ai-center filter-group-wrap flex">
+        <div class="form-group flex">
+          <div class="ddown-item">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label>Groups:</label>
+            <app-multiselect-dropdown [isFilter]="false" [title]="groupTitle" [displaySubItem]="workGroupList"
+              [isDisabled]=" workflow?.workflow?.status != 1"
+              searchPlaceholder="Search Groups" (search)="$event && getLists('group', $event)"
+              (selectionChanged)="onFilterSelected($event, 'group')" (isOpened)="isOpened($event)">
+            </app-multiselect-dropdown>
+          </div>
+          <div class="ddown-item">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label for="">Tags: </label>
+            <app-multiselect-dropdown [isTag]="true" [isFilter]="false" [title]="tagTitle" [displaySubItem]="tagsList"
+              [isDisabled]=" workflow?.workflow?.status != 1"
+              searchPlaceholder="Search Tags" (search)="$event && getLists('tag', $event)"
+              (selectionChanged)="onFilterSelected($event, 'tag')" (isOpened)="isOpened($event)">
+            </app-multiselect-dropdown>
+          </div>
+          <div class="ddown-item privilege_filter">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label for="">Privilege: </label>
+            <app-select-privilege [checkedPrivilege]="privilege"
+              (selectedPrivilege)="updateWorkflow('privilege', $event)"
+              [isDisabled]="!permisionList?.workflow_create_edit_privilege_selector || workflow?.workflow?.status != 1" (isOpened)="isOpened($event)">
+            </app-select-privilege>
+          </div>
+          <div class="ddown-item">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label for="">Status: </label>
+            <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="statusTitle"
+              [displaySubItem]="statusList" [isSearch]="false" 
+              [isDisabled]="true" (isOpened)="isOpened($event)">
+            </app-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="filter-right flex ai-center">
+          <div class="chart-info">
+            <app-pie-chart [properties]="chartProperties"></app-pie-chart>
+            <div class="chart-detail text-left">
+              <span><strong>{{headerDetails?.completedTasks}}/{{headerDetails?.totalTasks}}</strong> tasks
+                complete</span>
+              <span><strong>{{completePercent()}}% complete </strong></span>
+            </div>
+          </div>
+          <div class="chart-info">
+            <app-pie-chart [properties]="chartProperties1"></app-pie-chart>
+            <div class="chart-detail text-left">
+              <span><strong class="high">{{headerDetails?.highPriority}}</strong> High</span>
+              <span><strong class="medium">{{headerDetails?.mediumPriority}}</strong> Medium</span>
+              <span><strong class="low">{{headerDetails?.lowPriority}}</strong> Low</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex filter-group-custom-fields ai-center mt-10">
+
+        <div class=" form-group flex">
+          <div class="ddown-item" *ngFor="let custom_field of this.workflow?.custom_fields">
+            <label for="">{{custom_field.label}}</label>
+            <div class="edit_name active">
+              <label class="test-class" *ngIf="!custom_field.showEdit"
+                [ngStyle]="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4 && {'cursor': 'pointer'}"
+                [title]="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4 ? 'Double click to edit' : workflow?.workflow?.name"
+                (dblclick)="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4 && showEditForGlobalCustomField(custom_field)">
+                {{ custom_field.value || '--' }}
+              </label>
+              <div class="input-wrap"
+                *ngIf="custom_field.showEdit && permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4">
+                <input [type]="custom_field.controlType" [placeholder]="custom_field.label"
+                  [(ngModel)]="custom_field.valueToEdit" (keyup.enter)="updateCustomField()"
+                  class="editCustomFieldInput" />
+                <a href="javascript:void(0);" class="close" (click)="custom_field.valueToEdit= ''"><img
+                    src="assets/images/btn-close-icon.png" alt=""></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex filter-group-custom-fields ai-center mt-10">
+        <div class=" form-group flex">
+          <div class="ddown-item" *ngFor="let custom_field of workflow?.workflow.global_custom_fields">
+            <label for="">{{custom_field.label}}</label>
+            <div class="edit_name active">
+              <label class="test-class" *ngIf="!custom_field.showEdit"
+                [ngStyle]="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4 && {'cursor': 'pointer'}"
+                [title]="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4 ? 'Double click to edit' : workflow?.workflow?.name"
+                (dblclick)="permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4 && showEditForGlobalCustomField(custom_field)">
+                {{ custom_field.value || '--' }}
+              </label>
+              <div class="input-wrap"
+                *ngIf="custom_field.showEdit && permisionList?.workflow_workflow_edit_name && workflow?.workflow?.status != 3 && workflow?.workflow?.status != 4">
+                <input [type]="custom_field.controlType" [placeholder]="custom_field.label"
+                  [(ngModel)]="custom_field.valueToEdit" (keyup.enter)="updateGlobalCustomField(custom_field)"
+                  class="editCustomFieldInput" />
+                <a href="javascript:void(0);" class="close" (click)="custom_field.valueToEdit= ''"><img
+                    src="assets/images/btn-close-icon.png" alt=""></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm-block-row">
+    <div class="container">
+      <app-notifier></app-notifier>
+      <span class="bklink">
+        <a href="javascript:void(0);" (click)="goBack()" class="mb-10 flex flex-start">
+          <img class="r90 m-0" src="assets/images/Chevron-Icon.svg" alt="" /> &nbsp; <b class="m-0">Back</b>
+        </a>
+      </span>
+      <div class="ai-center flex title-row">
+        <h5 class="mb-0">Tasks within Workflow</h5>
+        <div class="right-cap-area">
+          <div class="inline-flex toggle-switch"> Table View
+            <div class="btn-switch-wrap">
+              <input type="checkbox" class="btn-switch" id="chart" (change)="changeView($event.target.checked)">
+              <label for="chart"> Gantt Chart </label>
+            </div>
+          </div>
+          <button type="button" (click)="goToCreateTask()" class="btn btn-md"
+            *ngIf="permisionList?.task_task_create && workflow?.workflow?.status == 1">Add New Task</button>
+          <button type="button" (click)="goToCreateTask()" class="btn btn-sm add-btn mb-10"
+            *ngIf="permisionList?.task_task_create && workflow?.workflow?.status == 1">+</button>
+        </div>
+      </div>
+      <div class="card-row" *ngIf="isGanttView">
+        <div class="card">
+          <div class="card-body">            
+            <div class="not-found ie-msg">Gantt chart is not supported in IE browser</div>
+            <div id="chart_div"></div>
+          </div>
+        </div>
+      </div>
+      <div class="ttable-row" *ngIf="!isGanttView">
+        <div class="titem-row-head titem-bg">
+          <span class="titem ttable-rank" (click)="orderByChange('rank')"
+            [ngClass]="{ 'active': taskDefaultParams.ordering === 'rank' }">Rank
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-full" (click)="orderByChange('task__name')"
+            [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__name' }">Task Name
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-date" (click)="orderByChange('task__due_date')"
+            [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__due_date' }">Due Date
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                (click)="handleFilterShow('showStatusFilter', 'showUserAssignedFilter')" alt="sort"></a>
+            <app-select-task-status *ngIf="showStatusFilter" [isFilter]="true" [checkedStatus]="arrCheckedStatus"
+              (selectedStatus)="selectTaskStatus($event)"></app-select-task-status>
+          </span>
+          <span class="titem ttable-assign pos-relative">Assigned To <a href="javascript:void(0)"><img
+                src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="sort"
+                (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')"></a>
+            <app-multiselect-dropdown *ngIf="showUserAssignedFilter" [title]="taskUserTitle"
+              [displaySubItem]="taskUsersList" searchPlaceholder="Search Users"
+              (search)="$event && getLists('taskuser', $event)"
+              (allClear)="clearSelections('user', 'taskUsersList', 'taskUserTitle')"
+              (selectionChanged)="onTaskFilterSelected($event)" [showTitle]="false">
+            </app-multiselect-dropdown>
+          </span>
+          <span class="titem ttable-btn">&nbsp;</span>
+        </div>
+        <div *ngFor="let task of arrTasks" class="flex-ttable-item "
+          [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+          <div class="ttable-rank">
+            <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank" resourceType="my-task"
+              [isDisabled]="true">
+            </app-rank-number>
+          </div>
+          <div class="ttable-full"> <a [routerLink]="['/main/projects/tasks/', task.task.id]">
+              {{task?.task?.name}}
+            </a> </div>
+          <div class="ttable-date"> {{task?.task?.due_date | utcTime }}</div>
+          <div class="ttable-status">{{sharedService.taskStatus(task?.task?.status)}}</div>
+          <div class="ttable-assign">
+            <div class="profile-wrap" *ngIf="task?.task?.assigned_to">
+              <figure *ngIf="task?.task?.assigned_to?.user_avatar_thumb">
+                <img *ngIf="task?.task?.assigned_to?.user_avatar_thumb"
+                  [src]="task?.task?.assigned_to?.user_avatar_thumb" alt="">
+              </figure>
+              <span *ngIf="!task?.task?.assigned_to?.user_avatar_thumb"
+                class="no-img">{{sharedService.displayInitial(task.task.assigned_to?.first_name, task.task.assigned_to?.last_name)}}</span>
+              <p>{{task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name}}</p>
+            </div>
+          </div>
+          <div class="ttable-btn flex-end opacity-hidden">
+            <a class="btn-bdr" [ngClass]="{'not-allowed': task?.task?.status == 3 || task?.task?.status == 4}"
+              href="javascript:void(0);" *ngIf="permisionList?.task_send_ping"
+              (click)="task?.task?.status != 3 && task?.task?.status != 4 && sendTaskNotification(task?.task?.id)">
+              <img src="assets/images/send-icon-b-lg.svg" alt="" title="Ping" />
+            </a>
+            <a class="btn-bdr" href="javascript:void(0);"
+              *ngIf="permisionList?.task_mark_as_completed && task?.task?.status != 3  && task?.task?.status != 4"
+              (click)="markTaskAsComplete(task?.task?.id)">
+              <img src="assets/images/check-icon-b.svg" alt="" title="Mark Complete" />
+            </a>
+            <a class="btn-bdr btn-green tooltip" href="javascript:void(0);" *ngIf="task?.task?.status == 3">
+              <span class="tt_text">Marked Complete</span>
+              <img src="assets/images/check-icon-b.svg" alt="" />
+            </a>
+          </div>
+        </div>
+        <div class="not-found" *ngIf="!arrTasks.length">
+          <p>{{ loading ? 'Loading...' : 'No record found' }}</p>
+        </div>
+        <pagination *ngIf="taskTotalCount > 10" [type]="Task" [totalRecords]="taskTotalCount"
+          (getPageCount)="loadMoreTaskOfWorkflow($event)">
+        </pagination>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm-block-row pt-0">
+    <div class="container">
+      <div class="aside-area">
+        <div class="mtabs">
+          <a href="javascript:void(0)" [class.active]="activeTab === 'discussions'"
+            (click)="activeTab = 'discussions'">Discussions</a>
+          <a href="javascript:void(0)" [class.active]="activeTab === 'documents'"
+            (click)="activeTab = 'documents'">documents</a>
+          <a href="javascript:void(0)" [class.active]="activeTab === 'trail'" (click)="activeTab = 'trail'">Audit
+            Trail</a>
+        </div>        
+        <app-discussions class="aside-full-block" modalType="workflow" [modalId]="workflowId" [detail]="workflow" [message_inbound_email]="workflow?.workflow?.message_inbound_email"
+          (refresh)="refreshPage()" (onSuccess)="onSuccess($event)" [class.display]="activeTab === 'discussions'"></app-discussions>
+        <aside>
+          <app-documents modalType="workflow" [modalId]="workflowId" [attachments]="workflow?.workflow?.attachments"
+            (updateTrails)="updateTrails()" (updateModal)="updateWorkflow('documents', $event)" [detail]="workflow"
+            [class.display]="activeTab === 'documents'">
+          </app-documents>
+          <app-audit-trail-history modalType="workflow" [modalId]="workflowId" [class.display]="activeTab === 'trail'">
+          </app-audit-trail-history>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="block-row pg-not-found"
+  *ngIf="!permisionList?.workflow_workflow_view && !permisionList?.workflow_workflow_view_all">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Workflows.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+.main-filter-head {
+  &.twp-filter {
+    border-bottom: 2px solid #d4d7f0;
+  }
+}
+@media (max-width: 1023px) {
+  .wf-list {
+    .main-full-head {
+      .tcount {
+        margin: 0;
+      }
+      .tcount-row {
+        max-width: 50%;
+      }
+      .chart-info {
+        max-width: 30%;
+      }
+      .main-full-head-task {
+        padding: 0 15px;
+        display: flex;
+        .priority-list,
+        .chart-info {
+          display: flex;
+        }
+        .tcount-row {
+          order: 1;
+          display: flex;
+        }
+        .priority-list {
+          order: 2;
+        }
+        .chart-info {
+          order: 3;
+        }
+        .due-box {
+          order: 4;
+        }
+      }
+    }
+  }
+}
+@media (max-width: 767px) {
+  .container {
+    padding: 0;
+  }
+  .wf-list {
+    .main-full-head {
+      .main-full-head-task {
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        .tcount-row {
+          order: 1;
+          display: flex;
+          padding: 5px 10px;
+          margin-bottom: 0;
+        }
+        .priority-list,
+        .chart-info {
+          display: flex;
+          flex: auto;
+          max-width: 50%;
+          width: 50%;
+          padding: 5px 10px;
+        }
+        .due-box {
+          display: flex;
+          flex: auto;
+          max-width: 100px;
+          width: 100px;
+          padding: 5px 10px;
+        }
+        .priority-list {
+          .chart-info {
+            min-width: 150px;
+          }
+        }
+      }
+      .due-box {
+        margin-bottom: -10px;
+      }
+    }
+  }
+}
+@media (max-width: 767px) {
+  .main-full-head .due-box {
+    display: none;
+  }
+  .main-full-head .main-full-head-task {
+    padding: 10px 15px;
+  }
+}
+@media (max-width: 420px) {
+  .wf-list {
+    .main-full-head {
+      .main-full-head-task {
+        .chart-info {         
+          max-width: 50%;
+          width: 80%;
+          padding: 5px 10px;
+     
+        }
+        .due-box {    
+          max-width: 120px;
+          width: 120px;
+          padding: 10px 10px;
+          margin-bottom: -15px;
+        }
+        .priority-list {
+          width: 100%;
+          max-width: 50%;
+          .chart-info {
+            max-width: 100%;
+            width: 100%;
+          }
+        }
+      }
+      
+    }
+ 
+  }
+}
+@media (max-width: 360px) {
+  .wf-list {
+    .main-full-head .main-full-head-task .due-box {
+        margin-bottom: 0px;
+    }
+  }
+}

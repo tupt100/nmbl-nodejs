@@ -1,0 +1,93 @@
+<app-menu class="m-header"></app-menu>
+
+<div class="title-fluid">
+  <div class="container">
+    <div class="title-row flex ai-center">
+      <div class="left-cap-area">
+        <h3 class="m-0"> Groups <br>
+          <span class="subtitle mb-0">Select a Group to view Members, Projects, Workflows and Task assigned to that
+            group.</span>
+        </h3>
+      </div>
+      <div class="flex-width right-cap-area sm-hidden">
+        <a class="btn btn-brand" (click)="addNewGroup()">Add New Group</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="block-row no-pad">
+  <div class="sm-block-row ">
+    <div class="container">
+      <div class="card-row flex info-card-list flex-start">
+        <div class="card" *ngFor="let group of arrWorkGroup" (click)="groupsDetail(group.id)"
+          [class.no_prior]="!group?.isChartExist">
+          <div class="card-title mb-0">
+            <h6 class="mb-0"> {{group.name}} </h6>
+            <span *ngIf="group.group_members && group.group_members.length > 0"> {{group.group_members.length}} Members
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="chart-info">
+              <app-pie-chart [properties]="group.chartProperties">
+              </app-pie-chart>
+              <div class="chart-detail">
+                <span><strong>{{group?.task?.completed_task}} / {{group?.task?.total_task}}</strong> tasks
+                  complete</span>
+                <span><strong>{{completePercent(group?.task?.completed_task, group?.task?.total_task)}}%
+                    complete</strong></span>
+                <span class="overdue">{{group?.task?.overdue_task}} overdue &nbsp;<img
+                    src="assets/images/arrow-down-right.svg" height="15" width="6" alt="" class="m-0"></span>
+              </div>
+            </div>
+          </div>
+          <div class="card-foot flex ai-center">
+            <a class="m-0 sm-text" href="javascript:void(0)">View all &nbsp; <img class="m-0"
+                src="assets/images/arrow-icon.svg" alt="view all" /></a>
+            <div class="profile-wrap m-0">
+              <ng-container *ngFor="let user of group.group_members | slice:0:3; let i = index;">
+                <figure>
+                  <span class="no-img" *ngIf="!user.user_avatar_thumb" title="{{user?.first_name}} {{user?.last_name}}">
+                    {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                  <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                    title="{{user?.first_name}} {{user?.last_name}}" />
+                </figure>
+              </ng-container>
+              <div class="tooltip userlist" *ngIf="group?.group_members?.length > 3">
+                <span class="tt_text">
+                    <span class="tt_text" *ngFor="let user of group.group_members | slice:3">
+                        {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                    </span>
+                </span>
+                <figure class="more-user">
+                  <span>+{{group.group_members.length - 3}}</span>
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block-row pg-not-found" *ngIf="arrWorkGroup.length === 0">
+          <div class="sm-container">
+            <div class="pg-type pos-relative">
+              <img src="assets/images/Groups.png" alt="">
+            </div>
+            <div class="not-found-msg flex mt-30">
+              <span><strong> There are no groups to view.</strong></span>
+              <span class="mt-20 text-center"> To create a group, click the 'Add New Group' button below to
+                begin.</span>
+              <a class="btn btn-brand mt-20" (click)="addNewGroup()">Add New Group</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <pagination [viewBy]="defaultParams.limit" [isTwelve]="true" [totalRecords]="totalCount" type="Group" (changePerPage)="setPerPage($event)"
+        (getPageCount)="loadMoreGroups($event)">
+      </pagination>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition intro-slide-modal" [ngClass]="{'in': showModal?.isIntro}">
+  <app-intro-slides [module]="module" [slides]="slides" (onClose)="onClose($event)">
+  </app-intro-slides>
+</div>

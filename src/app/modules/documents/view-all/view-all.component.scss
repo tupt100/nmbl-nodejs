@@ -1,0 +1,14 @@
+@media (max-width: 767px) {
+  .file-wrap .upload-file-lbl {
+    line-height: 29px;
+  }
+  /*Document*/
+  .doc-list {
+    .aside-full-block {
+      padding: 0;
+      .title-row {
+        display: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,354 @@
+<div class="group-pwt">
+  <div class="title-fluid">
+    <span class="bkto-grp">
+      <div class="container">
+        <a href="javascript:void();" [routerLink]="['/main/groups']" class="mb-10 flex flex-start primary_link"><img
+            class="r90 m-0" src="assets/images/Chevron-Icon.svg" alt=""> &nbsp;Back to&nbsp;<u> My Groups </u></a>
+      </div>
+    </span>
+    <div class="container">
+      <div class="title-row flex ai-start">
+        <div class="left-cap-area">
+          <h3 class="m-0"> {{groupName}} <br>
+          </h3>
+        </div>
+        <div class="btn-wrap flex">
+          <div class="user-wrap pos-relative md-filter">
+            <div class="profile-wrap fig-lg">
+              <ng-container *ngFor="let user of arrGroups | slice:0:3; let i = index;">
+                <figure>
+                  <span class="no-img" *ngIf="!user.user_avatar_thumb" title="{{user?.first_name}} {{user?.last_name}}">
+                    {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                  <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                    title="{{user?.first_name}} {{user?.last_name}}" />
+                </figure>
+              </ng-container>
+              <div class="tooltip userlist" *ngIf="arrGroups?.length > 3">
+                <span class="tt_text">
+                  <span class="tt_text" *ngFor="let user of arrGroups | slice:3">
+                    {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                  </span>
+                </span>
+                <figure class="more-user">
+                  <span>+{{arrGroups.length - 3}}</span>
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-info">
+          <app-pie-chart [properties]="chartProperties"></app-pie-chart>
+          <div class="chart-detail">
+            <span><strong>{{headerDetails?.completedTasks}}/{{headerDetails?.totalTasks}}</strong> tasks
+              <span>complete</span></span>
+            <span><strong>{{completePercent()}}% complete </strong></span>
+          </div>
+        </div>
+        <div class="chart-info">
+          <app-pie-chart [properties]="chartProperties1"></app-pie-chart>
+          <div class="chart-detail">
+            <span><strong class="high">{{headerDetails?.highPriority}}</strong> High</span>
+            <span><strong class="medium">{{headerDetails?.mediumPriority}}</strong> Medium</span>
+            <span><strong class="low">{{headerDetails?.lowPriority}}</strong> Low</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block-row no-pad">
+    <div class="sm-block-row ">
+      <div class="container">
+        <div class="flex title-row ai-center">
+          <h5 class="mb-0"><b>Projects ({{totalProjectCount}}) </b> </h5>
+          <div class="right-cap-area" *ngIf="arrProjects.length">
+            <p>
+              <span class="cpointer" (click)="tabs.projects = !tabs.projects">
+                {{tabs.projects ? 'Collapse' : 'Expand'}} Projects
+              </span>
+            </p>
+          </div>
+        </div>
+        <div class="card-row flex info-card-list flex-start" *ngIf="tabs.projects">
+          <div class="card no_prior" *ngFor="let project of arrProjects"
+            [class.low_prior]="project?.project?.importance == 1"
+            [class.medium_prior]="project?.project?.importance == 2"
+            [class.high_prior]="project?.project?.importance == 3">
+            <div class="card-title mb-0">
+              <h6 class="mb-0" (click)="goToProjectDetail(project.project?.id)"> {{project.project?.name}} </h6>
+              <div class="ai-center flex">
+                <span class="ml-0"><b>Due:</b> {{project?.project?.due_date | utcTime }} </span>
+                <span class="mr-0 uname"> {{project?.project?.owner?.first_name}}
+                  {{project?.project?.owner?.last_name}} </span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-info">
+                <app-pie-chart [properties]="project.chartProperties">
+                </app-pie-chart>
+                <div class="chart-detail">
+                  <span>
+                    <strong> {{project?.project?.task?.completed_task || 0}} /
+                      {{project?.project?.task?.total_task || 0}}</strong> tasks complete
+                  </span>
+                  <span>
+                    <strong>{{completePercentOfProject(project?.project?.task?.completed_task, project?.project?.task?.total_task)}}%
+                      complete</strong>
+                  </span>
+                  <span class="overdue"> {{project?.project?.task?.passed_due || 0}} overdue &nbsp;<img
+                      src="assets/images/arrow-down-right.svg" alt="" height="15" width="6" class="m-0"></span>
+                </div>
+              </div>
+            </div>
+            <div class="card-foot flex ai-center">
+              <a class="m-0 sm-text" href="javascript:void(0)" (click)="goToProjectDetail(project?.project?.id)">View all
+                &nbsp; <img class="m-0" src="assets/images/arrow-icon.svg" alt="view all" /></a>
+              <div class="profile-wrap m-0">
+                <ng-container *ngFor="let user of project.project.assigned_to_users; let i = index;">
+                  <figure *ngIf="i < 3">
+                    <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                      title="{{user?.first_name}} {{user?.last_name}}">{{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                    <img *ngIf="user.user_avatar_thumb" src="{{user.user_avatar_thumb}}" title="{{user.first_name}}" />
+                  </figure>
+                </ng-container>
+
+                <div class="tooltip userlist" *ngIf="project?.project?.assigned_to_users?.length > 3">
+                  <span class="tt_text">
+                    <span class="tt_text" *ngFor="let user of project.project.assigned_to_users | slice:3">
+                      {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                    </span>
+                  </span>
+                  <figure class="more-user">
+                    <span>+{{project.project.assigned_to_users.length - 3}}</span>
+                  </figure>
+                </div>
+              </div>
+            </div>
+          </div>
+          <pagination [viewBy]="projDefaultParams.limit" [isTwelve]="true" [totalRecords]="totalProjectCount"
+            type="Project" (changePerPage)="setProjectPerPage($event)" (getPageCount)="loadMoreProjects($event)">
+          </pagination>
+          <div class="not-found" *ngIf="!arrProjects?.length">No record found</div>
+        </div>
+
+        <div class="flex title-row ai-center">
+          <h5 class="mb-0"><b>Workflows ({{totalWorkflowCount}})</b></h5>
+          <div class="right-cap-area" *ngIf="arrWorkflow.length">
+            <p>
+              <span class="cpointer" (click)="tabs.workflows = !tabs.workflows">{{tabs.workflows ? 'Collapse' : 'Expand'}}
+                Workflows</span></p>
+          </div>
+        </div>
+        <div class="ctable-row" *ngIf="tabs.workflows">
+          <div class="wf-tab" *ngFor="let workflow of arrWorkflow">
+            <div class="flex-ctable-item ctable-danger" [class.ctable-success]="workflow?.workflow?.importance == 1"
+              [class.ctable-warn]="workflow?.workflow?.importance == 2"
+              [class.ctable-danger]="workflow?.workflow?.importance == 3">
+              <div class="ctable-full" [routerLink]="['/main/projects/workflow/', workflow.workflow.id]">
+                {{workflow?.workflow?.name}} </div>
+              <div class="ctable-date-name">
+                <p><strong>Due:</strong> {{workflow?.workflow?.due_date | utcTime }}</p>
+                <p>Owner: <a href="javascript:void(0)"
+                    title="{{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}}">
+                    {{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}} </a></p>
+              </div>
+              <div class="ctable-progress">
+                <div class="ctable-progress-wrap">
+                  <span
+                    [style.width.%]="workflow.width"></span>{{workflow.width == 100 ? 'All Tasks Complete': workflow.workflow?.completed_task + ' Tasks' }}
+                  <p *ngIf="workflow.width != 100">{{workflow.workflow?.total_task}} Total Tasks</p>
+                </div>
+              </div>
+              <div class="ctable-btn">
+                <a href="javascript:void(0);" [class.active]="workflow.expand">
+                  <img (click)="getWorkflowTasks(workflow.workflow?.id);" class="open"
+                    src="/assets/images/plus-icon-black.svg" alt="">
+                  <img (click)="closeWorkflowTab(workflow)" class="close" src="/assets/images/minus-square.svg" alt="">
+                </a>
+              </div>
+            </div>
+            <div class="ttable-row" *ngIf="workflow.expand">
+              <div class="titem-row-head titem-bg">
+                <span class="titem ttable-rank" (click)="orderByChange('rank', true)"
+                  [ngClass]="{ 'active': workflowTaskDefaultParams.ordering === 'rank' }">Rank
+                  <a href="javascript:void(0)">
+                    <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                    <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                  </a>
+                </span>
+                <span class="titem ttable-full" (click)="orderByChange('task__name', true)"
+                  [ngClass]="{ 'active': workflowTaskDefaultParams.ordering === 'task__name' }">Task Name
+                  <a href="javascript:void(0)">
+                    <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                    <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                  </a>
+                </span>
+                <span class="titem ttable-date" (click)="orderByChange('task__due_date', true)"
+                  [ngClass]="{ 'active': workflowTaskDefaultParams.ordering === 'task__due_date' }">Due Date
+                  <a href="javascript:void(0)">
+                    <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                    <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                  </a>
+                </span>
+                <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                      (click)="handleFilterShow('showWTStatusFilter', 'showWTUserAssignedFilter')" alt="sort"></a>
+                  <app-select-task-status *ngIf="showWTStatusFilter" [isFilter]="true"
+                    [checkedStatus]="arrCheckedWTStatus" (selectedStatus)="selectTaskStatus($event, true)">
+                  </app-select-task-status>
+                </span>
+                <span class="titem ttable-assign">Assigned To <a href="javascript:void(0)"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                      (click)="handleFilterShow('showWTUserAssignedFilter', 'showWTStatusFilter')" alt="sort"></a>
+                  <app-multiselect-dropdown *ngIf="showWTUserAssignedFilter" [title]="taskUserTitle" [showTitle]="false"
+                    [displaySubItem]="taskUsersList" searchPlaceholder="Search Users"
+                    (search)="$event && getLists('taskUsers', $event)" (allClear)="clearAssignToSelections(true)"
+                    (selectionChanged)="onAssignedUserSelected($event, 'user', true)">
+                  </app-multiselect-dropdown>
+                </span>
+              </div>
+              <div class="flex-ttable-item" *ngFor="let task of arrWorflowTasks"
+                [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+                <div class="ttable-rank">
+                  <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank"
+                    resourceType="my-task" [isDisabled]="true">
+                  </app-rank-number>
+                </div>
+                <div class="ttable-full"> <a> {{task.task?.name}} </a> </div>
+                <div class="ttable-date"> {{task.task?.due_date | utcTime }}</div>
+                <div class="ttable-status">{{sharedService.taskStatus(task?.task?.status)}}</div>
+                <div class="ttable-assign">
+                  <div class="profile-wrap" *ngIf="task?.task?.assigned_to">
+                    <figure *ngIf="task?.task?.user_avatar_thumb">
+                      <img src="{{task.task?.assigned_to?.user_avatar_thumb}}" alt="">
+                    </figure>
+                    <span
+                      class="no-img">{{sharedService.displayInitial(task.task.assigned_to?.first_name, task.task.assigned_to?.last_name)}}</span>
+                    <p> {{task.task?.assigned_to?.first_name}} {{task.task?.assigned_to?.last_name}} </p>
+                  </div>
+                </div>
+              </div>
+              <div class="not-found" *ngIf="!arrWorflowTasks.length">
+                <p> No record found </p>
+              </div>
+              <div class="flex-ttable-item" *ngIf="workflowTaskTotalCount > 5">
+                <a href="javascript:void(0)" class="secondary-link" (click)="workflowDetail(workflow?.workflow?.id)"> View
+                  all tasks </a>
+              </div>
+            </div>
+          </div>
+          <pagination [viewBy]="workflowDefaultParams.limit" [totalRecords]="totalWorkflowCount" type="Workflow"
+            (changePerPage)="setWorkflowPerPage($event)" (getPageCount)="loadMoreGroupData($event)">
+          </pagination>
+          <div class="not-found" *ngIf="!arrWorkflow?.length">No record found</div>
+        </div>
+
+        <div class="flex title-row ai-center">
+          <h5 class="mb-0"><b>Tasks ({{totalTaskCount}})</b></h5>
+          <div class="right-cap-area" *ngIf="arrTasks?.length">
+            <div class="inline-flex toggle-switch" [class.disable]="!isGanttView && arrTasks && arrTasks.length == 0">
+              Table View
+              <div class="btn-switch-wrap">
+                <input type="checkbox" class="btn-switch" id="chart" (change)="changeView($event.target.checked)"
+                  [disabled]="arrTasks.length === 0 && tabs.task" />
+                <label for="chart"> Gantt Chart </label>
+              </div>
+              &nbsp;
+              <p>
+                <span class=" cpointer" (click)="changeView(tabs.task);tabs.task = !tabs.task">
+                  {{tabs.task ? 'Collapse' : 'Expand'}} Tasks
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="" *ngIf="tabs.task">
+          <div class="card-row" *ngIf="isGanttView">
+            <div class="card">
+              <div class="card-body">
+                <div class="not-found ie-msg">Gantt chart is not supported in IE browser</div>
+                <div id="chart_div"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ttable-row  mb-30" *ngIf="!isGanttView">
+            <div class="titem-row-head titem-bg">
+              <span class="titem ttable-rank" (click)="orderByChange('rank')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'rank' }">Rank
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-full" (click)="orderByChange('task__name')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__name' }">Task Name
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-date" (click)="orderByChange('task__due_date')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__due_date' }">Due Date <a
+                  href="javascript:void(0)" [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__due_date' }">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                    (click)="handleFilterShow('showStatusFilter', 'showUserAssignedFilter')" alt="sort"></a>
+
+                <app-select-task-status *ngIf="showStatusFilter" [isFilter]="true" [checkedStatus]="arrCheckedStatus"
+                  (selectedStatus)="selectTaskStatus($event)">
+                </app-select-task-status>
+              </span>
+              <span class="titem ttable-assign pos-relative">Assigned To <a href="javascript:void(0)"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                    (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')" alt="sort"></a>
+
+                <app-multiselect-dropdown *ngIf="showUserAssignedFilter" [title]="userTitle" [showTitle]="false"
+                  [displaySubItem]="usersList" searchPlaceholder="Search Users"
+                  (search)="$event && getLists('user', $event)" (allClear)="clearAssignToSelections()"
+                  (selectionChanged)="onAssignedUserSelected($event, 'user')">
+                </app-multiselect-dropdown>
+              </span>
+            </div>
+            <div *ngFor="let task of arrTasks" class="flex-ttable-item "
+              [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+
+              <div class="ttable-rank">
+                <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank" resourceType="my-task"
+                  [isDisabled]="true">
+                </app-rank-number>
+              </div>
+
+              <div class="ttable-full"> <a [routerLink]="['/main/projects/tasks/', task.task.id]">
+                  {{task?.task?.name}}
+                </a> </div>
+
+              <div class="ttable-date"> {{task?.task?.due_date | utcTime }}</div>
+              <div class="ttable-status">{{sharedService.taskStatus(task?.task?.status)}}</div>
+
+              <div class="ttable-assign">
+                <div class="profile-wrap" *ngIf="task?.task?.assigned_to">
+                  <figure *ngIf="task?.task?.assigned_to?.user_avatar_thumb">
+                    <img [src]="task?.task?.assigned_to?.user_avatar_thumb" alt="{{task.task.assigned_to?.first_name}}">
+                  </figure>
+                  <span *ngIf="!task?.task?.assigned_to?.user_avatar_thumb"
+                    class="no-img">{{sharedService.displayInitial(task.task.assigned_to?.first_name, task.task.assigned_to?.last_name)}}</span>
+                  <p>{{task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name}}</p>
+                </div>
+              </div>
+            </div>
+            <pagination [viewBy]="taskDefaultParams.limit" [type]="Task" [totalRecords]="totalTaskCount"
+              (changePerPage)="setTaskPerPage($event)" (getPageCount)="loadMoreGroupTask($event)">
+            </pagination>
+            <div class="not-found" *ngIf="!arrTasks?.length">
+              <p> No record found </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

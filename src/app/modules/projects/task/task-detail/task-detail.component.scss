@@ -1,0 +1,73 @@
+.aside-full-block {
+  width: 100%;
+}
+
+input.btn-switch ~ label:before {
+  background: #fff;
+  border: 1px solid #d0d2d5;
+}
+.btn-switch-wrap input.btn-switch ~ label:after {
+  background-color: #d0d2d5;
+}
+.btn-switch-wrap input.btn-switch:checked ~ label:before {
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+.btn-switch-wrap input.btn-switch:checked ~ label:after {
+  background-color: #fff;
+}
+@media (max-width: 1023px) {
+  .task-header-wrap {
+    background: #fff;
+  }
+  .private_page {
+    .task-header-wrap {
+      background: #151f2b;
+    }
+  }
+  app-discussions,
+  app-documents,
+  app-audit-trail-history {
+    display: none;
+    &.display {
+      display: block;
+    }
+    app-discussions,
+    app-documents,
+    app-audit-trail-history {
+      display: none;
+      &.display {
+        display: block;
+      }
+    }
+  }
+}
+
+.cdk-drag {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.main-filter-head {
+  .filter-group-custom-fields {
+    margin-top: 10px;
+    justify-content: flex-start;
+    .form-group {
+      margin: 0;
+
+      .ddown-item {
+        margin-bottom: 0;
+        margin-right: 30px;
+        .edit_name {
+          min-height: 30px;
+          .editCustomFieldInput {
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+}

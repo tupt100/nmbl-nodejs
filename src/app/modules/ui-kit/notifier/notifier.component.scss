@@ -1,0 +1,43 @@
+.validations-success {
+  height: auto;
+  width: 100%;
+  max-width: 1170px;
+  background-color: #ffffff;
+  margin-top: 15px;
+  min-height: 30px;
+  padding-left: 10px;
+  align-items: center;
+  display: flex;
+  padding: 5px 0;
+  white-space: normal;
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
+.info {
+  border-left: 4px solid #33c12e;
+}
+
+.error {
+  border-left: 4px solid #f73b22;
+}
+.rectangle {
+  margin: 0;
+}
+.chicago-group-has {
+  height: auto;
+  min-height: 30px;
+  width: 100%;
+  max-width: 1170px;
+  color: #152638;
+  font-family: "stolzl medium";
+  font-size: 13px;
+  line-height: 18x;
+  margin: 0 0 0 10px;
+  align-items: center;
+  display: flex;
+  padding: 5px 0;
+  white-space: normal;
+  word-break: break-word;
+  word-wrap: break-word;
+}

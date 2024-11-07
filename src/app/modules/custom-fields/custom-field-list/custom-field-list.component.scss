@@ -1,0 +1,64 @@
+.ttable-field-type,
+.ttable-is-required,
+.ttable-actions {
+  max-width: 135px;
+  width: 15%;
+}
+
+.ttable-actions {
+  button {
+    margin-right: .5rem;
+  }
+}
+
+.title-index {
+  width: 1%;
+}
+
+.ttable-index {
+  width: 1%;
+}
+
+
+.ttable-row {
+  :hover {
+    background: #f3f8f6;
+    cursor: pointer;
+  }
+}
+
+.search-bar {
+  margin-top: 2rem;
+}
+
+.main-filter-head {
+  padding-bottom: 0;
+}
+
+.ttable-user {
+  width: 38%;
+  max-width: 230px;
+  min-height: 39px;
+}
+
+.ttable-date {
+  max-width: 185px !important;
+  width: 35% !important;
+}
+
+.ttable-row .titem-row-head .titem {
+  padding-right: 25px;
+}
+
+.pagination {
+  width: 30%;
+  display: flex;
+  margin: 1rem 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
+}

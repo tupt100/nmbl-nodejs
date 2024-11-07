@@ -1,0 +1,78 @@
+/**
+* {{&summary}}
+* @method
+* @name {{&className}}#{{&methodName}}
+{{#parameters}}
+    {{^isSingleton}} * @param {{=<% %>=}}{<%&type%>}<%={{ }}=%> {{&camelCaseName}} - {{&description}}{{/isSingleton}}
+{{/parameters}}
+*
+*/
+{{&methodName}}(parameters: {
+{{#parameters}}
+    {{^isSingleton}}'{{&camelCaseName}}'{{&cardinality}}: {{#getType}}{{/getType}},
+    {{/isSingleton}}
+{{/parameters}}
+        $queryParameters?: {}
+    }, headers: Headers): Observable<{{#getResponseType}}{{/getResponseType}}> {
+        let domain = this.domain;
+        let path = '{{&path}}';
+        let body: string = "";
+        let queryParameters = {};
+        let url: string;
+        let form = new FormData();
+        let requestOptionArgs = {};
+        let paramsStr : string;
+
+{{#parameters}}
+
+    {{#required}}
+        //TODO check if param is required in header or body
+        //if(parameters['{{&camelCaseName}}'] === undefined){
+        //    return Observable.throw(new Error('Missing required {{&paramType}} parameter: {{&camelCaseName}}'));
+        //}
+    {{/required}}
+
+    {{#isQueryParameter}}
+        {{#isSingleton}}
+            queryParameters['{{&name}}'] = '{{&singleton}}';
+        {{/isSingleton}}
+        {{^isSingleton}}
+            {{#isPatternType}}
+                queryParameters = this.setPatternParameter('{{&pattern}}', queryParameters, parameters);
+            {{/isPatternType}}
+            {{^isPatternType}}
+                queryParameters = this.setNonPatternTypeParameter('{{&camelCaseName}}', '{{&name}}', queryParameters, parameters);
+            {{/isPatternType}}
+        {{/isSingleton}}
+    {{/isQueryParameter}}
+
+    {{#isPathParameter}}
+        path = path.replace(/{{=<% %>=}}{<%&name%>}<%={{ }}=%>/, parameters['{{&camelCaseName}}'].toString());
+    {{/isPathParameter}}
+
+    {{#isBodyParameter}}
+        if(parameters['{{&camelCaseName}}'] !== undefined){
+            body = JSON.stringify(parameters['{{&camelCaseName}}']);
+        }
+    {{/isBodyParameter}}
+
+    {{#isFormParameter}}
+        {{#isSingleton}}
+            form['{{&name}}'] = '{{&singleton}}';
+        {{/isSingleton}}
+        {{^isSingleton}}
+            if(parameters['{{&camelCaseName}}'] !== undefined){
+                // form['{{&name}}'] = parameters['{{&camelCaseName}}'];
+                form.append('{{&name}}', parameters['{{&camelCaseName}}']);
+            }
+        {{/isSingleton}}
+    {{/isFormParameter}}
+
+{{/parameters}}
+
+    if(parameters.$queryParameters) {
+        queryParameters = this.setQueryParameters(parameters, queryParameters);
+    }
+
+{{> request}}
+};

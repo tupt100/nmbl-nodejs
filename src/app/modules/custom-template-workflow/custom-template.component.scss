@@ -1,0 +1,50 @@
+.tab-list-container {
+  a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+  }
+}
+.active-route {
+  color: #fff;
+  background: rgba(72, 92, 199, 0.8);
+  text-align: center;
+  width: 100%;
+}
+
+.steps-number-wrapper {
+  display: grid;
+  grid-template-columns: 10% 36% 4% 40% 4%;
+  margin: 0 auto;
+  width: 73%;
+  align-items: baseline;
+}
+.step-number {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 50%;
+  background: #fff;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  z-index: 2;
+  position: relative;
+  &.active {
+    background: #33c12e;
+    color: #fff;
+  }
+  span {
+    display: inline-block;
+    color: #222;
+  }
+}
+.steps-text-wrapper {
+  width: 95%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+.line {
+  width: 100%;
+  background: #fff;
+  height: 5px;
+}

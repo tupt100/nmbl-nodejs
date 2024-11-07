@@ -1,0 +1,26 @@
+.field-check-wrapper{
+  display: flex !important;
+  align-items: flex-end;
+  margin: 0 32px 0 0;
+  label{
+    margin-left: 0;
+  }
+}
+.remove-btn{
+  background: #fff;
+  color: red;
+}
+
+.checkboxes-root {
+  display: flex;
+}
+
+.displayed-root {
+  margin: 16px 0;
+}
+
+.type-select:disabled {
+  opacity: 0.6 !important;
+  background-color: #d2d2d2;
+  cursor: not-allowed;
+}

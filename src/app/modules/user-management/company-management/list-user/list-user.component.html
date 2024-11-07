@@ -1,0 +1,143 @@
+<app-notifier></app-notifier>
+<div class="sm-block-row user-management sm-hidden">
+  <div class="container">
+    <div class="title-row flex">
+      <div class="left-cap-area">
+        <h3>
+          Users And Permissions <br>
+          <span class="subtitle">Your 'Company Admin' can be a secretary or a nominated person in your company, who is
+            responsible for the user management for Proxy. This thankless task, we hope, can at least be quick and
+            painless.</span>
+        </h3>
+      </div>
+      <div class="right-cap-area flex-width">
+        <a class="btn btn-brand btn-lg" (click)="inviteNewUser()">Invite New Members</a>
+      </div>
+    </div>
+
+    <div class="fitem half-fitem">
+      <div class="flex title-row ai-center">
+        <div class="left-cap-area">
+          <div class="tabs tab-hide">
+            <a href="javascript:void(0)" class="active tname" [class.active]="!isPendingUserVisible" (click)="viewActivePendingUsers(false)">USERS</a>
+            <a href="javascript:void(0)" class="tname tab-hide" [class.active]="isPendingUserVisible" (click)="viewActivePendingUsers(true)">PENDING INVITES</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card"  *ngIf="!isPendingUserVisible">
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="15%" *ngIf="isPendingUserVisible"><span>Email</span></th>
+            <th width="15%"><span>First Name <img (click)="sortUsersBy('first_name')"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt="" /></span></th>
+            <th width="15%"><span>Last Name <img (click)="sortUsersBy('last_name')"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt="" /></span></th>
+            <th width="15%"><span>Title <img (click)="sortUsersBy('title')"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt="" /></span></th>
+            <th width="15%" class="pos-relative">
+              <span>
+                <img class="cpointer" (click)="isDisplayFilter = !isDisplayFilter"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="" />&nbsp;
+                Permission
+                &nbsp;<a href="javascript:void(0)" (click)="permissionManager()"><u>MANAGE</u></a>
+              </span>
+              <app-permission-filter *ngIf="isDisplayFilter" [arrCheckedGroups]="arrCheckedGroups"
+                (selectedGroup)="selectedGroup($event)" (clearStatus)="clearStatusOfActiveUsers()">
+              </app-permission-filter>
+            </th>
+            <th width="10%"><span>Group
+                &nbsp; <a href="javascript:void(0)" (click)="myGroups()"><u>MANAGE</u></a></span></th>
+            <th width="15%">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of arrUsers; let i = index;">
+            <td> {{user.first_name}} </td>
+            <td> {{user.last_name}} </td>
+            <td class="opacity6"> {{user.title}} </td>
+            <td class="opacity6" (click)="editPermission(user.group?.id)"> {{user.group?.name}} </td>
+            <td class="opacity6"> <span *ngIf="user?.work_group.length > 0"> {{displayGroups(user.work_group)}}</span>
+            </td>
+            <td class="actions opacity-hidden">
+              <edit-user-popup [userId]="user.id" (deleteUser)="userId =user.id; showModal.isRemoveUser = true;">
+              </edit-user-popup>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <pagination *ngIf="!isPendingUserVisible" [viewBy]="activeUsersdefaultParams.limit" [totalRecords]="totalActiveCount" type="Users" (changePerPage)="setActivePerPage($event)"
+      (getPageCount)="loadMoreCompanyUsers($event)">
+    </pagination>
+    <div class="card"  *ngIf="isPendingUserVisible">
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="15%"><span>First Name <img (click)="sortPendingUsersBy('first_name')"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt=""></span></th>
+            <th width="15%"><span>Last Name <img (click)="sortPendingUsersBy('last_name')"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt=""></span></th>
+            <th width="15%" class="pos-relative">
+              <span>
+                <img (click)="isDisplayFilter = !isDisplayFilter"
+                  src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="" />&nbsp;
+                  Permission
+                  &nbsp;<a href="javascript:void(0)" (click)="permissionManager()"><u>MANAGE</u></a>
+              </span>
+              <app-permission-filter *ngIf="isDisplayFilter" (selectedGroup)="selectedPendingGroup($event)"
+                (clearStatus)="clearStatusOfPendingUsers()"></app-permission-filter>
+            </th>
+            <th width="15%">&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of arrPendingUsers; let i = index;">
+            <td class="opacity6"> {{user?.first_name}} </td>
+            <td class="opacity6"> {{user?.last_name}} </td>
+            <td class="opacity6" (click)="editPermission(user?.invited_by_group?.id)"> {{user?.invited_by_group?.name}} </td>
+            <td class="actions opacity-hidden"><span class="flex-start"><a (click)="resend(user.id);">Resend</a> &nbsp;
+                <a title="Remove" (click)="userId=user.id;showModal.isRemovePendingUser = true;"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Bin-Icon.svg" /></a></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <pagination *ngIf="isPendingUserVisible" [viewBy]="PendingUsersdefaultParams.limit" [totalRecords]="totalPendingCount" type="Users" (changePerPage)="setPendingPerPage($event)"
+      (getPageCount)="loadMorePendingUsers($event)">
+    </pagination>
+  </div>
+</div>
+
+
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveUser}">
+  <app-confirm-modal message1="Remove User"
+    message2="The user will no longer have access to any current or future Projects, Workflows or Tasks."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removeUserConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemovePendingUser}">
+  <app-confirm-modal message1="Remove User"
+    message2="The user will no longer have access to any current or future Projects, Workflows or Tasks."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removePendingUserConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<!--not accessible in mobile-->
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+          <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>         
+      </div>
+    </div>
+  </div>
+</div>

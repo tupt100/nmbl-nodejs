@@ -1,0 +1,71 @@
+<app-notifier></app-notifier>
+<app-menu class="m-header"></app-menu>
+<div class="sm-block-row notification-list">
+  <div class="container">
+    <div class="inline-row-col flex">
+      <div class="inline-col-7">
+        <div class="title-row flex">
+          <div class="left-cap-area">
+            <h5 class="mb-0">Your Notifications</h5>
+          </div>
+          <div class="flex-width right-cap-area" *ngIf="arrNotifications.length > 0">
+            <a href="javascript:void(0)" class="secondary-link" (click)="readAllNotifications()">Mark all as read</a>
+          </div>
+        </div>
+        <div class="card mt-10" *ngIf="arrNotifications.length > 0">
+          <div class="card-body no-pad">
+            <div class="notification" *ngFor="let notification of arrNotifications; let i = index;"
+              [class.unread]="notification.status == 1">
+              <div class="ndetail" (click)="redirect(notification)">
+                <figure><img src="assets/images/n-task.svg" class="nimg" alt="" /></figure>
+                <p>{{notification.title}}</p>
+                <div class="flex ai-center m-0">
+                  <span class="noti-prior-box high"></span>
+                  <span class="time opacity6"> {{notification.created_at | formatDate}} </span>
+                </div>
+              </div>
+              <app-selection [status]="notification.status" (read)="readNotification(notification.id, $event)"
+                (unread)="readNotification(notification.id, $event)"
+                (removeNotification)="removeNotification(notification.id)">
+              </app-selection>
+            </div>
+          </div>
+        </div>
+        <!--No Notification-->
+        <div class="block-row pg-not-found" *ngIf="arrNotifications.length === 0">
+          <div class="sm-container">
+            <div class="pg-type pos-relative">
+              <img src="assets/images/Notifications.png" alt="">
+            </div>
+            <div class="not-found-msg flex mt-30">
+              <span><strong> You have no Notifications.</strong></span>
+              <span class="mt-20 text-center"> Once you have been assigned a Project, Workflow, Task or become a member
+                of
+                any group, you will begin receiving notifications.
+              </span>
+            </div>
+          </div>
+        </div>
+        <!--No Notification-->
+        <pagination [viewBy]="defaultParams.limit" [totalRecords]="totalRecords" type="Notifications"
+          (changePerPage)="setPerPage($event)" (getPageCount)="loadMoreNotifications($event)">
+        </pagination>
+      </div>
+      <div class="inline-col-3 nsettings" *ngIf="arrNotifications.length > 0">
+        <div class="card">
+          <div class="card-body text-center">
+            <span class="sm-text">Notification Settings</span>
+            <p class="opacity6 sm-text">You can change your notification settings below</p>
+            <button type="button" class="btn btn-bdr btn-lg btn-full" (click)="notificationSettings();">Go To
+              Notification Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveNotification}">
+  <app-confirm-modal message1="Remove Notification" message2="Are you sure you want to remove this notifications ?"
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removeNotificationConfirm($event)">
+  </app-confirm-modal>
+</div>

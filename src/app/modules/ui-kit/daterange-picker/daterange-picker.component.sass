@@ -1,0 +1,323 @@
+@charset "utf8"
+
+@import 'colors.scss'
+
+=unselectable
+  -webkit-touch-callout: none
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+.capitalize
+  text-transform: capitalize
+
+.daterangepicker
+  width: 100%
+  height: auto
+  background: $white
+  display: inline-block
+  //border: 1px solid $border
+  border-radius: 7px
+  position: relative
+  font-family: stolzl regular
+
+  &.is-active
+    //border: 1px solid $blue
+
+  .input-section
+    width: calc(100% / 2)
+    height: auto
+    display: block
+    float: left
+    outline: none
+    //padding: 7px 10px
+    color: $text
+    cursor: pointer
+    position: relative
+
+    &:first-child
+      //border-right: 1px solid $border-light
+
+    .label-txt, .value-txt
+      display: block
+
+    .label-txt
+      color: $blue
+      font-size: 11px
+
+    .value-txt
+      color: $text
+      font-size: 13px
+      border-bottom: 1px solid transparent
+
+    .cal-icon
+      position: absolute
+      display: block
+      right: 10px
+      bottom: 5px
+
+      svg
+        width: 20px
+        height: 20px
+
+        path
+          fill: $blue-icon
+
+  .calendar
+    +unselectable
+    width: auto
+    border: 1px solid transparent
+    border-radius: 7px
+    background: $white
+    position: relative
+    top: 0
+    left: 0
+    z-index: 100000
+    display: none
+    width: 285px
+    &.is-opened
+      display: flex
+
+    &.is-to
+     
+      .arrow
+        left: 215px
+
+    .arrow
+      position: absolute
+      display: block
+      min-width: 30px
+      min-height: 30px
+      top: -15px
+      left: 65px
+      transform: rotate(45deg)
+      border-top: 1px solid $blue
+      border-left: 1px solid $blue
+      background: $white
+      transition: left 0.5s
+
+    .calendar-container
+      display: inline-block
+      width: 340px
+      height: 100%
+      padding: 20px
+      padding: 0
+      border-right: none
+
+      .controls
+        width: 100%       
+        display: flex
+        justify-content: space-between
+        align-items: center        
+        padding: 8px 15px 8px 25px
+        border-bottom: 1px solid #E8E9EA
+        position: relative
+        height: auto !important
+
+        .control-icon
+          display: block
+          width: 25px
+          height: 20px
+          cursor: pointer    
+          text-align: center 
+          background-image: url(/assets/images/next-arrow.svg)
+          background-repeat: no-repeat
+          background-position: center center
+          height: 10px
+          width: 10px 
+          transform: rotate(180deg)
+          margin-left: 10px
+
+          + .control-icon 
+            transform: rotate(0deg)              
+          i 
+            font-size: 18px
+        .control-title
+          color: #151F2B !important
+          font-family: "stolzl medium"
+          font-size: 13px !important
+          line-height: 23px
+          -webkit-box-flex: 1
+          flex: 1
+          margin: 0
+          -webkit-box-pack: justify
+          justify-content: space-between
+          display: -webkit-box
+          display: flex
+          -webkit-box-align: center
+          align-items: center
+          &:after 
+            content: ''
+            height: 3px
+            width: 35px
+            background-color: #485CC7
+            position: absolute
+            bottom: 0
+            left: 20px
+
+      .day-names
+        display: inline-block
+        width: 100%
+        margin-top: 30px
+        margin-bottom: 0
+
+        .day-name
+          width: calc(318px / 7)
+          font-size: 11px
+          color: #000000
+          display: block
+          float: left
+          text-align: center
+          font-weight: normal
+          font-family: stolzl light
+
+      .days
+        display: inline-block
+        width: 100%
+
+        .day
+          width: calc(318px / 7)
+          font-size: 14px
+          color: $grey
+          display: block
+          float: left
+          text-align: center
+          margin-bottom: 10px
+          cursor: pointer
+          font-weight: normal
+
+          &.is-within-range
+            background-color: rgba(72,92,199,0.2) !important           
+            color: $dark
+            &.is-to
+              background-color: transparent !important
+          &.is-from, &.is-first-weekday
+            border-radius: 0
+          
+          &.is-from
+              @extend .is-within-range
+              background-color: rgba(72,92,199,0.2) !important
+
+          &.is-to, &.is-last-weekday
+            border-radius: 0
+
+          .day-num
+            display: flex
+            justify-content: center
+            align-items: center
+            float: left
+            width: 24px
+            height: 24px
+            max-width: 24px
+            max-height: 24px
+            border-radius: 2px
+
+            padding: 10px 15px
+
+            &:hover, &.is-active
+              background: #485CC7
+              color: $white
+
+    .side-container
+      width: 158px
+      min-height: 390px
+      padding: 10px
+      display: flex
+      align-items: center
+      position: relative
+      overflow: hidden
+      height: 100%
+
+      .side-container-buttons
+        margin-top: 64px
+        width: 200px
+        height: 100%
+        overflow-y: auto
+        overflow-x: hidden
+        height: 390px
+        position: absolute
+        padding-bottom: 10px
+        
+
+        .side-button
+          background: $white
+          border-radius: 15px
+          border: 1px solid $blue
+          height: 35px
+          width: 138px
+          display: block
+          text-align: center
+          outline: none
+          margin-bottom: 15px
+          color: $text-button
+          font-size: 13px
+          cursor: pointer
+
+          &:hover, &.is-active
+            background: $blue
+            color: $white
+
+      .close-icon
+        position: absolute
+        width: 20px
+        height: 20px
+        top: 20px
+        right: 15px
+        cursor: pointer
+        
+  &.theme-proxy
+    &.is-active
+      border-color: $proxy
+    .input-section
+      .label-txt
+        color: $proxy
+      .cal-icon
+        svg
+          path
+            fill: $proxy
+    .calendar
+      border: 3px solid rgba(72,92,199,0.2) !important
+      .arrow
+        border-top-color: $proxy
+        border-left-color: $proxy
+      .calendar-container
+        .days
+          .day
+            &.is-within-range
+              background: lighten($proxy, 20)
+            .day-num
+              &:hover, &.is-active
+                background: $proxy
+      .side-container
+        .side-container-buttons
+          .side-button
+            border-color: $proxy
+            &:hover, &.is-active
+              background: $proxy
+
+
+/*SOW3 datepicker global css*/
+.daterangepicker 
+  &.theme-proxy 
+    .calendar 
+        border: 3px solid rgba(72,92,199,0.2) !important
+        border-radius: 3px !important
+        background-color: #FFFFFF !important
+        margin-top: 5px
+        .calendar-container
+          .day-names
+            margin-top: 0           
+            background: rgba(72,92,199,0.05)
+            padding: 10px 0
+            .day-name
+              text-transform: uppercase
+              color: rgba(138,143,149,1)
+              font-size: 11px
+        .days 
+          .day 
+            .day-num 
+              font-size: 11px
+              line-height: 16px
+              font-family: 'stolzl regular'
+              color: #000

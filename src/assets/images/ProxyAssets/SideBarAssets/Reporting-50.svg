@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59.1 (86144) - https://sketch.com -->
+    <title>Dashboard Copy 5</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.5" stroke-linecap="round" stroke-linejoin="round">
+        <g id="pie-chart" transform="translate(1.000000, 2.000000)" stroke="#FFFFFF" stroke-width="2">
+            <path d="M20.21,13.89 C18.4598492,18.028883 14.1638237,20.4920434 9.70777262,19.9115357 C5.25172156,19.3310281 1.73014276,15.8494369 1.09878707,11.4003055 C0.467431373,6.95117409 2.88137274,2.62730068 7,0.83" id="Path"></path>
+            <path d="M21,10 C21,7.3478351 19.9464316,4.80429597 18.0710678,2.92893219 C16.195704,1.0535684 13.6521649,0 11,0 L11,10 L21,10 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

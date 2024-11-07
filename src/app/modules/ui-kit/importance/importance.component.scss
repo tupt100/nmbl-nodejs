@@ -1,0 +1,24 @@
+.Medium {
+  a {
+    &.prty-btn {
+      border-left-color: #f9cd07;
+      background-color: #fefcf2;
+    }
+  }
+}
+.High {
+  a {
+    &.prty-btn {
+      border-left-color: #f73b22;
+      background-color: #fef7f6;
+    }
+  }
+}
+.low {
+  a {
+    &.prty-btn {
+      border-left-color: #33c12e;
+      background-color: #f7fcf6;
+    }
+  }
+}

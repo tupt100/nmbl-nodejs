@@ -1,0 +1,275 @@
+<app-menu class="m-header"></app-menu>
+<div class="main-full-search" *ngIf="!tagSearch">
+  <div class="flex">
+    <input type="text" class="" placeholder="Search Proxy ..." [(ngModel)]="searchParam.search"
+      (keyup)="onSearch($event)" #searchInput>
+    <div class="sfilter flex flex-end">
+      <a href="javascript:void(0)" class="m-0 flex-end" (click)="searchParam.search = ''"
+        *ngIf="searchParam.search">Clear</a>
+      <a href="javascript:void(0)" class="m-0 flex-end" (click)="openFilter = !openFilter;"> <img
+          src="assets/images/filter.svg" alt="" /></a>
+    </div>
+  </div>
+</div>
+<div class="sm-block-row search-pg">
+  <div class="container">
+    <a href="javascript:void(0)" (click)="backToTagsManager()" *ngIf="tagSearch">
+      <span class="flex flex-start ai-center">
+        <img class="r90 m-0" src="assets/images/Chevron-Icon.svg" alt="" /> &nbsp;Back
+        to &nbsp;
+        <u>Tags Manager</u>
+      </span>
+    </a>
+    <div class="aside-area srch-pg">
+      <main *ngIf="tagSearch || (!tagSearch && searchData)">
+        <div class="info-block">
+          <div class="title-row flex ai-center">
+            <h5 class="mb-0">Projects ({{searchData?.project?.length}})</h5>
+            <div class="right-cap-area" *ngIf="searchData?.project?.length">
+              <p (click)="tabs.projects = !tabs.projects">
+                <span>{{ tabs.projects ? 'Collapse' : 'Expand'}} Projects</span>
+              </p>
+            </div>
+          </div>
+          <div class="ctable-row card-row flex info-card-list" *ngIf="tabs.projects">
+            <div class="card no_prior" *ngFor="let project of searchData?.project; let i = index"
+              [class.low_prior]="project?.importance == 1" [class.medium_prior]="project?.importance == 2"
+              [class.high_prior]="project?.importance == 3" (click)="goToProjectDetail(project?.id)">
+              <div class="card-title mb-0">
+                <h6 class="mb-0"> {{project?.name | splitText}} </h6>
+                <div class="ai-center flex">
+                  <span class="ml-0"><b>Due:</b> {{project?.due_date | utcTime }} </span>
+                  &nbsp;&nbsp; <span class="mr-0 uname"> {{project?.owner?.first_name}}
+                    {{project?.owner?.last_name}}
+                  </span>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart-info">
+                  <app-pie-chart [properties]="chartProperties[i]"></app-pie-chart>
+                  <div class="chart-detail">
+                    <span><strong>{{project?.task?.completed_task || 0}} /
+                        {{project?.task?.total_task || 0}}</strong>
+                      tasks complete</span>
+                    <span><strong
+                        *ngIf="project?.task?.total_task">{{getCompleted(project?.task?.total_task, project?.task?.completed_task)}}%
+                        complete</strong></span>
+                    <span class="overdue" *ngIf="project?.task?.passed_due"> {{project?.task?.passed_due}} overdue
+                      &nbsp;<img src="assets/images/arrow-down-right.svg" alt="" height="15" width="6"
+                        class="m-0"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-foot flex ai-center">
+                <span class="m-0">
+                  <a class="m-0 sm-text" href="javascript:void(0)"> View all &nbsp;
+                    <img class="m-0" src="assets/images/ProxyAssets/DashboardAssets/Arrow-Icon.svg" alt="view all">
+                  </a>
+                </span>
+                <div class="profile-wrap m-0" *ngIf="project?.assigned_to_users && project?.assigned_to_users?.length">
+                  <ng-container *ngFor="let user of project?.assigned_to_users | slice:0:3; let i = index;">
+                    <figure>
+                      <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                        title="{{user?.first_name}} {{user?.last_name}}">
+                        {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                      <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                        title="{{user?.first_name}} {{user?.last_name}}" />
+                    </figure>
+                  </ng-container>
+                  <div class="tooltip userlist" *ngIf="project?.assigned_to_users?.length > 3">
+                    <span class="tt_text">
+                      <span class="tt_text" *ngFor="let user of project?.assigned_to_users | slice:3">
+                        {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                      </span>
+                    </span>
+                    <figure class="more-user">
+                      <span>+{{project?.assigned_to_users.length - 3}}</span>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="not-found" *ngIf="!searchData?.project?.length">
+              <p> {{ loading ? 'Loading...' : 'No record found' }} </p>
+            </div>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="title-row flex ai-center">
+            <h5 class="mb-0">Workflows ({{arrWorkflow.length}})</h5>
+            <div class="right-cap-area" *ngIf="arrWorkflow?.length">
+              <p (click)="tabs.workflows = !tabs.workflows"><span>{{tabs.workflows ? 'Collapse' : 'Expand'}}
+                  Workflows</span></p>
+            </div>
+          </div>
+          <div class="ctable-row flex-table" *ngIf="tabs.workflows">
+            <div class="flex-ctable-item" *ngFor="let workflow of arrWorkflow"
+              [class.ctable-success]="workflow?.importance == 1" [class.ctable-warn]="workflow?.importance == 2"
+              [class.ctable-danger]="workflow?.importance == 3" (click)="workflowDetail(workflow?.id)">
+              <div class="ctable-full">{{workflow?.name | splitText}}</div>
+              <div class="ctable-date-name">
+                <p><strong>Due:</strong> {{workflow?.due_date | utcTime }}</p>
+                <p class="wf-owner-dsk">Owner: <a href="javascript:void(0)"
+                    [title]="workflow?.owner?.first_name + ' '+workflow?.owner?.last_name">{{workflow?.owner?.first_name}}
+                    {{workflow?.owner?.last_name}}</a></p>
+                <div class="wf-owner-mb">
+                  <div class="profile-wrap">
+                    <figure>
+                      <img [src]="workflow?.owner?.user_avatar" *ngIf="workflow?.owner?.user_avatar" alt=""
+                        [title]="workflow?.owner?.first_name + ' '+workflow?.owner?.last_name" />
+                      <span *ngIf="!workflow?.owner?.user_avatar"
+                        class="no-img">{{sharedService.displayInitial(workflow?.owner?.first_name, workflow?.owner?.last_name)}}</span>
+                    </figure>
+                    <a href="javascript:void(0)"
+                      [title]="workflow?.owner?.first_name + ' '+workflow?.owner?.last_name">{{workflow?.owner?.first_name}}
+                      {{workflow?.owner?.last_name}}</a>
+                  </div>
+                </div>
+              </div>
+              <div class="ctable-progress">
+                <div class="ctable-progress-wrap">
+                  <span [style.width.%]="workflow?.width"></span>{{workflow?.completed_task}} Tasks
+                  <p>{{workflow?.total_task}} Total Tasks</p>
+                </div>
+              </div>
+            </div>
+            <div class="not-found" *ngIf="!arrWorkflow.length">
+              <p> {{ loading ? 'Loading...' : 'No record found' }} </p>
+            </div>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="title-row flex ai-center">
+            <h5 class="mb-0">Tasks ({{searchData?.task?.length}})</h5>
+            <div class="right-cap-area" *ngIf="searchData?.task?.length">
+              <p (click)="tabs.task = !tabs.task"><span>{{tabs.task ? 'Collapse' : 'Expand'}} Tasks</span></p>
+            </div>
+          </div>
+          <div class="flex-table ttable-row" *ngIf="tabs.task">
+            <div class="flex-ttable-item" *ngFor="let task of searchData?.task"
+              [ngClass]="(task?.importance == 1) ? 'ttable-success' : ((task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+              <div class="ttable-full" (click)="goToTaskDetail(task?.id)"> {{task?.name | splitText}} </div>
+              <div class="ttable-assign">
+                <div class="profile-wrap" *ngIf="task?.assigned_to?.first_name">
+                  <figure>
+                    <img *ngIf="task?.assigned_to?.user_avatar_thumb" [src]="task?.assigned_to?.user_avatar_thumb"
+                      alt="">
+                    <span class="no-img" *ngIf="!task?.assigned_to?.user_avatar_thumb">
+                      {{ sharedService.displayInitial(task?.assigned_to?.first_name, task?.assigned_to?.last_name) }}
+                    </span>
+                  </figure>
+                  <p [title]="task?.assigned_to?.first_name + ' '+ task?.assigned_to?.last_name">
+                    {{ task?.assigned_to?.first_name }} {{ task?.assigned_to?.last_name }}</p>
+                </div>
+              </div>
+              <div class="ttable-btn flex-end opacity-hidden" (click)="goToTaskDetail(task?.id)">
+                <a class="btn-bdr" href="javascript:void(0);"><img src="/assets/images/black-arrow-right.svg"
+                    alt=""></a>
+              </div>
+            </div>
+            <div class="not-found" *ngIf="!searchData?.task?.length">
+              <p> {{ loading ? 'Loading...' : 'No record found' }} </p>
+            </div>
+          </div>
+        </div>
+        <div class="info-block doc-list">
+          <div class="title-row flex ai-center">
+            <h5 class="mb-0">Documents ({{searchData?.document.length}})</h5>
+            <div class="right-cap-area" *ngIf="searchData?.document?.length">
+              <p (click)="tabs.document = !tabs.document"><span>{{tabs.document ? 'Collapse' : 'Expand'}}
+                  Documents</span></p>
+            </div>
+          </div>
+          <div class="ttable-row" *ngIf="tabs.document">
+            <div class="flex-ttable-item" *ngFor="let doc of searchData?.document" (click)="goToDocument(doc?.id)">
+              <div data-attr="Document NAME" class="ttable-full">
+                {{doc?.document_name | splitText}}
+                <a href="javascript:void(0)" class="doc-head"> {{doc?.uploaded_to?.name}} </a>
+              </div>
+              <div data-attr="Date" class="ttable-date">{{ doc?.created_at | utcTime }}</div>
+              <div data-attr="Uploaded by" class="ttable-assign">
+                <div class="profile-wrap" *ngIf="doc?.created_by?.first_name">
+                  <figure>
+                    <img *ngIf="doc?.created_by?.user_avatar_thumb" [src]="doc?.created_by?.user_avatar_thumb" alt="">
+                    <span class="no-img" *ngIf="!doc?.created_by?.user_avatar_thumb">
+                      {{ sharedService.displayInitial(doc?.created_by?.first_name, doc?.created_by?.last_name) }}
+                    </span>
+                  </figure>
+                  <p [title]="doc?.created_by?.first_name + ' '+ doc?.created_by?.last_name">
+                    {{ doc?.created_by?.first_name }} {{ doc?.created_by?.last_name }}</p>
+                </div>
+              </div>
+              <div class="titem ti-btn flex-end opacity-hidden">
+                <a class="btn-bdr" href="javascript:void(0);" (click)="goToDocument(doc?.id)"><img
+                    src="/assets/images/black-arrow-right.svg" alt=""></a>
+              </div>
+            </div>
+            <div class="not-found" *ngIf="!searchData?.document?.length">
+              <p> {{ loading ? 'Loading...' : 'No record found' }} </p>
+            </div>
+          </div>
+        </div>
+      </main>
+      <aside [class.openfilter]="openFilter" *ngIf="tagSearch || (!tagSearch && searchData)">
+        <div class="card">
+          <div class="card-title card-bdr">
+            <h5>Filter Results</h5>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <div class="ddown-item multi-select">
+                <label>Sort by</label>
+                <div class="select-box select-box-multibox">
+                  <app-multiselect-dropdown [isFilter]="false" [title]="sortByTitle" [isSearch]="false"
+                    [isMultiple]="false" [displaySubItem]="sortByList"
+                    (selectionChanged)="onFilterSelected($event, 'sortBy')">
+                  </app-multiselect-dropdown>
+                </div>
+              </div>
+              <div class="ddown-item multi-select">
+                <label>Type</label>
+                <div class="select-box select-box-multibox">
+                  <app-multiselect-dropdown [isFilter]="false" [title]="typeTitle" [isSearch]="false"
+                    [displaySubItem]="typeList" (selectionChanged)="onFilterSelected($event, 'type')">
+                  </app-multiselect-dropdown>
+                </div>
+              </div>
+              <div class="ddown-item multi-select">
+                <label>Importance</label>
+                <div class="select-box select-box-multibox">
+                  <app-multiselect-dropdown [isFilter]="false" [title]="importanceTitle" [isSearch]="false"
+                    [displaySubItem]="importanceList" (selectionChanged)="onFilterSelected($event, 'importance')">
+                  </app-multiselect-dropdown>
+                </div>
+              </div>
+              <div class="ddown-item multi-select">
+                <label for="">Tags</label>
+                <div class="select-box select-box-multibox">
+                  <app-multiselect-dropdown [isTag]="true" [isFilter]="false" [title]="tagTitle"
+                    [displaySubItem]="tagsList" [noneText]="'Search Tags'" searchPlaceholder="Search Tags"
+                    (search)="$event && getLists($event)" (selectionChanged)="onFilterSelected($event, 'tag')">
+                  </app-multiselect-dropdown>
+                </div>
+              </div>
+              <div class="btn-group flex mb-0">
+                <button type="button" class="btn btn-half btn-bdr" (click)="clearFilters()">Clear All </button>
+                <button type="button" class="btn btn-half" (click)="search()">Refine Search </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div class="block-row pg-not-found" *ngIf="!searchData && !loading && !tagSearch">
+      <div class="sm-container">
+        <div class="pg-type pos-relative">
+          <img src="assets/images/Search.png" alt="">
+        </div>
+        <div class="not-found-msg flex mt-30">
+          <span><strong> There are no results.</strong></span>
+          <span class="mt-20 text-center"> Try to search an alternative word related to what you are looking for.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

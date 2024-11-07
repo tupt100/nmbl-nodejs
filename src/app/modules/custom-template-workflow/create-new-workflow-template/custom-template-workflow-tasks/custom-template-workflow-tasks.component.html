@@ -1,0 +1,40 @@
+<div class="card">
+  <div class="card-title card-bdr sm-hidden">
+    <h5 *ngIf="!templateId">New Workflow Template</h5>
+    <h5 *ngIf="templateId">Workflow Template</h5>
+  </div>
+  <div class="card-body">
+    <p>Add tasks to your workflow template</p>
+    <div style="margin-bottom: 1rem"
+      *ngFor="let item of tasks; let i = index;">
+      <div>
+        <div *ngIf="item['deleted']!==true">
+          <app-custom-workflow-template-task-form
+            [initialData]="item"
+            [index]="i"
+            (onTaskChanged)="updateTask($event, i)"
+          ></app-custom-workflow-template-task-form>
+          <div class="form-group">
+            <button (click)="removeItem(item)" style="background: #fff;border:red;color:red;" type="button"
+              class="btn remove">- Remove Task
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <div class="form-group">
+      <button (click)="addItem()" type="button" class="btn">+ Add Task</button>
+    </div>
+  </div>
+</div>
+<div class="btn-group text-right fx-btm">
+  <a class="btn btn-md btn-bdr" (click)="stepBack()" href="javascript:void(0);">Back</a>
+  <button class="btn btn-md" (click)="next()">
+    Continue
+  </button>
+</div>

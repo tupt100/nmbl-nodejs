@@ -1,0 +1,36 @@
+<div class="right-cap-area flex-end  pos-relative">
+  <button type="button" class="no-btn visible" (click)="displayDownload=false;isFilter = !isFilter"> Show All <img
+      src="assets/images/Chevron-Icon.svg" alt="" /></button>
+  <!-- <button type="button" class="action-dropdown no-btn visible pos-relative text-left"> -->
+    <button type="button" class="no-btn btn" (click)="isFilter = false; displayDownload = !displayDownload"><img src="assets/images/more-horizontal.svg"
+        alt="" /></button>
+    <div class="nav-dropdown sm-filter r-0" *ngIf="displayDownload">
+      <button type="button" class="no-btn" (click)="download();">Download</button>
+    </div>
+    <div class="nav-dropdown r-0" *ngIf="isFilter">
+      <perfect-scrollbar style="max-width: 100%; max-height: 200px;">
+        <div class="checked_list">
+          <div class="check-list">
+            <span class="fitem-check" *ngFor="let filter of listProductivityFilter | isTrue">
+              <input id="priv-{{filter.id}}" type="checkbox" class="fitem-ck-input" [checked]="filter.checked"
+                (change)="selectFilter($event, filter)" />
+              <label for="priv-{{filter.id}}" class="fitem-ck-txt">
+                {{filter.name}}
+              </label>
+            </span>
+          </div>
+        </div>
+
+        <div class="check-list">
+          <span class="fitem-check" *ngFor="let filter of listProductivityFilter | isFalse">
+            <input id="priv-{{filter.id}}" type="checkbox" class="fitem-ck-input" [checked]="filter.checked"
+              (change)="selectFilter($event, filter)" />
+            <label for="priv-{{filter.id}}" class="fitem-ck-txt">
+              {{filter.name}}
+            </label>
+          </span>
+        </div>
+      </perfect-scrollbar>
+    </div>
+  <!-- </button> -->
+</div>

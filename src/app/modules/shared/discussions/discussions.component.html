@@ -1,0 +1,218 @@
+<main>
+  <div class="card">
+    <div class="nmb-chat-main-row">
+      <div class="nmb-chat-head flex ai-center">
+        <h5 class="m-0">Discussions</h5>
+        <a href="javascript:void(0);" *ngIf="message_inbound_email" class="secondary_btn m-0 flex-end" ngxClipboard
+          [cbContent]="message_inbound_email" (cbOnSuccess)="onCopySuccess()" (cbOnError)="onCopyFailure()">
+          Copy Discussion Direct Email
+        </a>
+      </div>
+      <div class="nmb-chat-content-wrap">
+        <div class="nmb-chat-wbox">
+          <div class="nmb-revert-scroll-wrap">
+            <perfect-scrollbar style="max-width: 100%; max-height: 770px;" (psScrollY)="onScroll($event)"
+              id="chatSection">
+              <div class="nmb-revert-scroll">
+                <div class="nmb-ct-list" *ngFor="let obj of messages; let i = index;" [id]="'message_' + obj.id">
+                  <p class="nmb-ct-date" *ngIf="isDifferentDay(i)">{{ getMessageDate(i)}}</p>
+                  <div
+                    [ngClass]="obj?.created_by_user && !obj?.servicedesk_user_detail ? 'nmb-to-msg' : 'nmb-sent-msg'">
+                    <div class="flex">
+                      <figure class="nmb-thumb-dp" *ngIf="obj?.created_by_user?.first_name">
+                        <img [src]="obj?.created_by_user?.user_avatar_thumb" alt=""
+                          *ngIf="obj?.created_by_user?.user_avatar_thumb"
+                          [title]="obj?.created_by_user?.first_name + ' ' + obj?.created_by_user?.last_name">
+                        <span class="no-img" *ngIf="!obj?.created_by_user?.user_avatar_thumb"
+                          [title]="obj?.created_by_user?.first_name + ' ' + obj?.created_by_user?.last_name">
+                          {{ sharedService.displayInitial(obj?.created_by_user?.first_name, obj?.created_by_user?.last_name) }}
+                        </span>
+                      </figure>
+                      <figure class="nmb-thumb-dp" *ngIf="!obj?.created_by_user">
+                        <span class="no-img" [title]="obj?.reply_by_servicedeskuser?.user_name">
+                          {{ sharedService.displayInitialFull(obj?.reply_by_servicedeskuser?.user_name) }}
+                        </span>
+                      </figure>
+                      <div class="chat-caption-media">
+                        <span class="nmb-ctmsg-time">
+                          <span *ngIf="obj?.servicedesk_user_detail?.user_email && modalType === 'submitrequest'">
+                            {{ obj?.servicedesk_user_detail?.user_name }}</span>
+                          <strong *ngIf="obj?.servicedesk_user_detail?.user_email && modalType !== 'submitrequest'"
+                            title="TO: {{ obj?.servicedesk_user_detail?.user_name}},{{ obj?.servicedesk_user_detail?.user_email }}">
+                            To: {{ obj?.servicedesk_user_detail?.user_name}},
+                            {{ obj?.servicedesk_user_detail?.user_email }} </strong>
+                          <ng-container *ngIf="obj?.cc && modalType !== 'submitrequest'">
+                            <strong *ngFor="let cc of obj.cc" title="{{cc?.email}}">
+                              CC: {{ cc?.user_name}}<span *ngIf="cc?.user_name">,</span>
+                              {{ cc?.email }}
+                            </strong>
+                          </ng-container>
+                          <span *ngIf="!obj?.servicedesk_user_detail?.user_email">
+                            {{ obj?.created_by_user ? obj?.created_by_user?.first_name + '' + obj?.created_by_user?.last_name : obj?.reply_by_servicedeskuser?.user_name }}</span>
+                        </span>
+                        <div class="nmb-msg-group">
+                          <p>
+                            <span [innerHtml]="displayMessage(obj?.message)"></span>
+                            <span class="file-block flex flex-start" *ngIf="obj?.attachments?.length">
+                              <span class="file-box" *ngFor="let ob of obj.attachments" (click)="downloadFile(ob)">
+                                <img [src]="ob?.document_name | image" alt="">
+                                <strong class="cpointer">{{ ob?.document_name }}
+                                  <small>by <u>{{ ob?.created_by }}</u>
+                                    {{ momentObj(ob?.created_at).format('MM/DD/YYYY') }}
+                                  </small>
+                                </strong>
+                              </span>
+                            </span>
+                          </p>
+                          <span class="nmb-ct-date">
+                            <button class="btn no-btn"
+                              *ngIf="obj?.created_by_user?.id === userId && modalType !== 'submitrequest'"
+                              (click)="openDeletePopup(obj?.id)">
+                              <img class="" src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg" alt="" />
+                            </button>
+                            <small>
+                              {{momentObj(obj?.created_at).format('MM/DD/YYYY')}}
+                            </small>
+                            {{momentObj(obj?.created_at).format('hh:mm A')}}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-body no-pad" *ngIf="!messages?.length">
+                    <div class="file-list">
+                      <div class="not-found">
+                        {{ loader ? 'Loading...' : 'No record found'}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </perfect-scrollbar>
+          </div>
+          <div class="nmb-chat-footer">
+            <div class="nmb-select-sender nmb-dark-bg">
+              <div class="flex ai-center">
+                <div class="left-msg-col">
+                  <p>{{ modalType === 'submitrequest' ? 'Reply to Service Desk Team': 'Send message to' }}</p>
+                  <div class="sender-list-wrap" *ngIf="modalType !== 'submitrequest'">
+                    <a class="selected-sender" *ngIf="selected_users.length === 0" href="javascript:void(0);" [ngClass]="{ 'disable': modalType !== 'task'}"
+                      (click)="modalType === 'task' && showMessageTypePopup()">
+                      {{ messageTypeText | titlecase }}</a>
+                    
+                      <a class="selected-sender" *ngIf="selected_users.length > 0" href="javascript:void(0);" [ngClass]="{ 'disable': modalType !== 'task'}"
+                      (click)="modalType === 'task' && showMessageTypePopup()" title="{{selected_users.join()}}">
+                      {{ messageTypeText | titlecase }}</a>
+
+                    <div class="nav-dropdown sm-filter" *ngIf="showMessageType" id="messageOptions">
+                      <span class="no-btn" (click)="setMessageType()"><a href="javascript:void(0);">Internal</a></span>
+                      <ng-container
+                        *ngFor="let details of detail[modalType]?.servicedeskrequest_details; let i = index;">
+                        <!-- <span class="no-btn" (click)="setMessageType('user')"
+                        *ngIf="detail[modalType].servicedeskrequest_details?.servicedeskuser?.user_email"><a
+                          href="javascript:void(0);">{{ detail[modalType].servicedeskrequest_details?.servicedeskuser?.user_name | titlecase }}</a>
+                      </span> -->
+                        <span class="fitem-check checkuser flex"
+                          (click)="setMessageType('user',  details?.service_desk_request, details?.servicedeskuser?.user_name, i, details.checked)">
+                          <input type="checkbox" id="user-{{i}}" class="fitem-ck-input" [(ngModel)]="details.checked" (change)="setMessageType('user',  details?.service_desk_request, details?.servicedeskuser?.user_name, i, details.checked)" />
+                          <label class="no-btn fitem-ck-txt flex" for="user-{{i}}"
+                            *ngIf="details?.servicedeskuser?.user_email"><a href="javascript:void(0);">
+                              {{ details?.servicedeskuser?.user_name | titlecase }}</a>
+                          </label>
+                        </span>
+                      </ng-container>
+                      <span class="no-btn" (click)="setMessageType('new')"
+                        *ngIf="!detail[modalType]?.servicedeskrequest_details?.servicedeskuser?.user_email && detail[modalType]?.status != getStatus('completed') && detail[modalType]?.status != getStatus('archived') && modalType === 'task'">
+                        <a href="javascript:void(0);">New Contact</a></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="right-email-col" *ngIf="newContact.trigger">
+                  <div class="email-area">
+                    <div class="email-type-wrap">
+                      <input class="email-type" type="text" placeholder="Enter name" [(ngModel)]="newContact.name">
+                      <a class="remove-email" href="javascript:void(0);" (click)="newContact.name = ''"><img
+                          src="assets/images/btn-close-icon.png" alt=""></a>
+                    </div>
+                    <div class="email-type-wrap">
+                      <input class="email-type" [(ngModel)]="newContact.email" type="text" placeholder="Enter email" />
+                      <a class="remove-email" href="javascript:void(0);" (click)="newContact.email = ''"><img
+                          src="assets/images/btn-close-icon.png" alt=""></a>
+                    </div>
+                  </div>
+                  <div class="btn-group" style="padding-top: 0px;">
+                    <a href="javascript:void(0);" (click)="iscc = !iscc;">cc</a>
+                  </div>
+                </div>
+
+                <!-- {{messageTypeText}} New Contact -->
+                <div class="right-email-col"
+                  *ngIf="messageTypeText !== 'Internal Team' && messageTypeText !== 'New Contact'">
+                  <div class="email-area"></div>
+                  <div class="btn-group" style="padding-top: 0px;">
+                    <a href="javascript:void(0);" (click)="iscc = !iscc;">cc</a>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-bcc flex" *ngIf="iscc">
+                <div class="left-msg-col"></div>
+                <div class="right-email-col">
+                  <div class="email-area">
+                    <div class="email-type-wrap">
+                      <input type="text" placeholder="Enter email" [(ngModel)]="ccemail"
+                        class="email-type ng-untouched ng-pristine ng-valid">
+                      <a href="javascript:void(0);" class="remove-email"><img src="assets/images/btn-close-icon.png"
+                          alt=""></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="nmb-textarea-box">
+              <textarea class="nmb-sent-text" [(ngModel)]="messageData.msg" placeholder="Type your message"></textarea>
+              <div class="nmb-send-buttons">
+                <a class="btn-txt" *ngIf="isMsgUploadingAllowed()" (click)="openUploader('uploadDocMessage')"><img
+                    src="assets/images/attachments-icon.svg" alt=""></a>
+                <button type="button" class="btn-txt" (click)="sendMessage()"><img src="assets/images/send-message.svg"
+                    alt=""></button>
+              </div>
+              <div class="upld-file-list mt-10" *ngIf="files?.length">
+                <div class="file-item flex flex-start ai-center" *ngFor="let doc of files; let i = index;">
+                  <div class="m-0">
+                    <figure class="m-0">
+                      <img [src]="doc?.name | image" alt="">
+                    </figure>
+                    <p class="m-0">
+                      <strong>{{ doc?.newName  ? doc?.newName : doc?.name }}</strong>
+                    </p>
+                  </div>
+                  <div class="del-upld-ico cpointer" (click)="deleteDocument(i)">
+                    <img src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="modal transition" [ngClass]="{'in': showModal?.deleteDoc}">
+  <app-confirm-modal [message1]="deleteObj?.message1" [message2]="deleteObj?.message2" cancelButtonText="Cancel"
+    [okButtonText]="deleteObj?.buttonText" (onClose)="deleteMessage($event)"></app-confirm-modal>
+</div>
+
+<div class="modal transition send-email" [ngClass]="{'in': showModal?.newContactMessage}">
+  <app-confirm-modal message1="Send Email"
+    message2="Are you ready to send your email? You will able to see your sent email in discussions and recipients included in this email will be added to discussions as an external user"
+    cancelButtonText="Continue Editing" okButtonText="Send" (onClose)="sendNewContactMessage($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.uploadDocMessage}">
+  <app-document-upload [submitRequest]="modalType === 'submitrequest'" [isDiscussion]="true"
+    (afterUpload)="updateTaskDocs($event)"></app-document-upload>
+</div>

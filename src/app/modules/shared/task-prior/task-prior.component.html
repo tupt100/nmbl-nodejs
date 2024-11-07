@@ -1,0 +1,78 @@
+<div *ngIf="workflow">
+  <div class="fitem">
+    <label>Tasks aren’t just stand-alone objects and we want to help you understand and
+      visualise your
+      task flows.</label>
+    <p>For example: a task for a General Counsel to review an NDA has to come after a task
+      for their
+      junior to write the NDA. When one is complete, the other can occur. </p>
+  </div>
+  <div class="ddown-item">
+    <label>Prior to this task</label>
+    <div class="select-box select-box-multibox medium">
+      <div class="multiselect-text" [class.open]="showDropdown" (click)="show('prior_task')">
+        <span class="badge badge-primary mr-8">
+          <span class="flex" *ngIf="selected?.task?.name">
+            <span class="task">{{ selected?.task?.name ? selected?.task?.name :''}}</span>
+            <span class="task"><b class="task">Due:</b>
+              {{ selected?.task?.due_date ? momentObj(selected?.task?.due_date).format('MM/DD/YYYY') : '--' }}</span>
+          </span>
+        </span>
+      </div>
+      <div class="nav-dropdown no-scroll" *ngIf="showDropdown">
+        <input type="text" class="search_input" placeholder="Search Tasks" [(ngModel)]="searchValue"
+          (keyup)="onSearchKeyup($event,'prior_task')">
+        <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+          <div class="check-list mscroll-height">
+            <span class="fitem-check" *ngFor="let item of searchData">
+              <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input"
+                [checked]="item.checked || (item?.task?.id === selected?.task?.id)"
+                (change)="changeSelection($event, item,'prior_task')" />
+              <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                <span class="flex m-0"><span class="m-0">{{ item?.task?.name }}</span> <span class="m-0"><b>Due:</b>
+                    {{ item?.task?.due_date ? momentObj(item?.task?.due_date).format('MM/DD/YYYY') : '--' }}</span></span>
+              </label>
+            </span>
+            <span *ngIf="!searchData?.length">
+              <strong> No data found </strong>
+            </span>
+          </div>
+        </perfect-scrollbar>
+      </div>
+    </div>
+  </div>
+  <div class="ddown-item">
+    <label>After this task</label>
+    <div class="select-box select-box-multibox high">
+      <div class="multiselect-text" [class.open]="showDropdown2" (click)="show('after_task')">
+        <span class="badge badge-primary mr-8">
+          <span class="flex" *ngIf="selected2?.task?.name">
+            <span class="task">{{ selected2?.task?.name ? selected2?.task?.name :''}}</span>
+            <span class="task"><b class="task">Due:</b>
+              {{ selected2?.task?.due_date ? momentObj(selected2?.task?.due_date).format('MM/DD/YYYY') : '--' }}</span>
+          </span>
+        </span>
+      </div>
+      <div class="nav-dropdown no-scroll" *ngIf="showDropdown2">
+        <input type="text" class="search_input" placeholder="Search Tasks" [(ngModel)]="searchValue2"
+          (keyup)="onSearchKeyup($event,'after_task')">
+        <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+          <div class="check-list mscroll-height">
+            <span class="fitem-check" *ngFor="let item of searchData2">
+              <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input"
+                [checked]="item.checked  || (item?.task?.id === selected2?.task?.id)"
+                (change)="changeSelection($event, item,'after_task')" />
+              <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                <span class="flex m-0"><span class="m-0">{{ item?.task?.name }}</span> <span class="m-0"><b>Due:</b>
+                    {{ item?.task?.due_date ? momentObj(item?.task?.due_date).format('MM/DD/YYYY') : '--' }}</span></span>
+              </label>
+            </span>
+            <span *ngIf="!searchData2?.length">
+              <strong> No data found </strong>
+            </span>
+          </div>
+        </perfect-scrollbar>
+      </div>
+    </div>
+  </div>
+</div>

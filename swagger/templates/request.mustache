@@ -1,0 +1,16 @@
+url = this.getUrl(path, queryParameters);
+
+requestOptionArgs = {
+    headers: headers
+};
+
+return this.http.{{#getLowercaseMethod}}{{/getLowercaseMethod}}(url,{{#parameters}}{{#isBodyParameter}}body,{{/isBodyParameter}}{{#isFormParameter}}form,{{/isFormParameter}}{{/parameters}}requestOptionArgs)
+{{#hasResponseBody}}
+    .map(res => {
+        return {
+            body: res.json(),
+            headers: res.headers,
+        }
+    })
+{{/hasResponseBody}}
+.catch(this.handleError);

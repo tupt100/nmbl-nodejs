@@ -1,0 +1,77 @@
+<div class="sm-block-row sm-hidden">
+  <div class="sm-block-row">
+    <div class="sm-container">
+      <div class="card-row flex">
+        <div class="card">
+          <div class="card-bdr card-title flex ai-center">
+            <h5> Edit &#8220;{{name}}&#8221;</h5>
+            <a class="m-0 secondary_btn" (click)="showModal.isRemoveUser = true;">DELETE USER</a>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <form [formGroup]="editForm">
+                <div class="fitem">
+                  <label for="">Email</label>
+                  <input type="text" placeholder="Enter Title" formControlName="email" readonly />
+                </div>
+
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label for="">Name<sup>*</sup></label>
+                    <input type="text" placeholder="Enter First Name" formControlName="firstName"
+                      [class.error]="submitted && editForm.controls.firstName.invalid" required />
+                    <label for="" *ngIf="submitted && editForm.controls.firstName.invalid" class="error">First name
+                      cannot be blank.</label>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label for="">&nbsp;</label>
+                    <input type="text" placeholder="Enter Last Name" formControlName="lastName"
+                      [class.error]="submitted && editForm.controls.lastName.invalid" required />
+                    <label for="" *ngIf="submitted && editForm.controls.lastName.invalid" class="error">Last name cannot
+                      be blank.</label>
+                  </div>
+                </div>
+                <div class="fitem">
+                  <label for="">Title</label>
+                  <input type="text" placeholder="Enter Title" formControlName="title"
+                    [class.error]="submitted && editForm.controls.title.invalid" />
+                </div>
+                <div class="ddown-item">
+                  <label for="">Permission Group</label>
+                  <app-select-permission [groupId]="groupId" (onSelection)="getGroup($event)"></app-select-permission>
+                </div>
+              </form>
+            </div>
+            <div class="btn-group text-right">
+              <button type="button" class="btn btn-bdr btn-lg" (click)="cancelEdit()">Cancel</button>
+              <button type="button" class="btn btn-lg" (click)="updateUser();">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveUser}">
+  <app-confirm-modal message1="Remove User"
+    message2="The user will no longer have access to any current or future Projects, Workflows or Tasks."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removeUserConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<!--not accessible in mobile-->
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

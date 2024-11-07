@@ -1,0 +1,19 @@
+<div class="ang-mat">
+  <mat-form-field class="example-chip-list">
+    <mat-chip-list #chipList aria-label="Tags selection">
+      <mat-chip *ngFor="let tag of tags" [removable]="true" (removed)="removeTag(tag)">
+        {{tag}}
+        <mat-icon matChipRemove><img src="assets/images/close.svg" alt="" /></mat-icon>
+      </mat-chip>
+      <input #tagInput placeholder="Search by tag" [(ngModel)]="newTagValue" (ngModelChange)="searchTags()"
+        [ngModelOptions]="{standalone: true}" [matAutocomplete]="tagSearch" [matChipInputFor]="chipList"
+        [matChipInputAddOnBlur]="true" />
+    </mat-chip-list>
+    <mat-autocomplete #tagSearch="matAutocomplete" (optionSelected)="selectTag($event.option.value)"
+      appendToBody="true">
+      <mat-option *ngFor="let tag of searchedTags" [value]="tag.tag" class="tag_search_list">
+        {{tag.tag}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

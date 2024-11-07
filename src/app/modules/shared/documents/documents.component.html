@@ -1,0 +1,61 @@
+<div class="card doc-page">
+  <div class="card-title card-bdr mb-0">
+    <div class="flex">
+      <h5>Documents ({{ attachments?.length }})</h5>
+      <div class="right-cap-area" (click)="openPopup('uploadDoc')" *ngIf="hasPermission(true)">
+        <a href="javascript:void(0);" class="plus-icon grayblue-icon"><img
+            src="/assets/images/ProxyAssets/TasksAssets/Plus-Icon.svg" alt=""></a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body no-pad" *ngIf="!attachments?.length">
+    <div class="file-list">
+      <div class="not-found">
+        No record found
+      </div>
+    </div>
+  </div>
+  <div class="card-body no-pad" *ngIf="attachments?.length">
+    <perfect-scrollbar style="max-width: 100%; max-height: 330px;">
+      <div class="file-list">
+        <div class="file-item" *ngFor="let attachment of attachments; let i = index;">
+          <figure>
+            <img *ngIf="!isExternalDocument(attachment)"
+              [src]="attachment?.document_name || attachment?.attachment_name | image" alt="">
+            <img *ngIf="isGoogleDoc(attachment)" [src]="'assets/images/file/f-googledoc.svg'" alt="">
+          </figure>
+          <p><strong>
+              {{ attachment?.document_name || attachment?.attachment_name }}
+            </strong>
+            <small *ngIf="attachment?.created_by || attachment?.uploaded_by">by <a href="javascript:void(0);">{{
+                attachment?.uploaded_by ? attachment?.uploaded_by?.user_name : attachment?.created_by }}</a>
+              {{ momentObj(attachment?.created_at).format('MM/DD/YYYY hh:mm a') }}</small>
+          </p>
+          <span class="action-dropdown more pos-relative" (click)="docActionOpen[i] = !docActionOpen[i]">
+            <span class="sm-span"></span>
+            <span class="sm-span"></span>
+            <span class="sm-span"></span>
+            <div class="nav-dropdown sm-filter docAction" *ngIf="docActionOpen[i]">
+              <button type="button" class="no-btn" (click)="openPopup('deleteDoc', attachment.id)"
+                *ngIf="hasPermission()">Delete</button>
+              <button *ngIf="!isExternalDocument(attachment)" type="button" class="no-btn"
+                (click)="downloadFile(attachment)">Download</button>
+              <button *ngIf="isExternalDocument(attachment)" type="button" class="no-btn"
+                (click)="viewAttach(attachment)">View</button>
+            </div>
+          </span>
+        </div>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.deleteDoc}">
+  <app-confirm-modal [message1]="deleteObj?.message1" [message2]="deleteObj?.message2" cancelButtonText="Cancel"
+    [okButtonText]="deleteObj?.buttonText" (onClose)="confirmationDone($event)"></app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.uploadDoc}" *ngIf="hasPermission(true)">
+  <app-document-upload (afterUpload)="updateDocs($event, 'taskDoc')" [isStandAloneTag]="modalType === 'submitrequest'">
+  </app-document-upload>
+</div>

@@ -1,0 +1,112 @@
+{{#imports}}
+    /// <reference path="{{&.}}" />
+{{/imports}}
+
+import {Http, Headers, Response} from "@angular/http";
+import {Observable} from "rxjs/Observable";
+import "rxjs/Rx";
+import {Injectable} from "@angular/core";
+import 'rxjs/add/operator/map';
+
+{{#definitions}}
+    export interface {{&name}} {
+    {{#properties}}
+        {{#getName}}{{/getName}}{{&cardinality}} : {{#getType}}{{/getType}};
+    {{/properties}}
+    }
+
+    export interface {{&name}}Wrapper {
+        body: {{&name}},
+        headers: Headers
+    }
+{{/definitions}}
+
+/**
+* {{&description}}
+* @class {{&className}}
+* @param {(string)} [domainOrOptions] - The project domain.
+*/
+@Injectable()
+export class {{&className}} {
+
+private domain: string;
+
+constructor(private http: Http) { //had to include HTTP_PROVIDERS in bootstrap (global) for this to work. Workaround needed
+    this.domain = {{#getApiUrl}}{{/getApiUrl}};
+}
+
+/**
+* Handles api call error
+* @param {any} error
+* @returns {ErrorObservable}
+*/
+private handleError(error: any) {
+    let errMsg = error || {
+        status: 500
+    };
+    return Observable.throw(errMsg);
+}
+
+/**
+* Set pattern type parameters
+* @param {string} pattern - the regex pattern
+* @returns {Object} the query parameters
+*/
+private setPatternTypeParameter(pattern, queryParameters, parameters) {
+    Object.keys(parameters).forEach(function(parameterName) {
+        if(new RegExp(pattern).test(parameterName)){
+            queryParameters[parameterName] = parameters[parameterName];
+        }
+    });
+    return queryParameters;
+}
+
+/**
+* Set pattern type parameters
+* @param {string} camelCaseName - the camel case name of the parameter
+* @param {string} name - the name of the parameter
+* @returns {Object} the query parameters
+*/
+private setNonPatternTypeParameter(camelCaseName: string, name: string, queryParameters, parameters) {
+    if(parameters[camelCaseName] !== undefined){
+        queryParameters[name] = parameters[camelCaseName];
+    }
+    return queryParameters;
+}
+
+/**
+* Returns the api call url
+* @param {string} path - the path of the endpoint
+* @param {Object} queryParameters - the corresponding query parameters
+* @returns {string} - the complete query api call url
+*/
+private getUrl(path: string, queryParameters) {
+
+    let paramsStr = Object.keys(queryParameters).map(function(key) {
+        return key + '=' + encodeURIComponent(queryParameters[key]);
+    }).join('&');
+
+    let url = paramsStr ? this.domain + path + '?' + paramsStr : this.domain + path;
+    return url;
+}
+
+/**
+* Returns the query parameters
+* @param {Object} parameters - the api call parameters
+* @param queryParameters - the corresponding query parameters
+* @returns {Object} - the query parameters of the api call
+*/
+private setQueryParameters(parameters, queryParameters) {
+    Object.keys(parameters.$queryParameters).forEach(function(parameterName){
+        var parameter = parameters.$queryParameters[parameterName];
+        queryParameters[parameterName] = parameter;
+    });
+    return queryParameters;
+}
+
+{{#methods}}
+    {{> method}}
+{{/methods}}
+}
+
+export const APP_{{&moduleName}}_PROVIDERS = [{{&className}}];

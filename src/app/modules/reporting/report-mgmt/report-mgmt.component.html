@@ -1,0 +1,648 @@
+<app-notifier></app-notifier>
+<div class="container">
+  <div class="aside-area reporting-wraps">
+    <aside>
+      <div class="card flex-col card-full-height">
+        <div class="card-title card-bdr">
+          <h5>Check Report Type:</h5>
+        </div>
+        <div class="card-body">
+          <p>Select the type of report you want to download and then further edit your report via the filters.</p>
+          <div class="form-group">
+            <div class="ddown-item">
+              <app-type-filter [reportName]="reportName" [originamReportName]="reportName"
+                (onSelectReport)="onSelectReport($event)"></app-type-filter>
+            </div>
+            <div class="ddown-item pt-20">
+              <p *ngIf="reportType === 'Productivity'">See New versus Completed Tasks, Workflows, or Projects for a
+                selected date range. Filter the results by
+                additional categories below:</p>
+              <p class="mt-30 mb-30" *ngIf="reportType === 'Efficiency'">View the average time from creation to
+                completion of a Task, Worklflow, or Project. Filter by time frame or team members.</p>
+              <p class="mt-30 mb-30" *ngIf="reportType === 'Workload'">View the total number of Tasks, Workflows, and
+                Projects to which users are assigned. Filter by date range or team members.</p>
+              <p class="mt-30 mb-30" *ngIf="reportType === 'Group Workload'">View the total number of open Tasks,
+                Workflows, and/or Projects for a Group, as well as the number of Tasks completed versus open for
+                Workflows and Projects by Group. Filter using the options below.</p>
+              <p class="mt-30 mb-30" *ngIf="reportType === 'Privilege Log'">Generate the Privilege Log or
+                Confidentiality Report for one or more users, filter by date range, item, and team members.</p>
+              <p class="mt-30 mb-30" *ngIf="reportType === 'Tags Report'">View open versus completed Tasks, Workflows,
+                and Projects for one or more Tags. Filter by daate range or category.</p>
+            </div>
+            <!--Productivity Report-->
+            <div class="fitem" *ngIf="reportType === 'Productivity'">
+              <div class="dwrap">
+                <app-category-filter (onSelectCategory)="onSelectCategory($event)" [isReset]="isReset">
+                </app-category-filter>
+              </div>
+              <div class="dwrap">
+                <app-team-member-filter (onSelectMember)="onSelectMember($event)" [isReset]="isReset">
+                </app-team-member-filter>
+              </div>
+              <div class="dwrap">
+                <app-group-filter (onSelectGroup)="onSelectGroup($event)" [isReset]="isReset"></app-group-filter>
+              </div>
+              <div class="dwrap">
+                <app-daterange-picker (onSelectDate)="onSelectDate($event)" [isReset]="isReset"></app-daterange-picker>
+              </div>
+            </div>
+            <!--Efficiency Report-->
+            <div class="fitem" *ngIf="reportType === 'Efficiency'">
+              <div class="dwrap">
+                <app-team-member-filter (onSelectMember)="onSelectMember($event)" [isReset]="isReset">
+                </app-team-member-filter>
+              </div>
+              <div class="dwrap">
+                <app-daterange-picker (onSelectDate)="onSelectDate($event)" [isReset]="isReset"></app-daterange-picker>
+              </div>
+            </div>
+            <!--Workload Report-->
+            <div class="fitem" *ngIf="reportType === 'Workload'">
+              <div class="dwrap">
+                <app-team-member-filter (onSelectMember)="onSelectMember($event)" [isReset]="isReset">
+                </app-team-member-filter>
+              </div>
+              <div class="dwrap">
+                <app-daterange-picker (onSelectDate)="onSelectDate($event)" [isReset]="isReset"></app-daterange-picker>
+              </div>
+            </div>
+            <!--Group Workload Report-->
+            <div class="fitem" *ngIf="reportType === 'Group Workload'">
+              <div class="dwrap">
+                <app-category-filter (onSelectCategory)="onSelectCategory($event)" [isReset]="isReset">
+                </app-category-filter>
+              </div>
+              <div class="dwrap">
+                <app-group-filter (onSelectGroup)="onSelectGroup($event)" [isReset]="isReset"></app-group-filter>
+              </div>
+              <div class="dwrap">
+                <app-daterange-picker (onSelectDate)="onSelectDate($event)" [isReset]="isReset"></app-daterange-picker>
+              </div>
+            </div>
+            <!--Privilege Log Report-->
+            <div class="fitem" *ngIf="reportType === 'Privilege Log'">
+              <div class="dwrap">
+                <app-privilege-filter (onSelectPrivilege)="onSelectPrivilege($event)" [isReset]="isReset">
+                </app-privilege-filter>
+              </div>
+              <div class="dwrap">
+                <app-category-filter (onSelectCategory)="onSelectCategory($event)" [isReset]="isReset">
+                </app-category-filter>
+              </div>
+              <div class="dwrap">
+                <app-team-member-filter (onSelectMember)="onSelectMember($event)" [isReset]="isReset">
+                </app-team-member-filter>
+              </div>
+              <div class="dwrap">
+                <app-daterange-picker (onSelectDate)="onSelectDate($event)" [isReset]="isReset"></app-daterange-picker>
+              </div>
+            </div>
+            <!--Tag Report-->
+            <div class="fitem" *ngIf="reportType === 'Tags Report'">
+              <div class="dwrap">
+                <app-tag-filter (onSelectTag)="onSelectTag($event)" [isReset]="isReset"></app-tag-filter>
+              </div>
+              <div class="dwrap">
+                <app-category-filter (onSelectCategory)="onSelectCategory($event)" [isReset]="isReset">
+                </app-category-filter>
+              </div>
+              <div class="dwrap">
+                <app-daterange-picker (onSelectDate)="onSelectDate($event)" [isReset]="isReset"></app-daterange-picker>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-ftr">
+          <!--Productivity Report-->
+          <div class="btn-group" *ngIf="reportType === 'Productivity'">
+            <button type="button" class="btn btn-full btn-brand btn-lg"
+              (click)="generateProductivityReport();generateProductivityGraph();">Generate
+              Report </button>
+            <button type="button" class="btn btn-full btn-brand btn-lg"
+              (click)="generateProductivityReport();generateProductivityGraph();download();">Export
+              Report </button>
+            <button type="button" class="btn btn-full btn-brand btn-bdr btn-lg"
+              (click)="resetProductivityReport();">Reset
+            </button>
+          </div>
+
+          <!--Efficiency Report-->
+          <div class="btn-group" *ngIf="reportType === 'Efficiency'">
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateEfficiencyReport()">Generate
+              Report </button>
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateEfficiencyReport(true);">Export
+              Report
+            </button>
+            <button type="button" class="btn btn-full btn-brand btn-bdr btn-lg" (click)="resetEfficiencyReport();">Reset
+            </button>
+          </div>
+
+          <!--Workload Report-->
+          <div class="btn-group" *ngIf="reportType === 'Workload'">
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateWorkloadReport()">Generate
+              Report </button>
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateWorkloadReport(true);">Export
+              Report
+            </button>
+            <button type="button" class="btn btn-full btn-brand btn-bdr btn-lg" (click)="resetWorkloadReport();">Reset
+            </button>
+          </div>
+
+          <!--Group Workload Report-->
+          <div class="btn-group" *ngIf="reportType === 'Group Workload'">
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateGroupWorkloadReport()">Generate
+              Report </button>
+            <button type="button" class="btn btn-full btn-brand btn-lg"
+              (click)="generateGroupWorkloadReport(true);">Export Report
+            </button>
+            <button type="button" class="btn btn-full btn-brand btn-bdr btn-lg"
+              (click)="resetGroupWorkloadReport();">Reset
+            </button>
+          </div>
+
+          <!--Privilege Log Report-->
+          <div class="btn-group" *ngIf="reportType === 'Privilege Log'">
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generatePrivilegeReport()">Generate
+              Report </button>
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generatePrivilegeReport(true);">Export
+              Report
+            </button>
+            <button type="button" class="btn btn-full btn-brand btn-bdr btn-lg" (click)="resetPrivilegeReport();">Reset
+            </button>
+          </div>
+
+          <!--Tag Report-->
+          <div class="btn-group" *ngIf="reportType === 'Tags Report'">
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateTagReport()">Generate Report
+            </button>
+            <button type="button" class="btn btn-full btn-brand btn-lg" (click)="generateTagReport(true)">Export Report
+            </button>
+            <button type="button" class="btn btn-full btn-brand btn-bdr btn-lg" (click)="resetTagReport();">Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <main>
+      <div class="info-block flex flex-column portrait-report " id="rptProductivity" *ngIf="listProductivity.length > 0"
+        [class.pdfview-wraps]="showModal.isDownloadReport" [class.lendscape-wraps]="FileReportView">
+
+        <div class="header">
+          <div class="header-innerrow">
+            <p>&nbsp;</p>
+            <img class="m-0" src="assets/images/dark-proxy.png" height="30" width="100" alt="" />
+            <h4 class="m-0">Productivity Report:</h4>
+            <p>New VS Completed Tasks</p>
+          </div>
+          <hr />
+        </div>
+        <div class="card ml-0 mr-0 card-tableviewpdf">
+          <div class="card-title">
+            <div class="flex">
+              <h5>Productivity Report: New VS Completed Tasks</h5>
+              <app-prod-rpt-filter (onFilterSelect)="filterProductivity($event)" (onDownload)="download()">
+              </app-prod-rpt-filter>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">TEAM MEMBERS <img src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" />
+                </div>
+                <div *ngIf="prodNew" class="rhead">NEW PWT <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="prodCompleted" class="rhead">COMPLETED PWT <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" />
+                </div>
+                <div *ngIf="prodTotal" class="rhead"></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let productivity of listProductivity">
+                <div class="ritem">
+                  <div class="profile-wrap m-0"><span class="no-img"
+                      [title]="productivity?.team_member?.first_name + ' ' + productivity?.team_member?.last_name">{{productivity?.team_member | initial}}</span>
+                    <p>{{productivity?.team_member?.first_name}} {{productivity?.team_member?.last_name}}</p>
+                  </div>
+                </div>
+                <div *ngIf="prodNew" class="ritem"> {{productivity?.active}} hours</div>
+                <div *ngIf="prodCompleted" class="ritem"> {{productivity?.complete}} hours</div>
+                <div class="ritem" *ngIf="prodTotal && productivity?.active > productivity?.complete">
+                  {{productivity?.active - productivity?.complete}} hours</div>
+                <div class="ritem" *ngIf="prodTotal && productivity?.active < productivity?.complete">0 hours</div>
+                <div class="ritem" *ngIf="prodTotal && productivity?.active == productivity?.complete">0 hours</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="card ml-0 mr-0 page-break" *ngIf="listProductivity.length > 0">
+          <div class="card-title ">
+            <div class="flex">
+              <h5>Time Frame: {{dateFrom}} to {{dateTo}}</h5>
+            </div>
+          </div>
+          <div class="card-body rlabel">
+            <span class="y-axis-label">Average Time (Hours)</span>
+            <canvas id="lineChart"></canvas>
+            <span class="x-axis-label">Average Time (Hours)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-block portrait-report" id="rptEfficiency" *ngIf="listEfficiency.length > 0"
+        [class.pdfview-wraps]="showModal.isDownloadReport" [class.lendscape-wraps]="FileReportView">
+        <div class="header">
+          <div class="header-innerrow">
+            <p>&nbsp;</p>
+            <img class="m-0" src="assets/images/dark-proxy.png" height="30" width="100" alt="" />
+            <h4 class="m-0">Efficiency Report:</h4>
+            <p>Average time from creation to completion</p>
+          </div>
+          <hr />
+        </div>
+        <div class="card card-tableviewpdf">
+          <div class="card-title">
+            <div class="flex">
+              <h5>Efficiency Report: Average time from creation to completion</h5>
+              <app-efficiency-rpt-filter displayText="Show All" (onSelectCategory)="filterEfficiency($event)"
+                (onDownload)="download()"></app-efficiency-rpt-filter>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">TEAM MEMBERS <img class="m-0"
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" />
+                </div>
+                <div *ngIf="effProject" class="rhead">PROJECTS <img class="m-0"
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="effWorkflow" class="rhead">WORKFLOWS <img class="m-0"
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="effTask" class="rhead">TASKS <img class="m-0"
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let efficiency of listEfficiency">
+                <div class="ritem">
+                  <div class="profile-wrap m-0"><span class="no-img"
+                      [title]="efficiency?.team_member?.first_name + ' ' + efficiency?.team_member?.last_name">{{efficiency?.team_member | initial}}</span>
+                    <p> {{efficiency?.team_member?.first_name}} {{efficiency?.team_member?.last_name}} </p>
+                  </div>
+                </div>
+                <div *ngIf="effProject" class="ritem"> {{efficiency?.project_avg}} hours</div>
+                <div *ngIf="effWorkflow" class="ritem"> {{efficiency?.workflow_avg}} hours</div>
+                <div *ngIf="effTask" class="ritem"> {{efficiency?.task_avg}} hours</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card page-break" *ngIf="listEfficiency.length > 0">
+          <div class="card-title ">
+            <div class="flex">
+              <h5>Time Frame : {{dateFrom}} to {{dateTo}} </h5>
+            </div>
+          </div>
+          <div class="card-body rlabel">
+            <span class="y-axis-label">Average Time (Hours)</span>
+            <canvas id="barChart"></canvas>
+            <span class="x-axis-label">Average Time (Hours)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-block portrait-report" id="rptWorkload" *ngIf="listWorkload.length > 0"
+        [class.pdfview-wraps]="showModal.isDownloadReport" [class.lendscape-wraps]="FileReportView">
+
+        <div class="header">
+          <div class="header-innerrow">
+            <p>&nbsp;</p>
+            <img class="m-0" src="assets/images/dark-proxy.png" height="30" width="100" alt="" />
+            <h4 class="m-0">Workload Report:</h4>
+            <p>Total Number of Tasks, Projects and Workflows</p>
+          </div>
+          <hr />
+        </div>
+        <div class="card ml-0 mr-0 card-tableviewpdf">
+          <div class="card-title ">
+            <div class="flex">
+              <h5>Workload Report: Total Number of Tasks, Projects and Workflows</h5>
+              <app-efficiency-rpt-filter displayText="Show All" (onSelectCategory)="filterWorkflow($event)"
+                (onDownload)="download()"></app-efficiency-rpt-filter>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">TEAM MEMBER(S) <img src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" />
+                </div>
+                <div *ngIf="workflowProject" class="rhead">PROJECTS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="workflowWorkflow" class="rhead">WORKFLOWS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="workflowTask" class="rhead">TASKS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="workflowTotal" class="rhead">TOTAL <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let workload of listWorkload">
+                <div class="ritem">
+                  <div class="profile-wrap m-0"><span class="no-img"
+                      [title]="workload?.team_member?.first_name + ' ' + workload?.team_member?.last_name">{{workload?.team_member | initial}}</span>
+                    <p> {{workload?.team_member?.first_name}} {{workload?.team_member?.last_name}} </p>
+                  </div>
+                </div>
+                <div *ngIf="workflowProject" class="ritem"> {{workload?.project}} </div>
+                <div *ngIf="workflowWorkflow" class="ritem"> {{workload?.workflow}} </div>
+                <div *ngIf="workflowTask" class="ritem"> {{workload?.task}} </div>
+                <div *ngIf="workflowTotal" class="ritem"> {{workload?.total}} </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card  page-break" *ngIf="listWorkload.length > 0">
+          <div class="card-title ">
+            <div class="flex">
+              <h5>Time Frame: {{dateFrom}} to {{dateTo}} </h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class=" flex flex-start flex-wrap">
+              <div class="rpie">
+                <canvas id="pieChart-0"></canvas>
+              </div>
+              <div class="rpie">
+                <canvas id="pieChart-1"></canvas>
+              </div>
+              <div class="rpie">
+                <canvas id="pieChart-2"></canvas>
+              </div>
+              <div class="rpie">
+                <canvas id="pieChart-3"></canvas>
+              </div>
+              <div class="rpie">
+                <canvas id="pieChart-4"></canvas>
+              </div>
+            </div>
+            <div class="pie-labels flex flex-center mt-20">
+              <div class="pr"><span></span> Project</div>
+              <div class="wf"><span></span> Workflow</div>
+              <div class="ts"><span></span> Task</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="info-block portrait-report" id="rptGroupWorkload"
+        *ngIf="listGroupWorkloadActive.length > 0 || listGroupWorkloadComplete.length > 0"
+        [class.pdfview-wraps]="showModal.isDownloadReport" [class.lendscape-wraps]="FileReportView">
+        <div class="header">
+          <div class="header-innerrow">
+            <p>&nbsp;</p>
+            <img class="m-0" src="assets/images/dark-proxy.png" height="30" width="100" alt="" />
+            <h4 class="m-0">Group Workload Report:</h4>
+            <p>Total Number of Open Tasks, Workflows, and/or Projects VS Completed by Group</p>
+          </div>
+          <hr />
+        </div>
+        <div class="card card-tableviewpdf">
+          <div class="card-title ">
+            <div class="flex">
+              <h5>Group Workload Report: Total Number of Open Tasks, Workflows, and/or Projects VS Completed by Group
+              </h5>
+              <app-efficiency-rpt-filter displayText="Show All" (onSelectCategory)="filterGroupWorkflow($event)"
+                (onDownload)="download()"></app-efficiency-rpt-filter>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">GROUP(S) <img src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowProject" class="rhead">PROJECTS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowWorkflow" class="rhead">WORKFLOWS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowTask" class="rhead">TASKS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowTotal" class="rhead">TOTAL <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let active of listGroupWorkloadActive">
+                <div class="ritem"> {{active?.work_group_name}} </div>
+                <div *ngIf="groupWorkflowProject" class="ritem"> {{active?.open_project}} </div>
+                <div *ngIf="groupWorkflowWorkflow" class="ritem"> {{active?.open_workflow}} </div>
+                <div *ngIf="groupWorkflowTask" class="ritem"> {{active?.open_task}} </div>
+                <div *ngIf="groupWorkflowTotal" class="ritem"> {{active?.total}} </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">GROUP(S) <img src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowProject" class="rhead">PROJECTS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowWorkflow" class="rhead">WORKFLOWS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowTask" class="rhead">TASKS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="groupWorkflowTotal" class="rhead">TOTAL <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let complete of listGroupWorkloadComplete">
+                <div class="ritem"> {{complete?.work_group_name}} </div>
+                <div *ngIf="groupWorkflowProject" class="ritem"> {{complete?.completed_project}} </div>
+                <div *ngIf="groupWorkflowWorkflow" class="ritem"> {{complete?.completed_workflow}} </div>
+                <div *ngIf="groupWorkflowTask" class="ritem"> {{complete?.completed_task}} </div>
+                <div *ngIf="groupWorkflowTotal" class="ritem"> {{complete?.total}} </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-block  page-break"
+          *ngIf="listGroupWorkloadActive.length > 0 || listGroupWorkloadComplete.length > 0">
+          <div class="card " *ngIf="listGroupWorkloadActive.length > 0">
+            <div class="card-title ">
+              <div class="flex">
+                <h5>Time Frame: {{dateFrom}} to {{dateTo}} </h5>
+              </div>
+            </div>
+            <div class="card-body rlabel">
+              <span class="y-axis-label">Average Time (Hours)</span>
+              <canvas id="barChart"></canvas>
+              <span class="y-axis-label">Average Time (Hours)</span>
+            </div>
+          </div>
+          <div class="card " *ngIf="listGroupWorkloadComplete.length > 0">
+            <div class="card-title ">
+              <div class="flex">
+                <h5>Time Frame: {{dateFrom}} to {{dateTo}} </h5>
+              </div>
+            </div>
+            <div class="card-body rlabel">
+              <span class="y-axis-label">Average Time (Hours)</span>
+              <canvas id="barChart1"></canvas>
+              <span class="y-axis-label">Average Time (Hours)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-block portrait-report" id="rptPrivilegeLog" *ngIf="listPrivilege.length > 0"
+        [class.pdfview-wraps]="showModal.isDownloadReport" [class.lendscape-wraps]="FileReportView">
+        <div class="header">
+          <div class="header-innerrow">
+            <p>&nbsp;</p>
+            <img class="m-0" src="assets/images/dark-proxy.png" height="30" width="100" alt="" />
+            <h4 class="m-0">Task List:</h4>
+          </div>
+          <hr />
+        </div>
+        <div class="card card-tableviewpdf">
+          <div class="card-title">
+            <div class="flex">
+              <h5>Privilege Report</h5>
+              <div class="right-cap-area flex-end pos-relative">
+                <button type="button" class="no-btn btn"
+                  (click)="isFilter=false;displayDownload = !displayDownload"><img
+                    src="assets/images/more-horizontal.svg" alt="" /></button>
+                <div class="nav-dropdown sm-filter r-0" *ngIf="displayDownload">
+                  <button type="button" class="no-btn" (click)="download();">Download</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">FROM</div>
+                <div class="rhead">TO</div>
+                <div class="rhead">CATEGORY</div>
+                <div class="rhead">NAME </div>
+                <div class="rhead">PRIVILEGE </div>
+                <div class="rhead">TEAM MEMBER</div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let privilege of listPrivilege">
+                <div class="ritem"> {{privilege?.FROM}} </div>
+                <div class="ritem"> {{privilege?.TO}}</div>
+                <div class="ritem"> {{privilege?.CATEGORY}} </div>
+                <div class="ritem"> {{privilege?.NAME}} </div>
+                <div class="ritem"> {{privilege?.PRIVILEGE}} </div>
+                <div class="ritem"> {{privilege?.TEAMMEMBER}} </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-block portrait-report" id="rptTagsReport"
+        *ngIf="listTagActive.length > 0 || listTagComplete.length > 0"
+        [class.pdfview-wraps]="showModal.isDownloadReport" [class.lendscape-wraps]="FileReportView">
+        <div class="header">
+          <div class="header-innerrow">
+            <p>&nbsp;</p>
+            <img class="m-0" src="assets/images/dark-proxy.png" height="30" width="100" alt="" />
+            <h4 class="m-0">Tags Report:</h4>
+            <p>View Open VS Completed Tasks, Workflows and Projects for one or more tags.</p>
+          </div>
+          <hr />
+        </div>
+        <div class="card card-tableviewpdf">
+          <div class="card-title ">
+            <div class="flex">
+              <h5>Tags Report: View Open VS Completed Tasks, Workflows and Projects for one or more tags.
+              </h5>
+              <app-efficiency-rpt-filter displayText="Show All" (onSelectCategory)="filterTag($event)"
+                (onDownload)="download()"></app-efficiency-rpt-filter>
+            </div>
+          </div>
+          <div class="card-body">
+            <span class="rtype-head">1. Open P/W/T</span>
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">TAG(S) <img src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagProject" class="rhead">PROJECTS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagWorkflow" class="rhead">WORKFLOWS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagTask" class="rhead">TASKS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagTotal" class="rhead">TOTAL <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let active of listTagActive">
+                <div class="ritem"> {{active?.tag_name}} </div>
+                <div *ngIf="tagProject" class="ritem"> {{active?.open_project}} </div>
+                <div *ngIf="tagWorkflow" class="ritem"> {{active?.open_workflow}} </div>
+                <div *ngIf="tagTask" class="ritem"> {{active?.open_task}} </div>
+                <div *ngIf="tagTotal" class="ritem"> {{active?.total}} </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <span class="rtype-head">2. Completed P/W/T</span>
+            <div class="rtable">
+              <div class="rrow rrow-head">
+                <div class="rhead">TAG(S) <img src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagProject" class="rhead">PROJECTS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagWorkflow" class="rhead">WORKFLOWS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagTask" class="rhead">TASKS <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+                <div *ngIf="tagTotal" class="rhead">TOTAL <img
+                    src="assets/images/ProxyAssets/ReportingAssets/Sort-Icon.svg" /></div>
+              </div>
+              <div class="rrow rrow-item" *ngFor="let complete of listTagComplete">
+                <div class="ritem"> {{complete?.tag_name}} </div>
+                <div *ngIf="tagProject" class="ritem"> {{complete?.completed_project}} </div>
+                <div *ngIf="tagWorkflow" class="ritem"> {{complete?.completed_workflow}} </div>
+                <div *ngIf="tagTask" class="ritem"> {{complete?.completed_task}} </div>
+                <div *ngIf="tagTotal" class="ritem"> {{complete?.total}} </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-block page-break" *ngIf="listTagActive.length > 0 || listTagComplete.length > 0">
+          <div class="card">
+            <div class="card-title ">
+              <div class="flex">
+                <h5>Time Frame: {{dateFrom}} to {{dateTo}}</h5>
+              </div>
+            </div>
+            <div class="card-body rlabel">
+              <span class="y-axis-label">Open P/W/T</span>
+              <canvas id="barChart"></canvas>
+              <span class="x-axis-label">Tags</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <span class="not-found md-text"
+        *ngIf="listProductivity.length === 0 && listEfficiency.length === 0 && listWorkload.length === 0 && listGroupWorkloadActive.length === 0 && listGroupWorkloadComplete.length === 0 && listPrivilege.length === 0 && listTagActive.length === 0 && listTagComplete.length === 0"><b>No
+          Data Found</b></span>
+    </main>
+  </div>
+  <!--Not accessible in mobile view-->
+  <div class="sm-visible">
+    <div class="block-row pg-not-found">
+      <div class="sm-container">
+        <div class="pg-type pos-relative">
+          <img src="assets/images/Reporting.png" alt="">
+        </div>
+        <div class="flex mt-30 not-found-msg">
+          <span class="text-center">
+            <strong>Mobile view does not support this page</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isDownloadReport}">
+  <app-download-report [items]="listProductivity" (mode)="mode($event)" (onDownload)="onDownload($event)"
+    (onClose)="onClose($event)">
+  </app-download-report>
+</div>

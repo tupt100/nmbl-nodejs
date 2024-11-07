@@ -1,0 +1,15 @@
+<div class="card">
+  <div class="card-title card-bdr mb-0">
+    <h5>Audit Trail</h5>
+  </div>
+  <div class="card-body no-pad">
+    <perfect-scrollbar style="max-width: 100%; max-height: 330px;">
+      <div class="viewed-list">
+        <p *ngFor="let audit of auditTrail">{{ audit.change_message | keys }} <span
+            [innerHtml]="audit.change_message | values"></span>
+        </p>
+        <p *ngIf="!auditTrail.length">{{ loader ? 'Loading...': 'No record found' }} </p>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</div>

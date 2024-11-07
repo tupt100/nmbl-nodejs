@@ -1,0 +1,51 @@
+<div class="sm-block-row sm-hidden">
+  <div class="sm-container">
+    <div class="card-row flex">
+      <div class="card">
+        <div class="card-bdr card-title">
+          <h5>Removing {{groupName}} </h5>
+        </div>
+        <div class="card-body">
+          <span class="subtitle"> {{arrUserDetails.length}} users are using this permission type, and removing it would
+            leave them with no permission sets. You therefore need to reassign those users.</span>
+          <div class="form-group" *ngFor="let user of arrUserDetails">
+            <div class="fitem half-fitem flex ai-center flex-start">
+              <div class="fitem sub-half-fitem">
+                <label>{{user.first_name}} {{user.last_name}}</label>
+              </div>
+              <div class="fitem half-fitem flex-start">
+                <app-select-permission (onSelection)="getGroup($event, user.id)"></app-select-permission>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group text-right mt-30">
+            <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+            <button type="button" class="btn btn-lg" (click)="showModal.isRemovePermission = true;">Remove
+              Permission</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemovePermission}">
+  <app-confirm-modal message1="Remove Permission" message2="Are you sure you want to remove this permission?"
+    message3="users will be notified that their permission levels have been altered. To use this permission type in future, you would have to create a new core permission."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removePermissionConfirm($event)">
+  </app-confirm-modal>
+</div>
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

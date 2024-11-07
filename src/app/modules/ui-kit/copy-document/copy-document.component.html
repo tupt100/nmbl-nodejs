@@ -1,0 +1,58 @@
+<div class="modal-dialog modal-sm">
+  <div class="alert-cont modal-content">
+    <div class="modal-header text-center">
+      <h5>Copy Document</h5>
+      <a href="javascript:void(0);" class="close" (click)="cancel()">esc</a>
+    </div>
+    <div class="modal-body">
+      <p>Copying this document will create a duplicate file in the new location you choose below.</p>
+      <form [formGroup]='myForm'>
+        <div class="form-group">
+          <div class="ddown-item">
+            <label>Search for a Project, Workflow or Task</label>
+            <input type="text" class="bg_input lg-field" placeholder="Seach here" formControlName="assignToSearch"
+              *ngIf="!name" />
+            <input type="text" class="bg_input lg-field" placeholder="Seach here" formControlName="assignToSearch1"
+              [(ngModel)]="name" *ngIf="name" />
+            <div class="search-result" *ngIf="isLoading">
+              <div class="sblock">
+                <span class="type">Project</span>
+                <span class="ty-name" *ngFor="let project of arrProjects">
+                  <a href="javascript:void(0)" (click)="selectProject(project)">
+                    <strong> {{project?.project?.name}} </strong>
+                  </a>
+                </span>
+                <span class="ty-name" *ngIf="!arrProjects?.length">
+                  No Projects
+                </span>
+                <span class="type">Workflow</span>
+                <span class="ty-name" *ngFor="let workflow of arrWorkflow">
+                  <a href="javascript:void(0)" (click)="selectWorkflow(workflow)">
+                    <strong> {{workflow?.workflow?.name}} </strong>
+                  </a>
+                </span>
+                <span class="ty-name" *ngIf="!arrWorkflow?.length">
+                  No Workflows
+                </span>
+                <span class="type">Tasks</span>
+                <span class="ty-name" *ngFor="let task of arrTask">
+                  <a href="javascript:void(0)" (click)="selectTask(task)">
+                    <strong> {{task?.task?.name}} </strong>
+                  </a>
+                </span>
+                <span class="ty-name" *ngIf="!arrTask?.length">
+                  No Tasks
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="btn-group flex mt-20">
+        <a class="btn btn-half btn-bdr btn-md" href="javascript:void(0);" (click)="cancel()">Cancel</a>
+        <button class="btn btn-half btn-md" href="javascript:void(0);" (click)="onSubmit()">
+          Copy </button>
+      </div>
+    </div>
+  </div>
+</div>

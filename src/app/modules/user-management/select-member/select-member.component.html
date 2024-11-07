@@ -1,0 +1,22 @@
+<div class="select-box lg-field" [class.open]="isMemberBoxOpen" (click)="isMemberBoxOpen = !isMemberBoxOpen;">
+  {{memberName}}
+</div>
+<form [formGroup]='usersForm'>
+  <div class="nav-dropdown no-scroll" *ngIf="isMemberBoxOpen">
+    <input type="text" class="search_input" placeholder="Search members" formControlName="assignToSearch">
+    <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+      <div class="check-list mscroll-height">
+        <span class="fitem-check" *ngFor="let member of arrMembers">
+          <input id="{{member.id}}" type="checkbox" class="fitem-ck-input" [checked]="member.checked"
+            (change)="selectMember($event, member)" />
+          <label for="{{member.id}}" class="fitem-ck-txt">
+            {{member.first_name}} {{member.last_name}}
+          </label>
+        </span>
+        <span *ngIf="arrMembers.length === 0">
+          <strong> No data found </strong>
+        </span>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</form>

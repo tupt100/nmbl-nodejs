@@ -1,0 +1,71 @@
+<app-notifier></app-notifier>
+<div class="block-row sm-hidden">
+  <div class="sm-block-row">
+    <div class="sm-container">
+      <div class="card-row flex">
+        <div class="card">
+          <div class="card-bdr card-title">
+            <h5>Edit Group </h5>
+          </div>
+          <div class="card-body">
+            <span class="subtitle">Groups allow users to assign a group of people to a task, workflow or project;
+              thereby giving a quick assignment to a team who can delegate and complete their assignments on their
+              own.</span>
+            <form [formGroup]="editForm">
+              <div class="form-group">
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label for="">Name</label>
+                    <input type="text" placeholder="Type a name" class="lg-field" formControlName="name" required />
+                    <label for="" *ngIf="submitted && editForm.controls.name.invalid" class="error">Group name should
+                      not be blank.</label>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label for="">Members in Group</label>
+                    <app-select-member [arrSelectedMembers]="arrUsers"
+                      (returnSelectedMemeber)="returnSelectedMemeber($event)"></app-select-member>
+                    <label for="" *ngIf="submitted && arrUsers.length === 0" class="error">Please add members to create
+                      group.</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div class="group-assign flex ai-center">
+              <div class="user-img-wrap flex" *ngFor="let user of arrUsers">
+                <p> <span>{{user.first_name}} {{user.last_name}} </span><img
+                    (click)="memberId=user.id; showModal.isRemoveMember = true;" src="assets/images/close.svg" alt="" />
+                </p>
+              </div>
+            </div>
+            <div class="btn-group text-right mt-30">
+              <button type="button" class="btn btn-bdr btn-lg" (click)="cancelAdd()">Cancel</button>
+              <button type="button" class="btn btn-lg" (click)="upddateGroupName();">Update Group</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveMember}">
+  <app-confirm-modal message1="Remove Member"
+    message2="The member will no longer have access to any current or future Projects, Workflows or Tasks."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removeMemberConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

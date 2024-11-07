@@ -1,0 +1,308 @@
+<app-menu class="m-header"></app-menu>
+
+<div class="main-page wf-list listing_pg"
+  *ngIf="permisionList?.workflow_workflow_view || permisionList?.workflow_workflow_view_all">
+  <div class="">
+    <div class="main-full-head">
+      <div class="container">
+        <div class="m-header">
+          <div class="flex sm-head">
+            <span class="m-0 bg-text flex flex-start ai-center">
+              <img src="assets/images/filter-ico.svg" alt="" class="ml-0 mr-10">
+              <span (click)="openFilter = !openFilter;">
+                Filter Workflows
+              </span> &nbsp;
+              / &nbsp;
+              <span (click)="openMetrics = !openMetrics;">
+                <span [class.hidden]="openMetrics">Show</span>
+                <span [class.hidden]="!openMetrics">Hide</span>
+                Metrics
+              </span>
+            </span>
+            <a *ngIf="permisionList?.workflow_workflow_create" class="bg-text flex-end"
+              [routerLink]="['/main/projects/create/workflow']"><strong class="m-0">Add New Workflow</strong></a>
+          </div>
+        </div>
+        <div class="active_filters tab-visible"
+          *ngIf="projectTitle?.length || userTitle?.length || groupTitle?.length || tagTitle?.length">
+          <span class="flex">Active Filters <a href="javascript:void(0)" class="m-0"
+              (click)="clearAllFilters()"><u>Clear All</u></a></span>
+          <div *ngIf="projectTitle?.length">Workflows: <span><b>{{ getTitle('projectTitle') }}</b></span></div>
+          <div *ngIf="userTitle?.length">Users: <span><b>{{ getTitle('userTitle') }}</b></span></div>
+          <div *ngIf="groupTitle?.length">Groups: <span><b>{{ getTitle('groupTitle') }}</b></span></div>
+          <div *ngIf="tagTitle?.length">Tags: <span><b>{{ getTitle('tagTitle') }}</b></span></div>
+        </div>
+        <div class="main-full-head-task flex ai-center" *ngIf="openMetrics">
+          <div class="tcount-row">
+            <span class="tcount">
+              <h3> {{headerDetails?.totalWorkflow}} <br> <span class="sm-text">Workflows</span></h3>
+            </span>
+            <span class="tcount">
+              <h3> {{headerDetails?.totalTasks}} <br> <span class="sm-text">Tasks</span></h3>
+            </span>
+          </div>
+
+          <div class="chart-info">
+            <app-pie-chart [properties]="chartProperties"></app-pie-chart>
+            <div class="chart-detail">
+              <span><strong>{{headerDetails?.completedTasks}}/{{headerDetails?.totalTasks}}</strong> tasks
+                <span>complete</span></span>
+              <span><strong>{{completePercent()}}% complete </strong></span>
+              <span class="overdue" *ngIf="headerDetails?.overdueTasks > 0">{{headerDetails?.overdueTasks}} overdue
+                &nbsp; <img src="assets/images/arrow-down-right.svg" height="15" width="6" alt="" class="m-0" /></span>
+            </div>
+          </div>
+
+          <div class="due-box">
+            <h3>
+              <span class="flex ai-end">{{headerDetails?.dueTasks}} &nbsp;
+                <img src="assets/images/arrow-down-right.svg" alt="" class="m-0" />
+              </span>
+              <span class="sm-text">Due Today</span>
+            </h3>
+          </div>
+
+          <div class="priority-list">
+            <div class="chart-info">
+              <app-pie-chart [properties]="chartProperties1"></app-pie-chart>
+              <div class="chart-detail">
+                <span><strong class="high">{{headerDetails?.highPriority}}</strong> High <span>Priority</span></span>
+                <span><strong class="medium">{{headerDetails?.mediumPriority}}</strong> Medium
+                  <span>Priority</span></span>
+                <span><strong class="low">{{headerDetails?.lowPriority}}</strong> Low <span>Priority</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-filter-head flist" [class.mfix-bar]="openFilter">
+      <div class="flex sm-head">
+        <a href="javascript:void(0)" class="flex-start" (click)="openFilter=false;">
+          <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back to All Tasks
+        </a>
+      </div>
+      <div class="container">
+        <div class="ai-center filter-group-wrap flex">
+          <div class="flex form-group">
+            <div class="ddown-item">
+              <label>Associated Projects:</label>
+              <app-multiselect-dropdown [title]="projectTitle" [displaySubItem]="projectList"
+                searchPlaceholder="Search Project" (search)="$event && getLists('project', $event)"
+                (allClear)="clearSelections('project', 'projectTitle')"
+                (selectionChanged)="onFilterSelected($event, 'project')">
+              </app-multiselect-dropdown>
+            </div>
+            <div class="ddown-item">
+              <label>Assigned to User(s):</label>
+              <app-multiselect-dropdown [title]="userTitle" [displaySubItem]="usersList"
+                searchPlaceholder="Search Users" (search)="$event && getLists('user', $event)"
+                (allClear)="clearSelections('user', 'userTitle')" (selectionChanged)="onFilterSelected($event, 'user')">
+              </app-multiselect-dropdown>
+            </div>
+            <div class="ddown-item">
+              <label>Assigned to Group(s):</label>
+              <app-multiselect-dropdown [title]="groupTitle" [displaySubItem]="workGroupList"
+                searchPlaceholder="Search Groups" (search)="$event && getLists('group', $event)"
+                (allClear)="clearSelections('group', 'groupTitle')"
+                (selectionChanged)="onFilterSelected($event, 'group')">
+              </app-multiselect-dropdown>
+            </div>
+            <div class="ddown-item">
+              <label>Assigned to Tag(s):</label>
+              <app-multiselect-dropdown [isTag]="true" [title]="tagTitle" [displaySubItem]="tagsList"
+                searchPlaceholder="Search Tags" (search)="$event && getLists('tag', $event)"
+                (allClear)="clearSelections('tag', 'tagTitle')" (selectionChanged)="onFilterSelected($event, 'tag')">
+              </app-multiselect-dropdown>
+            </div>
+          </div>
+
+          <div class="filter-right" *ngIf="permisionList?.workflow_workflow_create">
+            <button title="View Archive" *ngIf="defaultParam.type==='active'" type="button" class="btn btn-sm arbtn"
+              (click)="getArchivedList()"><img src="/assets/images/archive icon.png" alt="" width="16" /></button>
+            <button title="View Active" *ngIf="defaultParam.type==='archived'" type="button" class="btn btn-sm arbtn"
+              (click)="getActiveList()"><img src="/assets/images/esc.png" alt="" width="12" /></button>
+
+            <button type="button" class="btn btn-md" [routerLink]="['/main/projects/create/workflow']">Add New
+              Workflow</button>
+          </div>
+        </div>
+      </div>
+      <div class="btn-group plr-10 fx-btm fbtns">
+        <button type="button" class="btn btn-sm btn-bdr" (click)="clearAllFilters()"
+          *ngIf="projectTitle?.length || userTitle?.length || groupTitle?.length || tagTitle?.length">Clear</button>
+        <button type="button" class="btn btn-half" (click)="openFilter=false;">Filter workflows</button></div>
+    </div>
+  </div>
+  <div class="sm-block-row">
+    <div class="container">
+      <h5 class="tab-hide">Workflows</h5>
+      <div class="card-title flex ai-center head mb-10 plr-10">
+        <div class="left-cap-area m-0">
+          <span class="bklink">
+            <a href="javascript:void(0)" (click)="getActiveList()" *ngIf="defaultParam.type==='archived'">
+              <img src="assets/images/Chevron-Icon.svg" alt="" class="r90 m-0">&nbsp;<b>Back</b>
+            </a>
+          </span>  
+        </div>
+        <div class="right-cap-area tab-visible m-0">
+          <button type="button" class="btn btn-sm arbtn" (click)="getArchivedList()"><img
+            src="/assets/images/archive icon.png" alt="" width="16" /></button>
+        </div>
+      </div>
+      <div class="ctable-row">
+        <div class="wf-tab" *ngFor="let workflow of arrWorkflow">
+          <div class="flex-ctable-item ctable-danger" [class.ctable-success]="workflow.workflow?.importance === 1"
+            [class.ctable-warn]="workflow.workflow?.importance === 2"
+            [class.ctable-danger]="workflow.workflow?.importance === 3">
+            <div class="ctable-full" (click)="workflowDetail(workflow.workflow?.id)"> {{workflow.workflow?.name}} </div>
+            <div class="ctable-date-name">
+              <p><strong>Due:</strong> {{workflow.workflow?.due_date | utcTime }}</p>
+              <p class="wf-owner-dsk">Owner: <a href="javascript:void(0)"
+                  title="{{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}}">
+                  {{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}} </a></p>
+              <div class="wf-owner-mb">
+                <div class="profile-wrap">
+                  <figure>
+                    <img [src]="workflow?.workflow?.owner?.user_avatar_thumb" alt=""
+                      *ngIf="workflow?.workflow?.owner?.user_avatar_thumb"
+                      [title]="workflow?.workflow?.owner?.first_name + ' '+workflow?.workflow?.owner?.last_name" />
+                    <span *ngIf="!workflow?.workflow?.owner?.user_avatar_thumb" class="no-img">
+                      {{sharedService.displayInitial(workflow?.workflow?.owner?.first_name, workflow?.workflow?.owner?.last_name)}}
+                    </span>
+                  </figure>
+                  <a href="javascript:void(0)"
+                    title="{{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}}">
+                    {{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}} </a>
+                </div>
+              </div>
+            </div>
+            <div class="ctable-progress">
+              <div class="ctable-progress-wrap">
+                <span
+                  [style.width.%]="workflow.width"></span>{{workflow.width == 100 ? 'All Tasks Complete': workflow.workflow?.completed_task + ' Tasks' }}
+                <p *ngIf="workflow.width != 100">{{workflow.workflow?.total_task}} Total Tasks</p>
+              </div>
+            </div>
+            <div class="ctable-btn">
+              <a href="javascript:void(0);" [class.active]="workflow.expand">
+                <img (click)="getWorkflowTasks(workflow.workflow?.id);" class="open"
+                  src="/assets/images/plus-icon-black.svg" alt="">
+                <img (click)="closeWorkflowTab(workflow)" class="close" src="/assets/images/minus-square.svg" alt="">
+              </a>
+            </div>
+          </div>
+
+          <!--Task list of worklow starts here-->
+          <div class="ttable-row" *ngIf="workflow.expand">
+            <div class="titem-row-head titem-bg">
+              <span class="titem ttable-rank" (click)="orderByChange('rank')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'rank' }">Rank
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-full" (click)="orderByChange('task__name')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__name' }">Task Name
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-date" (click)="orderByChange('task__due_date')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__due_date' }">Due Date
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                    (click)="handleFilterShow('showStatusFilter', 'showUserAssignedFilter')" alt="sort"></a>
+                <app-select-task-status *ngIf="showStatusFilter" [isFilter]="true" [checkedStatus]="arrCheckedStatus"
+                  (selectedStatus)="selectTaskStatus($event)">
+                </app-select-task-status>
+              </span>
+              <span class="titem ttable-assign">Assigned To <a href="javascript:void(0)"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                    (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')" alt="sort"></a>
+                <app-multiselect-dropdown *ngIf="showUserAssignedFilter" [title]="taskUserTitle" [showTitle]="false"
+                  [displaySubItem]="taskUsersList" searchPlaceholder="Search Users"
+                  (search)="$event && getLists('taskUsers', $event)" (allClear)="clearAssignToSelections()"
+                  (selectionChanged)="onAssignedUserSelected($event, 'user')">
+                </app-multiselect-dropdown>
+              </span>
+            </div>
+            <div class="flex-ttable-item" *ngFor="let task of arrTasks"
+              [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+              <div class="ttable-rank">
+                <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank" [isDisabled]="true"
+                  resourceType="my-task">
+                </app-rank-number>
+              </div>
+              <div class="ttable-full"> <a [routerLink]="['/main/projects/tasks/' + task.task.id]"> {{task.task?.name}}
+                </a> </div>
+              <div class="ttable-date"> {{task.task?.due_date | utcTime }}</div>
+              <div class="ttable-status">{{sharedService.taskStatus(task?.task?.status)}}</div>
+              <div class="ttable-assign">
+                <div class="profile-wrap" *ngIf="task?.task?.assigned_to">
+                  <figure *ngIf="task?.task?.assigned_to?.user_avatar_thumb">
+                    <img [src]="task?.task?.assigned_to?.user_avatar_thumb" alt="{{task.task.assigned_to?.first_name}}"
+                      [title]="task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name">
+                  </figure>
+                  <span *ngIf="!task?.task?.assigned_to?.user_avatar_thumb" class="no-img"
+                    [title]="task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name">{{sharedService.displayInitial(task.task.assigned_to?.first_name, task.task.assigned_to?.last_name)}}</span>
+                  <p>{{task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="not-found" *ngIf="!arrTasks.length">
+              <p> No record found </p>
+            </div>
+            <div class="flex-ttable-item" *ngIf="taskTotalCount > 5">
+              <a href="javascript:void(0)" class="secondary-link" (click)="workflowDetail(workflow?.workflow?.id)"> View
+                all tasks </a>
+            </div>
+          </div>
+          <!--Task list of worklow starts here-->
+        </div>
+        <div class="block-row pg-not-found" *ngIf="arrWorkflow.length === 0">
+          <div class="sm-container">
+            <div class="pg-type pos-relative">
+              <img src="assets/images/Workflows.png" alt="">
+            </div>
+            <div class="not-found-msg flex mt-30">
+              <span><strong> You are not assigned to any workflows.</strong></span>
+              <span class="mt-20 text-center"> Once you have been assigned to a workflow, <br /> they will show
+                here.</span>
+            </div>
+          </div>
+        </div>
+
+        <pagination [viewBy]="defaultParam.limit" [totalRecords]="totalRecords" type="Workflow"
+          (changePerPage)="setPerPage($event)" (getPageCount)="loadMoreData($event)">
+        </pagination>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="block-row pg-not-found"
+  *ngIf="!permisionList?.workflow_workflow_view && !permisionList?.workflow_workflow_view_all">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Workflows.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition intro-slide-modal" [ngClass]="{'in': showModal?.isIntro}">
+  <app-intro-slides [module]="module" [slides]="slides" (onClose)="onClose($event)">
+  </app-intro-slides>
+</div>

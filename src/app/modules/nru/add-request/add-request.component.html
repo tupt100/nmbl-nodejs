@@ -1,0 +1,96 @@
+<div class="nru-main-wrap">
+  <app-sidebar></app-sidebar>
+  <div class="sm-block-row">
+    <div class="container ml-0">
+      <app-notifier class="mb-20"></app-notifier>
+      <div class="auth-block">
+        <div class="btn-row">
+          <a class="btn-back" href="javascript:void(0);" (click)="backToPendingRequest()">Back to Pending Requests</a>
+        </div>
+        <div class="card">
+          <div class="card-bdr card-title">
+            <div class="flex">
+              <h5 class="mb-0">Requests</h5>
+            </div>
+          </div>
+          <!-- for 2nd Steps code here  -->
+          <div class="card-body">
+            <p class="sm-text">This information will be shared with the team to follow-up on. If we need anything, we’ll
+              contact you! </p>
+            <form class="form-group" [formGroup]='stepTwoForm'>
+              <div class="fitem partition-items">
+                <div class="fitem">
+                  <label for="">Subject / Issue<sup>*</sup></label>
+                  <input type="text" placeholder="Issue name" name="subject" formControlName="subject" required />
+                </div>
+                <div class="fitem">
+                  <label>Importance</label>
+                  <div class="task-header-wrap flex pt-0">
+                    <div class="prty-wrap">
+                      <div class="high">
+                        <app-importance [checkedImportance]="importance"
+                          (selectedImportance)="updateImportance($event)">
+                        </app-importance>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="fitem">
+                <label for="">Details / Instructions <sup>*</sup></label>
+                <textarea placeholder="Add the details of your issue" name="detail" formControlName="detail"
+                  required></textarea>
+              </div>
+              <div class="fitem half-fitem mb-0">
+                <div class="fitem half-fitem pr-10">
+                  <div class="fitem">
+                    <label for="">Requested Due Date</label>
+                    <input readonly type="text" placeholder="Enter or Select from Calendar" formControlName="due_date"
+                      class="date-input create-date">
+                  </div>
+                  <div class="fitem">
+                    <label for="">For the Attention of</label>
+                    <input type="text" placeholder="Name a team member if known" name="teammember"
+                      formControlName="teammember" />
+                  </div>
+                  <div class="fitem">
+                    <label for="">Attachments</label>
+                    <div class="file-wrap main-full-head-task" DragDrop (onFileDropped)="uploadFile($event)">
+                      <input type="file" id="files" (change)="uploadFile($event)" />
+                      <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center">
+                        <p class="sm-hidden">Drag & drop your files here<strong> or <b>Browse</b> </strong></p>
+                        <p class="sm-visible"><b>Upload Documents</b></p>
+                      </label>
+                    </div>
+                    <div class="mscroll-height mt-10" *ngIf="fileList && fileList.length">
+                      <div class="ai-center flex view-doc-list mt-20" *ngFor="let file of fileList; let idx = index;">
+                        <div class="doc-info">
+                          <figure>
+                            <img [src]="file?.name | image" alt="file type">
+                          </figure>
+                          <span class="sm-text name-box" [title]="file?.name"> {{ file?.name }} </span>
+                        </div>
+                        <a href="javascript:void(0)" class="m-0" (click)="removeFile(idx)"><img height="18"
+                            src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg"></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="fitem">
+                <label for="">Captcha</label>
+                <div class="g-recaptcha">
+                  <re-captcha (resolved)="onCaptchaComplete($event)" [siteKey]="catpachaKey">
+                  </re-captcha>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="btn-group text-right">
+          <button class="btn btn-slg" (click)="submitRequest()">Send Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

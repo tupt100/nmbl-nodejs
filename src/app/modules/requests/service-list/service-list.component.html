@@ -1,0 +1,126 @@
+<app-notifier></app-notifier>
+<div class="sm-block-row sm-hidden" *ngIf="permisionList.request_request_view">
+  <div class="container">
+    <div class="title-row flex ai-center">
+      <div class="left-cap-area">
+        <h5>Service Desk Requests</h5>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ttable-row sdesk-main-pg">
+        <div class="titem-bg titem-row-head">
+          <span class="titem tcheck">&nbsp;</span>
+          <span class="titem ttable-reqno" [ngClass]="{ 'active': defaultParams.ordering === 'id' }"
+            (click)="orderByChange('id')">REQ NO
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-full" [ngClass]="{ 'active': defaultParams.ordering === 'subject' }"
+            (click)="orderByChange('subject')">SUBJECT NAME
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-req-date" [ngClass]="{ 'active': defaultParams.ordering === 'requested_due_date' }"
+            (click)="orderByChange('requested_due_date')">REQUESTED DUE DATE <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a></span>
+          <span class="titem ttable-mail" [ngClass]="{ 'active': defaultParams.ordering === 'user_email' }"
+            (click)="orderByChange('user_email')">FROM<a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a></span>
+          <span class="titem ttable-sassign" [ngClass]="{ 'active': defaultParams.ordering === 'assigned_to' }"
+            (click)="orderByChange('assigned_to')">ASSIGNED
+            TO
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a></span>
+          <span class="titem ttable-aopt">&nbsp;</span>
+        </div>
+        <div class="flex-ttable-item" *ngFor="let request of arrRequests"
+          [class.ttable-success]="request.request_priority === 1" [class.ttable-warn]="request.request_priority === 2"
+          [class.ttable-danger]="request.request_priority === 3">
+          <div class="tcheck">
+            <div class="fitem-check">
+              <input type="checkbox" class="fitem-ck-input" id="request-{{request.id}}"
+                (change)="selectRequestToRemove(request.id)" />
+              <label class="fitem-ck-txt" for="request-{{request.id}}">&nbsp;</label>
+            </div>
+          </div>
+          <div class="ttable-reqno"> {{request.id}} </div>
+          <div class="ttable-full cpointer" (click)="viewRequest(request.id)"> {{request.subject}} </div>
+          <div class="ttable-req-date"> {{request.requested_due_date | utcTime }} </div>
+          <div class="ttable-mail">
+            <span title="{{request.user_information.user_name}}">{{request.user_information.user_name}}</span> <br />
+            <span title="{{request.user_information.user_email}}">{{request.user_information.user_email}}</span>
+          </div>
+          <div class="ttable-sassign" title="{{request?.assigned_to}} "> {{request?.assigned_to}} </div>
+          <div class="ttable-aopt actions opacity-hidden">
+            <span class="flex-start">
+              <a (click)="convertRequest(request.id);" class="white-btn">Convert</a> &nbsp;
+              <a href="javascript:void(0)" title="Remove" (click)="requestId=request.id;showModal.isDelete = true;"><img
+                  src="assets/images/ProxyAssets/UserManagementAssets/trash-square.svg" /></a></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="right-cap-area flex-width">
+      <button type="button" class="btn btn-brand btn-gray btn-lg" *ngIf="!isValidRequest()">Convert to Task</button>
+      <button type="button" class="btn btn-brand btn-lg" *ngIf="isValidRequest()"
+        (click)="convertMultipleRequest();">Convert to Task</button>
+      <button type="button" class="btn btn-bdr btn-lg" *ngIf="isValidRequest()"
+        (click)="showModal.isDeleteMultiple=true;">Delete</button>
+    </div>
+    <pagination [viewBy]="defaultParams.limit" [totalRecords]="totalCount" type="Requests"
+      (changePerPage)="setPerPage($event)" (getPageCount)="loadMoreRequests($event)">
+    </pagination>
+  </div>
+</div>
+
+
+<div class="block-row pg-not-found sm-hidden" *ngIf="!permisionList.request_request_view">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Service Desk.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isDelete}">
+  <app-confirm-modal message1="Delete Request"
+    message2="Deleting this request will remove it from the list and your client's ticket will not be worked on. You can't undo this action. Are you sure?"
+    cancelButtonText="Cancel" okButtonText="Delete" (onClose)="removeRequestConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isDeleteMultiple}">
+  <app-confirm-modal message1="Delete Multiple Requests"
+    message2="Deleting these requests will remove them all and your client's tickets will not be worked on. You can't undo this action. Are you sure?"
+    cancelButtonText="Cancel" okButtonText="Delete" (onClose)="removeMultiRequestConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<!--not accessible in mobile-->
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Service Desk.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

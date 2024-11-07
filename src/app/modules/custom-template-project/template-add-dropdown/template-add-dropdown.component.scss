@@ -1,0 +1,45 @@
+.task-add-dropdown {
+  position: relative;
+  display: inline;
+  margin-left: 1.5px;
+  text-align: left;
+  .task-add-toggle {
+    height: 40px;
+    padding: 7px;
+  }
+  .fix-filter {
+    right: 0;
+    left: auto;
+  }
+  .task-add-dropdown-actions {
+    padding: 15px 0 5px 15px;
+    border-bottom: 1px solid #dadef4;
+    .task-add-dropdown-action {
+      display: block;
+      margin-bottom: 10px;
+      img {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+    }
+  }
+  .task-template-list {
+    padding: 15px 0 5px 15px;
+    label {
+      color: #797979;
+      font-family: "stolzl light";
+      margin-bottom: 12px;
+    }
+    .scroll-task-template-list {
+      max-width: 100%;
+      max-height: 150px;
+      p {
+        margin-bottom: 12px;
+        a {
+          color: black;
+        }
+      }
+    }
+  }
+}

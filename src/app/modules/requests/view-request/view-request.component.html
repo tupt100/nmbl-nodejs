@@ -1,0 +1,110 @@
+<div class="main-full-head">
+  <div class="container">
+    <div class="task-header-wrap flex">
+      <div class="prty-wrap">
+        <app-importance [isDisabled]="true" [checkedImportance]="objRequest?.request_priority">
+        </app-importance>
+      </div>
+      <div class="title-row">
+        <h2 class="test-class"> {{objRequest.subject}} </h2>
+        <div class="title-btm-wrap flex ai-center">
+          <div class="due-startdate-wrap">
+            <div class="due-date pos-relative">
+              <strong>Client Requested Date:</strong>
+              {{objRequest.requested_due_date | utcTime }}
+
+            </div>
+            <div class="start-date pos-relative">
+              <strong>Req No:</strong> {{objRequest.id}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="main-filter-head">
+  <div class="container">
+    <div class="ai-center filter-group-wrap flex">
+      <div class="form-group flex">
+        <div class="ddown-item">
+          <label>Name:</label>
+          <span> {{objRequest?.user_information?.user_name}} </span>
+        </div>
+
+        <div class="ddown-item">
+          <label>Email:</label>
+          <span> {{objRequest?.user_information?.user_email}} </span>
+        </div>
+
+        <div class="ddown-item">
+          <label>Phone Number:</label>
+          <span> {{objRequest?.user_information?.user_phone_number}} </span>
+        </div>
+
+        <div class="ddown-item" *ngIf="objRequest?.assigned_to">
+          <label>Assign to:</label>
+          <span> {{objRequest?.assigned_to}} </span>
+        </div>
+
+        <div class="ddown-item">
+          <button type="button" class="btn btn-md" (click)="convertRequest()">Convert to Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sm-block-row detail-pg">
+  <div class="container">
+    <div class="btn-row">
+      <a href="javascript:void(0)" class="btn-back" (click)="backToRequests()">
+        <b> Back to Service Desk Requests </b>
+      </a>
+    </div>
+    <div class="aside-area">
+      <main>
+        <div class="card">
+          <div class="nmb-chat-main-row">
+            <div class="nmb-chat-head">
+              <h5>Notes</h5>
+            </div>
+            <div class="nmb-chat-content-wrap">
+              <div class="nmb-chat-wbox">
+                <div class="nmb-revert-scroll-wrap mb-30">
+                  <div class="nmb-revert-scroll">
+                    <div class="nmb-ct-list" *ngIf="objRequest?.description">
+                      <div class="nmb-to-msg nmb-dark-msg">
+                        <div class="flex">
+                          <figure class="nmb-thumb-dp">
+                            <span class="no-img">
+                              {{ sharedService.displayInitialFull(objRequest?.user_information?.user_name) }}
+                            </span>
+                          </figure>
+                          <div class="chat-caption-media">
+                            <span class="nmb-ctmsg-time">{{objRequest?.user_information?.user_name}} </span>
+                            <div class="nmb-msg-group">
+                              <p>{{objRequest?.description }} </p>
+                              <span class="nmb-ct-date"><small>
+                                  {{ momentObj(objRequest.requested_due_date).format('MM/DD/YYYY') }}</small>{{ momentObj(objRequest.requested_due_date).format('hh:mm A') }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="not-found" *ngIf="!objRequest?.description">
+                      {{ loading ? 'Loading...' : 'No description available' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+      <aside>
+        <app-documents modalType="request" [modalId]="requestId" [attachments]="objRequest?.attachments">
+        </app-documents>
+      </aside>
+    </div>
+  </div>
+</div>

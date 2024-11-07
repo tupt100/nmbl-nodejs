@@ -1,0 +1,91 @@
+<app-notifier></app-notifier>
+<div class="block-row sm-hidden">
+  <div class="container">
+    <div class="title-row flex">
+      <div class="left-cap-area">
+        <h3 class="m-0">
+          Group Management <br>
+          <span class="subtitle">Groups are just that - groups of people that have a commonality. Whether that's be
+            department, location or job role, these groups are allowed to be allocated to a specific Project, Workflow
+            or Task and become collectively responsible for that action..</span>
+        </h3>
+      </div>
+      <div class="flex-width right-cap-area ">
+        <a class="btn btn-brand btn-lg" (click)="addNewGroup()">Add New Group</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="">
+        <table class="table">
+          <thead>
+            <tr>
+              <th width="30%"><span>Group Name <img (click)="sortGroupBy('name')"
+                    src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt=""></span></th>
+              <th width="15%"><span>Members</span></th>
+              <th width="35%">&nbsp;</th>
+              <th width="20%">&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let userGroup of arrUserGroups">
+              <td> {{userGroup.name}} </td>
+              <td class="opacity6"> {{userGroup.users_count}} Members</td>
+              <td class="opacity6">
+                <span *ngFor="let member of userGroup.group_members"> {{member.first_name}} {{member.last_name}},
+                </span>
+              </td>
+              <td class="actions opacity-hidden">
+                <span class="flex-center">
+                  <a class="edit" title="Edit" (click)="editGroup(userGroup.id);">
+                    <img src="assets/images/ProxyAssets/UserManagementAssets/edit-square.svg" width="30" height="30" />
+                  </a>
+                  &nbsp;
+                  <a class="remove" title="Remove" (click)="removeGroupNavigate(userGroup)">
+                    <img src="assets/images/ProxyAssets/UserManagementAssets/trash-square.svg" width="30" height="30" />
+                  </a>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="block-row pg-not-found" *ngIf="arrUserGroups.length === 0">
+        <div class="sm-container">
+          <div class="pg-type pos-relative">
+            <img src="assets/images/Groups.png" alt="">
+          </div>
+          <div class="not-found-msg flex mt-30">
+            <span><strong> There are no groups to view.</strong></span>
+            <span class="mt-20 text-center"> To create a group, click the 'Add New Group' button below to begin.</span>
+            <a class="btn btn-brand mt-20" (click)="addNewGroup()">Add New Group</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <pagination [viewBy]="defaultParams.limit" [totalRecords]="totalRecords" type="Groups"
+      (changePerPage)="setPerPage($event)" (getPageCount)="loadMoreGroups($event)">
+    </pagination>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveGroup}">
+  <app-confirm-modal message1="Remove Group"
+    message2="By removing this group all team members associated with it will lose access to any task, workflows and projects."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removeGroupConfirm($event)">
+  </app-confirm-modal>
+</div>
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

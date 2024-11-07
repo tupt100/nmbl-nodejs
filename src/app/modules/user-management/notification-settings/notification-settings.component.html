@@ -1,0 +1,212 @@
+<div class="block-row sm-hidden">
+  <div class="sm-block-row">
+    <div class="sm-container">
+      <div class="card-row flex">
+        <div class="card">
+          <div class="card-bdr card-title flex ai-center">
+            <h5> Notifications for {{userName}}</h5>
+          </div>
+          <div class="card-body">
+            <div class="tabs">
+              <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'task'"
+                (click)="modelType = 'task'">Tasks</a>
+              <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'project'"
+                (click)="modelType = 'project'">Projects</a>
+              <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'workflow'"
+                (click)="modelType = 'workflow'">Workflows</a>
+              <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'account'"
+                (click)="modelType = 'account'">Account</a>
+            </div>
+            <div class="inline-row-col flex">
+              <div class="inline-col-6">&nbsp;</div>
+              <div class="inline-col-3">
+                <span class="opacity6 xs-text">In-App <br /> Notifications</span>
+              </div>
+              <div class="inline-col-3">
+                <span class="opacity6 xs-text">Email <br /> Notifications</span>
+              </div>
+            </div>
+            <!--Task-->
+            <div *ngIf="modelType==='task'" class="tabs-body">
+              <div class="inline-row-col flex">
+                <div class="inline-col-6">&nbsp;</div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="task-app" class="fitem-ck-input"
+                      (change)="selectAllTaskNotification($event, 'in_app_notification')" />
+                    <label for="task-app" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="task-email" class="fitem-ck-input"
+                      (change)="selectAllTaskNotification($event, 'email_notification')" />
+                    <label for="task-email" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline-row-col flex" *ngFor="let notification of arrTaskNotifications">
+                <div class="inline-col-6"><span> {{notification.name}} </span></div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="task-app-{{notification.id}}"
+                      [checked]="notification.in_app_notification" (change)="changeSettings($event, notification, 'in_app_notification')"
+                      class="fitem-ck-input" />
+                    <label for="task-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="task-email-{{notification.id}}"
+                      [checked]="notification.email_notification" (change)="changeSettings($event, notification, 'email_notification')"
+                      class="fitem-ck-input" />
+                    <label for="task-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--Project-->
+            <div *ngIf="modelType==='project'" class="tabs-body">
+              <div class="inline-row-col flex">
+                <div class="inline-col-6">&nbsp;</div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="projects-app" class="fitem-ck-input"
+                      (change)="selectAllProjectNotification($event, 'in_app_notification')" />
+                    <label for="projects-app" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="projects-email" class="fitem-ck-input"
+                      (change)="selectAllProjectNotification($event, 'email_notification')" />
+                    <label for="projects-email" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline-row-col flex" *ngFor="let notification of arrProjectNotifications">
+                <div class="inline-col-6"><span> {{notification.name}} </span></div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="project-app-{{notification.id}}"
+                      [checked]="notification.in_app_notification" (change)="changeSettings($event, notification, 'in_app_notification')"
+                      class="fitem-ck-input" />
+                    <label for="project-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="project-email-{{notification.id}}"
+                      [checked]="notification.email_notification" (change)="changeSettings($event, notification, 'email_notification')"
+                      class="fitem-ck-input" />
+                    <label for="project-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--Workflow-->
+            <div *ngIf="modelType==='workflow'" class="tabs-body">
+              <div class="inline-row-col flex">
+                <div class="inline-col-6">&nbsp;</div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="workflow-app" class="fitem-ck-input"
+                      (change)="selectAllWorkflowNotification($event, 'in_app_notification')" />
+                    <label for="workflow-app" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="workflow-email" class="fitem-ck-input"
+                      (change)="selectAllWorkflowNotification($event, 'email_notification')" />
+                    <label for="workflow-email" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline-row-col flex" *ngFor="let notification of arrWorkflowNotifications">
+                <div class="inline-col-6"><span> {{notification.name}} </span></div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="workflow-app-{{notification.id}}"
+                      [checked]="notification.in_app_notification" (change)="changeSettings($event, notification, 'in_app_notification')"
+                      class="fitem-ck-input" />
+                    <label for="workflow-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="workflow-email-{{notification.id}}"
+                      [checked]="notification.email_notification" (change)="changeSettings($event, notification, 'email_notification')"
+                      class="fitem-ck-input" />
+                    <label for="workflow-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <!--Account-->
+            <div *ngIf="modelType==='account'" class="tabs-body">
+              <div class="inline-row-col flex">
+                <div class="inline-col-6">&nbsp;</div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="account-app" class="fitem-ck-input"
+                      (change)="selectAllAccountNotification($event, 'in_app_notification')" />
+                    <label for="account-app" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="account-email" class="fitem-ck-input"
+                      (change)="selectAllAccountNotification($event, 'email_notification')" />
+                    <label for="account-email" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+              <div class="inline-row-col flex" *ngFor="let notification of arrAccountNotifications">
+                <div class="inline-col-6"><span> {{notification.name}} </span></div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="account-app-{{notification.id}}"
+                      [checked]="notification.in_app_notification" (change)="changeSettings($event, notification, 'in_app_notification')"
+                      class="fitem-ck-input" />
+                    <label for="account-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+                <div class="inline-col-3">
+                  <div class="fitem-check">
+                    <input type="checkbox" id="account-email-{{notification.id}}"
+                      [checked]="notification.email_notification" (change)="changeSettings($event, notification, 'email_notification')"
+                      class="fitem-ck-input" />
+                    <label for="account-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group text-right mt-30">
+              <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+              <button type="button" class="btn btn-lg" (click)="saveUserNotifications();">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

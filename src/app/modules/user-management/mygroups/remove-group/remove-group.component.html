@@ -1,0 +1,89 @@
+<div class="block-row sm-hidden">
+  <div class="sm-block-row">
+    <div class="container">
+      <div class="card-row flex">
+        <div class="card">
+          <div class="card-bdr card-title flex">
+            <h5 class="m-0">Removing Chicago Group</h5>
+          </div>
+          <div class="card-body">
+            <span class="subtitle">
+              This group is the only assignee for the following item(s), please re-assign to a new group or team member
+              to proceed with its removal. Remember that by removing this group, all team members associated with it
+              will lose access to any task, workflows, and projects.
+            </span>
+            <div class="card-row mt-30" *ngIf="arrTask.length > 0">
+              <h5 class="md-text">Tasks</h5>
+              <div class="form-group" *ngFor="let task of arrTask">
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <span> {{task?.name}} </span>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <app-ctrl-user [isMultiple]="false" (onMemberSelect)="onTaskMemberSelect($event, task)">
+                    </app-ctrl-user>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <app-ctrl-group (onGroupSelect)="onTaskGroupSelect($event, task)"></app-ctrl-group>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-row mt-30" *ngIf="arrWorkflow.length > 0">
+              <h5 class="md-text">Workflows</h5>
+              <div class="form-group" *ngFor="let workflow of arrWorkflow">
+                <div class="fitem half-fitem flex ai-center">
+                  <div class="fitem half-fitem">
+                    <span> {{workflow?.name}} </span>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <app-ctrl-user [isMultiple]="true" (onMemberSelect)="onWorkflowMemberSelect($event, workflow)">
+                    </app-ctrl-user>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <app-ctrl-group (onGroupSelect)="onWorkflowGroupSelect($event, workflow)"></app-ctrl-group>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-row mt-30" *ngIf="arrProject.length > 0">
+              <h5 class="md-text">Projects</h5>
+              <div class="form-group" *ngFor="let project of arrProject">
+                <div class="fitem half-fitem flex ai-center">
+                  <div class="fitem half-fitem">
+                    <span> {{project?.name}} </span>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <app-ctrl-user [isMultiple]="true" (onMemberSelect)="onProjectMemberSelect($event, project)">
+                    </app-ctrl-user>
+                  </div>
+                  <div class="fitem half-fitem">
+                    <app-ctrl-group (onGroupSelect)="onProjectGroupSelect($event, project)"></app-ctrl-group>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group text-right mt-30">
+              <button type="button" class="btn btn-lg btn-bdr" (click)="cancel()">Cancel</button>
+              <button type="button" class="btn btn-lg" (click)="removeReassign()">Remove & Reassign </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

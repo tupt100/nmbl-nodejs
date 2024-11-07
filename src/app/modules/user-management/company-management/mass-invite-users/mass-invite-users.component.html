@@ -1,0 +1,50 @@
+<app-notifier></app-notifier>
+<div class="block-row member_form">
+    <div class="sm-block-row">
+        <div class="container">
+            <div class="card-row flex">
+                <div class="card">
+                    <div class="card-bdr card-title">
+                       <h5>Mass Invite Members</h5> 
+                    </div>
+                    <div class="card-body">
+                        <span class="subtitle">Whether you're extracting a comma delineated list from G-Suite or your HR program, you can paste the whole lot here to invite your company for a quick onboarding. We'll need their names and their permission set, but we can get you set up pretty quickly.</span>
+                        <div class="form-group">
+                            <div class="fitem" *ngIf="!isFirstStepComplete">
+                                <textarea placeholder="Add Your email address here" rows="9" [(ngModel)]="emails"></textarea>
+                            </div>
+                        </div>
+                        <div class="btn-group text-right" *ngIf="!isFirstStepComplete">
+                            <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-gray btn-lg" *ngIf="!isValidFields();">Next</button>
+                            <button type="button" class="btn btn-lg" *ngIf="isValidFields();" (click)="onSubmitNext()">Next</button>
+                        </div>
+                    
+                        <div class="form-group" *ngIf="isFirstStepComplete">
+                            <div class="fitem half-fitem" *ngFor="let invite of arrBulkInvitation; let i = index;">
+                                    <div class="icon-fitem"><a (click)="removeInvitedUser(i)"> <img src="assets/images/ProxyAssets/UserManagementAssets/MinusCircle-Icon-30.svg" /> </a></div>
+                                <div class="fitem md-half-fitem">
+                                    <input type="text" [(ngModel)]="invite.email" />
+                                </div>
+                                <div class="fitem sub-half-fitem">
+                                    <input type="text" placeholder="First Name" [(ngModel)]="invite.first_name" />
+                                </div>
+                                <div class="fitem sub-half-fitem">
+                                    <input type="text" placeholder="Last Name" [(ngModel)]="invite.last_name" />
+                                </div>                            
+                                <div class="fitem  half-fitem">
+                                    <select-group (invitedBy)="onRoleSelection($event, i)"></select-group>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group text-right" *ngIf="isFirstStepComplete">
+                            <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-gray btn-lg" *ngIf="isFormFilled()">Add Member</button>
+                            <button type="button" class="btn btn-lg" *ngIf="!isFormFilled()" (click)="sendBulkInvite()">Add Member</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

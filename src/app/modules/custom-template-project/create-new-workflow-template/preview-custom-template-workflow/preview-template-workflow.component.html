@@ -1,0 +1,160 @@
+<app-notifier></app-notifier>
+<form [formGroup]='form' (ngSubmit)="saveCustomTemplate(form.valid,form.value)">
+  <div class="card">
+    <div class="card-title card-bdr">
+      <h5 *ngIf="!templateId">New Project Template</h5>
+      <h5 *ngIf="templateId">Project Template</h5>
+    </div>
+    <div class="card-body">
+      <p>Review Your Project Template</p>
+      <div class="form-group mb-20">
+        <label>Template Title<sup>*</sup></label>
+        <input type="text" formControlName="title" required>
+      </div>
+      <div class="form-group ">
+        <div class="fitem half-fitem">
+          <div class="fitem half-fitem">
+            <label>Project Name</label>
+            <input type="text" class="" formControlName="name" />
+          </div>
+          <div class="fitem half-fitem">
+            <label>Importance</label>
+            <div class="prty-wrap">
+              <input type="text" formControlName="importance">
+            </div>
+          </div>
+        </div>
+        <div class="fitem half-fitem">
+          <div class="fitem half-fitem">
+            <label class="flex ai-center">Assign Project To</label>
+            <input type="text" class="" formControlName="user" />
+          </div>
+          <div class="fitem half-fitem">
+            <label>Add Your Team</label>
+            <input type="text" class="" formControlName="group" />
+          </div>
+        </div>
+        <div class="fitem half-fitem">
+          <div class="fitem half-fitem">
+            <label>Due Date</label>
+            <input type="text" formControlName="dueDate" />
+          </div>
+          <div class="fitem half-fitem">
+            <label class="flex ai-center">Start Date if known</label>
+            <input type="text" formControlName="startDate" />
+          </div>
+        </div>
+        <div class="fitem ddown-item">
+          <label class="flex ai-center">Description</label>
+          <textarea formControlName="description"></textarea>
+        </div>
+        <div class="fitem">
+          <div style="display: inline-block;width: 25%;" class="fitem inline-check-list" formArrayName="privileges"
+            *ngFor="let item of form.get('privileges')['controls']; let i = index;">
+            <div style="display: inline-block;width: 100%;" class="fitem-check eq-fitem" [formGroupName]="i">
+              <input type="checkbox" id="checkbox1" name="checkboxs" disabled formControlName="checked"
+                class="fitem-ck-input">
+              <label for="checkbox1" class="fitem-ck-txt">{{item.controls['title'].value}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="fitem sub-half-fitem ">
+          <div class="btn-switch-wrap">
+            <input type="checkbox" class="btn-switch" id="switch" formControlName="isPrivate">
+            <label for="switch"> Private</label>
+          </div>
+        </div>
+      </div>
+      <div formArrayName="fields" *ngFor="let item of form.get('fields')['controls']; let i = index;">
+        <div [formGroupName]="i">
+          <div class="form-group" *ngIf="item.get('label')">
+            <div class="fitem">
+              <label class="field-with-description">{{item.controls['label'].value}}<sup
+                  style="margin-left: 5px;color: red;" *ngIf="item.controls['isRequired'].value">*</sup>
+                <a *ngIf="item.controls['description'].value" onclick="this.blur();" class="btn-box tooltip"
+                  href="javascript:void(0);">
+                  <!-- <span class="field-description">i</span> -->
+                  <span class="tt_text">{{item.controls['description'].value}}</span>
+                  <img src="assets/images/info-icon.png" alt="">
+                </a>
+              </label>
+              <input type="text" class="" formControlName="defaultValue" name="field_name" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="margin-bottom: 1rem"
+          *ngFor="let item of tasks; let i = index;">
+          <div>
+            <div *ngIf="item['deleted']!==true">
+              <button type="button" class="accordion-btn" (click)="toggleChild(i)">{{item.workflowName}}</button>
+              <div *ngIf="childViews[i]" class="form-group ">
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Workflow Name</label>
+                    <input type="text" class="" [value]="item.workflowName" disabled />
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label>Importance</label>
+                    <div class="prty-wrap">
+                      <input type="text" [value]="item.importance" disabled />
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Assign Workflow To</label>
+                    <input type="text" class="" [value]="getTaskUserName(item)" disabled />
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label>Add Your Team</label>
+                    <input type="text" class="" [value]="getTaskGroupName(item)" disabled />
+                  </div>
+                </div>
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Due Date</label>
+                    <input type="text" [value]="item.dueDate" disabled />
+                  </div>
+                  <div class="fitem half-fitem">
+                    <label class="flex ai-center">Start Date if known</label>
+                    <input type="text" [value]="item.startDate" disabled />
+                  </div>
+                </div>
+                <div class="fitem ddown-item">
+                  <label class="flex ai-center">Description</label>
+                  <textarea [value]="item.description" disabled></textarea>
+                </div>
+                <div class="fitem">
+                  <div style="display: inline-block;width: 25%;" class="fitem inline-check-list"
+                    *ngFor="let it of item.privileges; let i = index;">
+                    <div style="display: inline-block;width: 100%;" class="fitem-check eq-fitem">
+                      <input type="checkbox" [checked]="it.checked" id="checkbox1" name="checkboxs" disabled
+                        class="fitem-ck-input">
+                      <label for="checkbox1" class="fitem-ck-txt">{{it.title}}</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem sub-half-fitem ">
+                  <div class="btn-switch-wrap">
+                    <input type="checkbox" class="btn-switch" id="switch" [checked]="item.isPrivate" disabled />
+                    <label for="switch"> Private</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="btn-group text-right fx-btm" *ngIf="!inEditModeAndUserDoesNotHaveUpdatePermission">
+    <a class="btn btn-md btn-bdr" (click)="back()" href="javascript:void(0);">Back</a>
+    <button class="btn btn-md" type="submit" [disabled]="!form.get('title').value">
+      Save Custom Template
+    </button>
+  </div>
+</form>

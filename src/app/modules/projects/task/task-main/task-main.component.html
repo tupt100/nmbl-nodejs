@@ -1,0 +1,374 @@
+<app-menu class="m-header"></app-menu>
+<div class="main-page listing_pg"
+  *ngIf="permisionList && (permisionList.task_task_view || permisionList.task_task_view_all)">
+  <div class="">
+    <div class="main-full-head">
+      <div class="container">
+        <div class="m-header">
+          <div class="flex sm-head">
+            <span class="m-0 bg-text flex flex-start ai-center">
+              <img src="assets/images/filter-ico.svg" alt="" class="ml-0 mr-10">
+              <span (click)="openFilter = !openFilter;">
+                Filter Tasks </span> &nbsp;
+              / &nbsp;<span (click)="openMetrics = !openMetrics;"> <span [class.hidden]="openMetrics">Show</span> <span
+                  [class.hidden]="!openMetrics">Hide</span> Metrics </span>
+            </span>
+            <a *ngIf="permisionList?.task_task_create" class="bg-text flex-end"
+              [routerLink]="['/main/projects/create/task']"><strong class="m-0">Add New Task</strong></a>
+          </div>
+          <div class="active_filters tab-visible"
+            *ngIf="workFlowTitle?.length || userTitle?.length || groupTitle?.length || tagTitle?.length">
+            <span class="flex">Active Filters <a href="javascript:void(0)" class="m-0"
+                (click)="clearAllFilters()"><u>Clear All</u></a></span>
+            <div *ngIf="workFlowTitle?.length">Associated Workflows: <span><b>{{ getTitle('workFlowTitle') }}</b></span>
+            </div>
+            <div *ngIf="userTitle?.length">Users: <span><b>{{ getTitle('userTitle') }}</b></span></div>
+            <div *ngIf="groupTitle?.length">Groups: <span><b>{{ getTitle('groupTitle') }}</b></span></div>
+            <div *ngIf="tagTitle?.length">Tags: <span><b>{{ getTitle('tagTitle') }}</b></span></div>
+          </div>
+        </div>
+        <div class="main-full-head-task flex ai-center list-pg" *ngIf="openMetrics">
+          <div class="tcount-row">
+            <span class="tcount m-0">
+              <h3>{{header?.totalTasks}} <br> <span class="sm-text">Tasks</span></h3>
+            </span>
+          </div>
+          <div class="chart-info" *ngIf="chartProperties.length">
+            <app-pie-chart [properties]="chartProperties"></app-pie-chart>
+            <div class="chart-detail">
+              <span><strong>{{header?.completedTasks}}/{{header?.totalTasks}}</strong> tasks
+                <span>complete</span></span>
+              <span><strong>{{completePercent()}}% complete </strong></span>
+              <span class="overdue">{{header?.overdueTasks}} overdue &nbsp;<img height="15" width="6"
+                  src="assets/images/arrow-down-right.svg" alt="" class="m-0" /></span>
+            </div>
+          </div>
+
+          <div class="due-box">
+            <h3><span class="flex ai-end">{{header?.dueTasks}} &nbsp;<img src="assets/images/arrow-down-right.svg"
+                  alt="" class="m-0"></span> <span class="sm-text">Due Today</span></h3>
+          </div>
+
+          <div class="priority-list">
+            <div class="chart-info">
+              <app-pie-chart [properties]="chartProperties1"></app-pie-chart>
+              <div class="chart-detail">
+                <span><strong class="high">{{header?.highPriority}}</strong> High <span>Priority</span></span>
+                <span><strong class="medium">{{header?.mediumPriority}}</strong> Medium <span>Priority</span></span>
+                <span><strong class="low">{{header?.lowPriority}}</strong> Low <span>Priority</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="main-filter-head tsk-list flist" [class.mfix-bar]="openFilter">
+      <div class="flex sm-head">
+        <a href="javascript:void(0)" class="flex-start" (click)="openFilter=false;">
+          <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back to All Tasks
+        </a>
+      </div>
+      <div class="container">
+        <div class="ai-center filter-group-wrap flex">
+          <div class="flex form-group">
+            <div class="ddown-item">
+              <label>Associated Workflow:</label>
+              <app-multiselect-dropdown [title]="workFlowTitle" [displaySubItem]="workFlowList"
+                searchPlaceholder="Search Workflows" (search)="$event && getLists('workflow', $event)"
+                (allClear)="clearSelections('workflow', 'workFlowTitle')"
+                (selectionChanged)="onFilterSelected($event, 'workflow')">
+              </app-multiselect-dropdown>
+            </div>
+            <div class="ddown-item">
+              <label>Assigned to User(s)</label>
+              <app-multiselect-dropdown [isAssignTo]="true" [title]="userTitle" [displaySubItem]="usersList"
+                searchPlaceholder="Search Users" (search)="$event && getLists('user', $event)"
+                (allClear)="clearSelections('user', 'userTitle')" (selectionChanged)="onFilterSelected($event, 'user')">
+              </app-multiselect-dropdown>
+            </div>
+            <div class="ddown-item">
+              <label>Assigned to Group(s)</label>
+              <app-multiselect-dropdown [title]="groupTitle" [displaySubItem]="workGroupList"
+                searchPlaceholder="Search Groups" (search)="$event && getLists('group', $event)"
+                (allClear)="clearSelections('group', 'groupTitle')"
+                (selectionChanged)="onFilterSelected($event, 'group')">
+              </app-multiselect-dropdown>
+            </div>
+            <div class="ddown-item">
+              <label>Assigned to Tag(s)</label>
+              <app-multiselect-dropdown [isTag]="true" [title]="tagTitle" [displaySubItem]="tagsList"
+                searchPlaceholder="Search Tags" (search)="$event && getLists('tag', $event)"
+                (allClear)="clearSelections('tag', 'tagTitle')" (selectionChanged)="onFilterSelected($event, 'tag')">
+              </app-multiselect-dropdown>
+            </div>
+          </div>
+          <div class="filter-right">
+            <button title="View Archive" *ngIf="defaultParam.type!=='archived'" type="button" class="btn btn-sm arbtn"
+              (click)="getArchivedList()"><img src="/assets/images/archive icon.png" alt="" width="15" /></button>
+            <button title="View Active" *ngIf="defaultParam.type==='archived'" type="button" class="btn btn-sm arbtn"
+              (click)="getActiveList()"><img src="/assets/images/esc.png" alt="" width="12" /></button>
+
+            <button type="button" class="btn btn-sm sharebtn" (click)="openCSVConfirm();"><img
+                src="/assets/images/ShareIcon.png" alt="" width="14" /></button>
+            <button type="button" [routerLink]="['/main/projects/create/task']" class="btn btn-sm">Add New Task</button>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="btn-group plr-10 fx-btm fbtns">
+        <button type="button"
+          *ngIf="workFlowTitle?.length || userTitle?.length || groupTitle?.length || tagTitle?.length"
+          class="btn btn-sm btn-bdr" (click)="clearAllFilters()">Clear</button>
+        <button type="button" class="btn btn-half" (click)="openFilter=false;">Filter tasks</button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <div class="container  flex ai-center">
+        <img src="/assets/images/search-icon-dark.svg" *ngIf="!searchText" />
+        <img src="/assets/images/btn-close.png" *ngIf="searchText" (click)="clearSearch()" />
+        <input type="text" class="in-search" placeholder="Search Tasks..." [(ngModel)]="searchText"
+          (ngModelChange)="onSearch($event)" />
+      </div>
+    </div>
+  </div>
+  <div id="taskList" class="sm-block-row task-main-pg">
+    <div class="container">
+      <app-notifier></app-notifier>
+      <div class="text-right mb-10 tab-visible plr-10">
+        <button title="View Archive" *ngIf="defaultParam.type==='active'" type="button" class="btn btn-sm sharebtn"
+          (click)="getArchivedList()"><img src="/assets/images/archive icon.png" alt="" width="15" /></button>
+        <button title="View Active" *ngIf="defaultParam.type==='archived'" type="button" class="btn btn-sm arbtn"
+          (click)="getActiveList()"><img src="/assets/images/esc.png" alt="" width="12" /></button>
+        <button type="button" class="btn btn-sm sharebtn" (click)="openCSVConfirm();"><img
+            src="/assets/images/ShareIcon.png" alt="" width="14" /></button>
+      </div>
+      <span class="bklink">
+        <a href="javascript:void(0)" (click)="getActiveList()" *ngIf="defaultParam.type!=='active'">
+          <img _ngcontent-hkg-c133="" src="assets/images/Chevron-Icon.svg" alt="" class="r90 m-0">&nbsp;<b>Back</b>
+        </a>
+      </span>
+      <div class="ttable-row" cdk-scrollable cdkDropList (cdkDropListDropped)="drop($event)">
+
+        <div class="titem-row-head titem-bg ph-row">
+          <span class="rank-tab" style="visibility: hidden;pointer-events: none;"
+            [class.titem]="defaultParam.type==='active'" [class.ttable-rank]="defaultParam.type==='active'"
+            (click)="orderByChange('rank')" [ngClass]="{ 'active': defaultParam.ordering === 'rank' }">Rank
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-full" (click)="orderByChange('task__name')"
+            [ngClass]="{ 'active': defaultParam.ordering === 'task__name' }">Task Name
+            <a class="" href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-date" (click)="orderByChange('task__due_date')"
+            [ngClass]="{ 'active': defaultParam.ordering === 'task__due_date' }">Due Date
+            <a href="javascript:void(0)">
+              <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+              <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+            </a>
+          </span>
+          <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                (click)="handleFilterShow('showStatusFilter', 'showUserAssignedFilter')" alt="sort"></a>
+            <app-select-task-status class="rbtn" *ngIf="showStatusFilter" [isFilter]="true"
+              [checkedStatus]="arrCheckedStatus" (selectedStatus)="selectTaskStatus($event)"></app-select-task-status>
+          </span>
+          <span class="titem ttable-assign pos-relative">Assigned To <a href="javascript:void(0)"><img
+                src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg" alt="sort"
+                (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')"></a>
+            <app-multiselect-dropdown *ngIf="showUserAssignedFilter" class="rbtn" [showTitle]="false"
+              [isAssignTo]="true" [title]="userTitle" [displaySubItem]="usersList" searchPlaceholder="Search Users"
+              (search)="$event && getLists('user', $event)" (allClear)="clearSelections('user', 'userTitle')"
+              (selectionChanged)="onFilterSelected($event, 'user')">
+            </app-multiselect-dropdown>
+          </span>
+        </div>
+        <div *ngIf="!isMobile">
+          <div *ngFor="let task of tasks" class="flex-ttable-item prow"
+            [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')"
+            cdkDrag
+            [cdkDragDisabled]="!permisionList?.task_set_rank_drag_drop || task?.task?.status == 3 || task?.task?.status == 4"
+            [cdkDragStartDelay]="isMobile ? 200 : 0">
+            <div class="ttable-rank" *ngIf="task?.task?.status != 3 && task?.task?.status != 4">
+
+              <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank"
+                [resourceType]="resourceType" (rankUpdated)="rankUpdated($event);">
+              </app-rank-number>
+              <div class="star-task tooltip" *ngIf="task?.task?.status != 3 && task?.task?.status != 4">
+                <span *ngIf="task.is_favorite" class="tt_text">Unstar</span>
+                <figure *ngIf="task.is_favorite"
+                  (click)="makeTaskFavourite(task.total_favorite_task,task.id,false, task.task.name)"><img
+                    src="assets/images/Star.png" alt="" /></figure>
+
+                <span *ngIf="!task.is_favorite" class="tt_text">Star</span>
+                <figure *ngIf="!task.is_favorite"
+                  (click)="makeTaskFavourite(task.total_favorite_task, task.id, true, task.task.name)">
+                  <img src="assets/images/Un-Star.png" alt="" />
+                </figure>
+              </div>
+            </div>
+            <div class="ttable-full" (click)="isMobile && openLink(task.task.id)">
+              <a [class.locked]="task?.task?.is_private" [routerLink]="['/main/projects/tasks/', task.task.id]">
+                <img src="assets/images/Private-Lock.png" alt="" width="13" height="13"
+                  *ngIf="task?.task?.is_private" />
+                {{task?.task?.name}}
+              </a>
+            </div>
+            <div class="ttable-date" (click)="openLink(task.task.id)">
+              {{task?.task?.due_date | utcTime }}
+            </div>
+            <div class="ttable-status" (click)="openLink(task.task.id)">
+              {{sharedService.taskStatus(task?.task?.status)}}
+            </div>
+            <div class="ttable-assign" (click)="openLink(task.task.id)">
+              <div class="profile-wrap">
+                <figure *ngIf="task?.task?.assigned_to?.user_avatar_thumb">
+                  <img *ngIf="task?.task?.assigned_to?.user_avatar_thumb"
+                    [src]="task?.task?.assigned_to?.user_avatar_thumb" alt="">
+                </figure>
+                <span class="no-img"
+                  *ngIf="task.task.assigned_to?.first_name && !task?.task?.assigned_to?.user_avatar_thumb">{{sharedService.displayInitial(task.task.assigned_to?.first_name,
+                  task.task.assigned_to?.last_name)}}</span>
+                <p *ngIf="task.task.assigned_to?.first_name">
+                  {{task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="isMobile">
+          <div *ngFor="let task of tasks" class="flex-ttable-item "
+            [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+            <div class="ttable-rank">
+              <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank"
+                [resourceType]="resourceType" (rankUpdated)="rankUpdated($event);">
+              </app-rank-number>
+              <div class="star-task tooltip" *ngIf="task?.task?.status != 3 && task?.task?.status != 4">
+                <span *ngIf="task.is_favorite" class="tt_text">Unstar</span>
+                <figure *ngIf="task.is_favorite"
+                  (click)="makeTaskFavourite(task.total_favorite_task,task.id,false, task.task.name)">
+                  <img src="assets/images/Star.png" alt="" />
+                </figure>
+                <span *ngIf="!task.is_favorite" class="tt_text">Star</span>
+                <figure *ngIf="!task.is_favorite"
+                  (click)="makeTaskFavourite(task.total_favorite_task, task.id, true, task.task.name)">
+                  <img src="assets/images/Un-Star.png" alt="" />
+                </figure>
+              </div>
+            </div>
+            <div class="ttable-full" (click)="isMobile && openLink(task.task.id)">
+              <a [class.locked]="task?.task?.is_private" [routerLink]="['/main/projects/tasks/', task.task.id]">
+                <img src="assets/images/Private-Lock.png" alt="" width="13" height="13"
+                  *ngIf="task?.task?.is_private" />
+                {{task?.task?.name}}
+              </a>
+            </div>
+            <div class="ttable-date" (click)="openLink(task.task.id)">
+              {{task?.task?.due_date | utcTime }}
+            </div>
+            <div class="ttable-status" (click)="openLink(task.task.id)">
+              {{sharedService.taskStatus(task?.task?.status)}}
+            </div>
+            <div class="ttable-assign" (click)="openLink(task.task.id)">
+              <div class="profile-wrap">
+                <figure *ngIf="task?.task?.assigned_to?.user_avatar_thumb">
+                  <img *ngIf="task?.task?.assigned_to?.user_avatar_thumb"
+                    [src]="task?.task?.assigned_to?.user_avatar_thumb" alt="">
+                </figure>
+                <span class="no-img"
+                  *ngIf="task.task.assigned_to?.first_name && !task?.task?.assigned_to?.user_avatar_thumb">{{sharedService.displayInitial(task.task.assigned_to?.first_name,
+                  task.task.assigned_to?.last_name)}}</span>
+                <p *ngIf="task.task.assigned_to?.first_name">
+                  {{task.task.assigned_to?.first_name + ' ' + task.task.assigned_to?.last_name}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="block-row pg-not-found" *ngIf="!tasks?.length">
+          <div class="sm-container">
+            <div class="pg-type pos-relative">
+              <img src="assets/images/Projects.png" alt="">
+            </div>
+            <div class="not-found-msg flex mt-30">
+              <span><strong> You are not assigned to any tasks.</strong></span>
+              <span class="mt-20 text-center"> Once you have been assigned to a task, <br /> they will show here.</span>
+            </div>
+          </div>
+        </div>
+        <pagination [viewBy]="defaultParam.limit" [type]="Task" [totalRecords]="tasksCount"
+          (changePerPage)="setPerPage($event)" (getPageCount)="getData($event)">
+        </pagination>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal transition intro-slide-modal" [ngClass]="{'in': showModal?.isIntro}">
+    <app-intro-slides [module]="module" [slides]="slides" (onClose)="onClose($event)">
+    </app-intro-slides>
+  </div>
+  <div class="modal transition" [ngClass]="{'in': showModal?.isFavorite}" *ngIf="totalFavoriteTask >= 25">
+    <app-favourite-task [taskName]="taskName" (onClose)="closeFavorite($event)"></app-favourite-task>
+  </div>
+  <div class="modal transition" [ngClass]="{'in': showModal?.shareMyList}">
+    <app-share-my-list (download)="onDownload()" (selectedMember)="onSelectMember($event)"></app-share-my-list>
+  </div>
+
+  <div class="modal transition" [ngClass]="{'in': showModal?.isExport}">
+    <div class="modal-dialog modal-sm">
+      <div class="alert-cont modal-content">
+        <div class="modal-header text-center">
+          <h5>Download Task Rank </h5>
+          <a href="javascript:void(0);" class="close" (click)="showModal.isExport = false">esc</a>
+        </div>
+        <div class="modal-body">
+          <p> How would you like to download your task rank?</p>
+          <div class="file-format fitem half-fitem inline-check-list mb-20 flex">
+            <div class="fimg flex ai-center flex-end">
+              <figure class="m-0">
+                <img src="assets/images/file/f-pdf.svg" width="30" height="30" alt="">
+              </figure>
+              <div class="fitem-check m-0">
+                <input type="radio" id="rado1" name="test" class="fitem-ck-input" [value]="true" [(ngModel)]="isPdf" />
+                <label for="rado1" class="fitem-ck-txt m-0">.PDF</label>
+              </div>
+            </div>
+            <div class="fimg flex ai-center flex-start">
+              <figure class="m-0">
+                <img src="assets/images/file/f-csv.svg" width="30" height="30" alt="">
+              </figure>
+              <div class="fitem-check m-0">
+                <input type="radio" id="rado2" name="test" class="fitem-ck-input" [value]="false" [(ngModel)]="isPdf" />
+                <label for="rado2" class="fitem-ck-txt m-0">.CSV</label>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group flex">
+            <a class="btn btn-half btn-bdr btn-lg" href="javascript:void(0);"
+              (click)="showModal.isExport = false;">cancel</a>
+            <a class="btn btn-half btn-lg" href="javascript:void(0);" (click)="exportTaks()">
+              Download </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="block-row pg-not-found"
+  *ngIf="permisionList && !permisionList.task_task_view && !permisionList.task_task_view_all">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Tasks.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>

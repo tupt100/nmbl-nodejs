@@ -1,0 +1,132 @@
+<div class="main-full-head sm-hidden">
+  <div class="container">
+    <div class="sm-block-row">
+      <h3>Check Report Type</h3>
+      <p>Select the type of report you want to download and then further edit your report via the filters.</p>
+    </div>
+  </div>
+</div>
+<div class="sm-block-row pt-35 report-wrap sm-hidden">
+  <div class="container">
+    <div class="card-row flex info-card-list">
+      <div class="card">
+        <div class="card-bdr card-title ">
+          <div class="flex ai-center">
+            <h5>Productivity</h5>
+            <div class="right-cap-area">
+              <img src="assets/images/report-productivity.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>See New versus Completed Tasks, Workflows, or Projects for a selected date range.</p>
+        </div>
+        <div class="card-foot flex ai-center" (click)="next('Productivity');">
+          <a href="javascript:void(0);" class="m-0 sm-text flex">Create Report &nbsp; <img _ngcontent-nxe-c126=""
+              src="assets/images/next-arrow.svg" alt="Create Report" class="m-0"></a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-bdr card-title ">
+          <div class="flex ai-center">
+            <h5>Efficiency</h5>
+            <div class="right-cap-area">
+              <img src="assets/images/report-efficiency.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>View the average time from creation to completion of a Task, Workflow, or Project. </p>
+        </div>
+        <div class="card-foot flex ai-center" (click)="next('Efficiency');">
+          <a href="javascript:void(0);" class="m-0 sm-text flex">Create Report &nbsp; <img _ngcontent-nxe-c126=""
+              src="assets/images/next-arrow.svg" alt="Create Report" class="m-0"></a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-bdr card-title ">
+          <div class="flex ai-center">
+            <h5>Workload</h5>
+            <div class="right-cap-area">
+              <img src="assets/images/report-workload.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>View the total number of Tasks, Workflows, and Projects to which users are assigned.</p>
+        </div>
+        <div class="card-foot flex ai-center" (click)="next('Workload');">
+          <a href="javascript:void(0);" class="m-0 sm-text flex">Create Report &nbsp; <img _ngcontent-nxe-c126=""
+              src="assets/images/next-arrow.svg" alt="Create Report" class="m-0"></a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-bdr card-title ">
+          <div class="flex ai-center">
+            <h5>Group Workload</h5>
+            <div class="right-cap-area">
+              <img src="assets/images/report-efficiency.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>View the total number of open Tasks, Workflows, and/or Projects for a Group, as well as the number of Tasks
+            completed versus open for Workflows and Projects by Group. </p>
+        </div>
+        <div class="card-foot flex ai-center" (click)="next('Group Workload');">
+          <a href="javascript:void(0);" class="m-0 sm-text flex">Create Report &nbsp; <img _ngcontent-nxe-c126=""
+              src="assets/images/next-arrow.svg" alt="Create Report" class="m-0"></a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-bdr card-title ">
+          <div class="flex ai-center">
+            <h5>Privilege Log</h5>
+            <div class="right-cap-area">
+              <img src="assets/images/report-workload.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Generate a Privilege Log or Confidentiality Report for one or more users.</p>
+        </div>
+        <div class="card-foot flex ai-center" (click)="next('Privilege Log');">
+          <a href="javascript:void(0);" class="m-0 sm-text flex">Create Report &nbsp; <img _ngcontent-nxe-c126=""
+              src="assets/images/next-arrow.svg" alt="Create Report" class="m-0"></a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-bdr card-title ">
+          <div class="flex ai-center">
+            <h5>Tags Report</h5>
+            <div class="right-cap-area">
+              <img src="assets/images/report-efficiency.svg" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>View open versus completed Tasks, Workflows, and Projects for one or more Tags. </p>
+        </div>
+        <div class="card-foot flex ai-center" (click)="next('Tags Report');">
+          <a href="javascript:void(0);" class="m-0 sm-text flex">Create Report &nbsp; <img _ngcontent-nxe-c126=""
+              src="assets/images/next-arrow.svg" alt="Create Report" class="m-0"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Not accessible in mobile view-->
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Reporting.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,541 @@
+<app-menu class="m-header"></app-menu>
+<div class="pr-list listing_pg" *ngIf="permisionList?.project_project_view || permisionList?.project_project_view_all">
+  <div class="main-full-head">
+    <div class="container">
+      <div class="m-header">
+        <div class="flex sm-head">
+          <span class="m-0 bg-text flex flex-start">
+            <img src="assets/images/filter-ico.svg" alt="" class="ml-0 mr-10">
+            <span (click)="openFilter = !openFilter;">
+              Filter Projects </span> &nbsp;
+            / &nbsp;<span (click)="openMetrics = !openMetrics;"> <span [class.hidden]="openMetrics">Show</span> <span
+                [class.hidden]="!openMetrics">Hide</span> Metrics </span>
+          </span>
+          <a class="bg-text flex-end" [routerLink]="['/main/projects/create/project']"
+            *ngIf="permisionList?.project_project_create"><strong class="m-0">Add New Project</strong></a>
+        </div>
+        <div class="active_filters tab-visible" *ngIf="userTitle?.length || groupTitle?.length || tagTitle?.length">
+          <span class="flex">Active Filters <a href="javascript:void(0)" class="m-0"
+              (click)="clearAllFilters()"><u>Clear All</u></a></span>
+          <div *ngIf="userTitle?.length">Users: <span><b>{{ getTitle('userTitle') }}</b></span></div>
+          <div *ngIf="groupTitle?.length">Groups: <span><b>{{ getTitle('groupTitle') }}</b></span></div>
+          <div *ngIf="tagTitle?.length">Tags: <span><b>{{ getTitle('tagTitle') }}</b></span></div>
+        </div>
+      </div>
+      <div class="main-full-head-task flex ai-center" *ngIf="openMetrics">
+        <div class="tcount-row">
+          <span class="tcount">
+            <h3> {{headerDetails?.totalProject}} <br> <span class="sm-text">Projects</span></h3>
+          </span>
+          <span class="tcount">
+            <h3> {{headerDetails?.totalWorkflow}} <br> <span class="sm-text">Workflows</span></h3>
+          </span>
+          <span class="tcount">
+            <h3> {{headerDetails?.totalTasks}} <br> <span class="sm-text">Task</span></h3>
+          </span>
+        </div>
+        <div class="chart-info">
+          <app-pie-chart [properties]="chartProperties"></app-pie-chart>
+          <div class="chart-detail">
+            <span><strong>{{headerDetails?.completedTasks}}/{{headerDetails?.totalTasks}}</strong> tasks
+              <span>complete</span></span>
+            <span><strong>{{completePercent()}}% complete </strong></span>
+            <span class="overdue" *ngIf="headerDetails?.overdueTasks > 0">{{headerDetails?.overdueTasks}} overdue
+              &nbsp;<img src="assets/images/arrow-down-right.svg" height="15" width="6" alt="" class="m-0" /></span>
+          </div>
+        </div>
+        <div class="due-box">
+          <h3>
+            <span class="flex ai-end">{{headerDetails?.dueTasks}} &nbsp;<img src="assets/images/arrow-down-right.svg"
+                alt="" class="m-0" /></span>
+            <span class="sm-text">Due Today</span>
+          </h3>
+        </div>
+        <div class="priority-list">
+          <div class="chart-info">
+            <app-pie-chart [properties]="chartProperties1"></app-pie-chart>
+            <div class="chart-detail">
+              <span><strong class="high">{{headerDetails?.highPriority}}</strong> High <span>Priority</span></span>
+              <span><strong class="medium">{{headerDetails?.mediumPriority}}</strong> Medium
+                <span>Priority</span></span>
+              <span><strong class="low">{{headerDetails?.lowPriority}}</strong> Low <span>Priority</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-filter-head flist" [class.mfix-bar]="openFilter">
+    <div class="flex sm-head">
+      <a href="javascript:void(0)" class="flex-start" (click)="openFilter=false;">
+        <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back to All Projects
+      </a>
+    </div>
+    <div class="container">
+      <div class="ai-center filter-group-wrap flex">
+        <div class="flex form-group">
+          <div class="ddown-item">
+            <label>Assigned to User(s):</label>
+            <app-multiselect-dropdown [title]="userTitle" [displaySubItem]="usersList" searchPlaceholder="Search Users"
+              (search)="$event && getLists('user', $event)" (allClear)="clearSelections('user', 'userTitle')"
+              (selectionChanged)="onFilterSelected($event, 'user')">
+            </app-multiselect-dropdown>
+          </div>
+          <div class="ddown-item">
+            <label>Assigned to Group(s):</label>
+            <app-multiselect-dropdown [title]="groupTitle" [displaySubItem]="workGroupList"
+              searchPlaceholder="Search Groups" (search)="$event && getLists('group', $event)"
+              (allClear)="clearSelections('group', 'groupTitle')"
+              (selectionChanged)="onFilterSelected($event, 'group')">
+            </app-multiselect-dropdown>
+          </div>
+          <div class="ddown-item">
+            <label>Assigned to Tag(s):</label>
+            <app-multiselect-dropdown [isTag]="true" [title]="tagTitle" [displaySubItem]="tagsList"
+              searchPlaceholder="Search Tags" (search)="$event && getLists('tag', $event)"
+              (allClear)="clearSelections('tag', 'tagTitle')" (selectionChanged)="onFilterSelected($event, 'tag')">
+            </app-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="filter-right">
+          <div class="flex ai-center">
+            <div class="inline-flex toggle-switch">Collapse
+              <div class="btn-switch-wrap">
+                <input type="checkbox" class="btn-switch" id="chart" (change)="isProjectExpand = !isProjectExpand">
+                <label for="chart"> Expand</label>
+              </div>
+            </div>
+            <button title="View Archive" *ngIf="defaultParam.type==='active'" type="button" class="btn btn-sm arbtn"
+              (click)="getArchivedList()"><img src="/assets/images/archive icon.png" alt="" width="14" /></button>
+            <button title="View Active" *ngIf="defaultParam.type==='archived'" type="button" class="btn btn-sm arbtn"
+              (click)="getActiveList()"><img src="/assets/images/esc.png" alt="" width="12" /></button>
+
+            <button type="button" [routerLink]="['/main/projects/create/project']" class="btn btn-md"
+              *ngIf="permisionList?.project_project_create">Add New Project</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-group plr-10 fx-btm fbtns">
+      <button type="button" class="btn btn-sm btn-bdr" (click)="clearAllFilters()"
+        *ngIf="userTitle?.length || groupTitle?.length || tagTitle?.length">Clear</button>
+      <button type="button" class="btn btn-half" (click)="openFilter=false;">Filter Projects</button>
+    </div>
+  </div>
+
+  <div class="block-row no-pad">
+    <div class="sm-block-row ">
+      <div class="container">
+        <app-notifier></app-notifier>
+        <div class="card-title flex ai-center head mb-10">
+          <div class="left-cap-area m-0">
+            <h5 class="m-0">My Projects ({{arrProject?.length}})</h5>
+          </div>
+          <div class="right-cap-area sm-visible m-0">
+            <button type="button" class="btn btn-sm arbtn" (click)="getArchivedList()"><img
+                src="/assets/images/archive icon.png" alt="" width="16" /></button>
+          </div>
+        </div>
+        <span class="bklink">
+          <a href="javascript:void(0)" (click)="getActiveList()" *ngIf="defaultParam.type==='archived'">
+            <img _ngcontent-hkg-c133="" src="assets/images/Chevron-Icon.svg" alt="" class="r90 m-0">&nbsp;<b>Back</b>
+          </a>
+        </span>
+        <!--Desktop drag & drop-->
+        <div class="card-column" *ngIf="!isMobile">
+          <div class="card-row info-card-list" cdk-scrollable cdkDropList #todo="cdkDropList"
+            [cdkDropListData]="arrProject0" [cdkDropListConnectedTo]="[inProgress, done]"
+            (cdkDropListDropped)="drop($event)">
+            <div class="card" *ngFor="let project of arrProject0;let i = index" [id]="project?.project?.id"
+              [class.low_prior]="project.project?.importance === 1"
+              [class.medium_prior]="project.project?.importance === 2"
+              [class.high_prior]="project.project?.importance === 3" cdkDrag
+              [cdkDragDisabled]="!permisionList?.project_set_rank_drag_drop || project?.project?.status == 2 || project?.project?.status == 3"
+              [cdkDragStartDelay]="100">
+              <div class="card-block">
+                <div class="card-title mb-0">
+                  <h6 class="mb-0" (click)="goToProjectDetail(project.project?.id)"> {{project.project?.name}} </h6>
+                  <span class="flex">
+                    <span class="ml-0"><b>Due:</b> {{project?.project?.due_date | utcTime }} </span>
+                    <span class="mr-0 uname"> {{project.project?.owner?.first_name}}
+                      {{project.project?.owner?.last_name}}
+                    </span>
+                  </span>
+                </div>
+                <div class="card-body">
+                  <div class="chart-info">
+                    <app-pie-chart [properties]="project.chartProperties">
+                    </app-pie-chart>
+                    <div class="chart-detail">
+                      <span><strong>{{project.project?.task?.completed_task || 0}} /
+                          {{project.project?.task?.total_task || 0}}</strong> tasks complete</span>
+                      <span><strong
+                          *ngIf="project.project?.task?.total_task">{{getCompleted(project.project?.task?.total_task, project.project?.task?.completed_task)}}%
+                          complete</strong></span>
+                      <span class="overdue" *ngIf="project.project?.task?.passed_due">
+                        {{project.project?.task?.passed_due}}
+                        overdue &nbsp;<img src="assets/images/arrow-down-right.svg" height="15" width="6" alt=""
+                          class="m-0"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-collapse"
+                  *ngIf="isProjectExpand && project?.project?.workflow && project?.project?.workflow.length > 0">
+                  <h6>Up Next</h6>
+                  <div class="ttable-row">
+                    <div class="flex-ttable-item" *ngFor="let workflow of project.project.workflow"
+                      [class.ttable-success]="workflow.importance === 1" [class.ttable-warn]="workflow.importance === 2"
+                      [class.ttable-danger]="workflow.importance === 3">
+                      <div class="ttable-rank">
+                        <span>2</span>
+                      </div>
+                      <div class="ttable-full">
+                        <div class="ttable-caption">
+                          <a> {{workflow.name}} </a>
+                        </div>
+                        <div class="ttable-status"> {{ getWorkflowDueDateText(workflow.due_date) }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-foot flex ai-center">
+                <a class="m-0 sm-text" [routerLink]="['/main/projects/',project.project.id ]">View all &nbsp; <img
+                    class="m-0" src="assets/images/arrow-icon.svg" alt="view all" /></a>
+                <div class="profile-wrap m-0">
+                  <ng-container *ngFor="let user of project.project.assigned_to_users | slice:0:3; let i = index;">
+                    <figure>
+                      <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                        title="{{user?.first_name}} {{user?.last_name}}">
+                        {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                      <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                        title="{{user?.first_name}} {{user?.last_name}}" />
+                    </figure>
+                  </ng-container>
+                  <div class="tooltip userlist" *ngIf="project?.project?.assigned_to_users?.length > 3">
+                    <span class="tt_text">
+                      <span class="tt_text" *ngFor="let user of project.project.assigned_to_users | slice:3">
+                        {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                      </span>
+                    </span>
+                    <figure class="more-user">
+                      <span>+{{project.project.assigned_to_users.length - 3}}</span>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-row info-card-list" cdk-scrollable cdkDropList #inProgress="cdkDropList"
+            [cdkDropListData]="arrProject1" [cdkDropListConnectedTo]="[todo, done]" (cdkDropListDropped)="drop($event)">
+            <div class="card" *ngFor="let project of arrProject1;let i = index" [id]="project?.project?.id"
+              [class.low_prior]="project.project?.importance === 1"
+              [class.medium_prior]="project.project?.importance === 2"
+              [class.high_prior]="project.project?.importance === 3" cdkDrag
+              [cdkDragDisabled]="!permisionList?.project_set_rank_drag_drop || project?.project?.status == 2 || project?.project?.status == 3"
+              [cdkDragStartDelay]="100">
+              <div class="card-block">
+                <div class="card-title mb-0">
+                  <h6 class="mb-0" (click)="goToProjectDetail(project.project?.id)"> {{project.project?.name}} </h6>
+                  <span class="flex">
+                    <span class="ml-0"><b>Due:</b> {{project?.project?.due_date | utcTime }} </span>
+                    <span class="mr-0 uname"> {{project.project?.owner?.first_name}}
+                      {{project.project?.owner?.last_name}}
+                    </span>
+                  </span>
+                </div>
+                <div class="card-body">
+                  <div class="chart-info">
+                    <app-pie-chart [properties]="project.chartProperties">
+                    </app-pie-chart>
+                    <div class="chart-detail">
+                      <span><strong>{{project.project?.task?.completed_task || 0}} /
+                          {{project.project?.task?.total_task || 0}}</strong> tasks complete</span>
+                      <span><strong
+                          *ngIf="project.project?.task?.total_task">{{getCompleted(project.project?.task?.total_task, project.project?.task?.completed_task)}}%
+                          complete</strong></span>
+                      <span class="overdue" *ngIf="project.project?.task?.passed_due">
+                        {{project.project?.task?.passed_due}}
+                        overdue &nbsp;<img src="assets/images/arrow-down-right.svg" height="15" width="6" alt=""
+                          class="m-0"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-collapse"
+                  *ngIf="isProjectExpand && project?.project?.workflow && project?.project?.workflow.length > 0">
+                  <h6>Up Next</h6>
+                  <div class="ttable-row">
+                    <div class="flex-ttable-item" *ngFor="let workflow of project.project.workflow"
+                      [class.ttable-success]="workflow.importance === 1" [class.ttable-warn]="workflow.importance === 2"
+                      [class.ttable-danger]="workflow.importance === 3">
+                      <div class="ttable-rank">
+                        <span>2</span>
+                      </div>
+                      <div class="ttable-full">
+                        <div class="ttable-caption">
+                          <a> {{workflow.name}} </a>
+                        </div>
+                        <div class="ttable-status"> {{ getWorkflowDueDateText(workflow.due_date) }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-foot flex ai-center">
+                <a class="m-0 sm-text" [routerLink]="['/main/projects/',project.project.id ]">View all &nbsp; <img
+                    class="m-0" src="assets/images/arrow-icon.svg" alt="view all" /></a>
+                <div class="profile-wrap m-0">
+                  <ng-container *ngFor="let user of project.project.assigned_to_users | slice:0:3; let i = index;">
+                    <figure>
+                      <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                        title="{{user?.first_name}} {{user?.last_name}}">
+                        {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                      <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                        title="{{user?.first_name}} {{user?.last_name}}" />
+                    </figure>
+                  </ng-container>
+                  <div class="tooltip userlist" *ngIf="project?.project?.assigned_to_users?.length > 3">
+                    <span class="tt_text">
+                      <span class="tt_text" *ngFor="let user of project.project.assigned_to_users | slice:3">
+                        {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                      </span>
+                    </span>
+                    <figure class="more-user">
+                      <span>+{{project.project.assigned_to_users.length - 3}}</span>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-row info-card-list" cdk-scrollable cdkDropList #done="cdkDropList"
+            [cdkDropListData]="arrProject2" [cdkDropListConnectedTo]="[todo, inProgress]"
+            (cdkDropListDropped)="drop($event)">
+            <div class="card" *ngFor="let project of arrProject2;let i = index" [id]="project?.project?.id"
+              [class.low_prior]="project.project?.importance === 1"
+              [class.medium_prior]="project.project?.importance === 2"
+              [class.high_prior]="project.project?.importance === 3" cdkDrag
+              [cdkDragDisabled]="!permisionList?.project_set_rank_drag_drop || project?.project?.status == 2 || project?.project?.status == 3"
+              [cdkDragStartDelay]="100">
+              <div class="card-block">
+                <div class="card-title mb-0">
+                  <h6 class="mb-0" (click)="goToProjectDetail(project.project?.id)"> {{project.project?.name}} </h6>
+                  <span class="flex">
+                    <span class="ml-0"><b>Due:</b> {{project?.project?.due_date | utcTime }} </span>
+                    <span class="mr-0 uname"> {{project.project?.owner?.first_name}}
+                      {{project.project?.owner?.last_name}}
+                    </span>
+                  </span>
+                </div>
+                <div class="card-body">
+                  <div class="chart-info">
+                    <app-pie-chart [properties]="project.chartProperties">
+                    </app-pie-chart>
+                    <div class="chart-detail">
+                      <span><strong>{{project.project?.task?.completed_task || 0}} /
+                          {{project.project?.task?.total_task || 0}}</strong> tasks complete</span>
+                      <span><strong
+                          *ngIf="project.project?.task?.total_task">{{getCompleted(project.project?.task?.total_task, project.project?.task?.completed_task)}}%
+                          complete</strong></span>
+                      <span class="overdue" *ngIf="project.project?.task?.passed_due">
+                        {{project.project?.task?.passed_due}}
+                        overdue &nbsp;<img src="assets/images/arrow-down-right.svg" height="15" width="6" alt=""
+                          class="m-0"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-collapse"
+                  *ngIf="isProjectExpand && project?.project?.workflow && project?.project?.workflow.length > 0">
+                  <h6>Up Next</h6>
+                  <div class="ttable-row">
+                    <div class="flex-ttable-item" *ngFor="let workflow of project.project.workflow"
+                      [class.ttable-success]="workflow.importance === 1" [class.ttable-warn]="workflow.importance === 2"
+                      [class.ttable-danger]="workflow.importance === 3">
+                      <div class="ttable-rank">
+                        <span>2</span>
+                      </div>
+                      <div class="ttable-full">
+                        <div class="ttable-caption">
+                          <a> {{workflow.name}} </a>
+                        </div>
+                        <div class="ttable-status"> {{ getWorkflowDueDateText(workflow.due_date) }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-foot flex ai-center">
+                <a class="m-0 sm-text" [routerLink]="['/main/projects/',project.project.id ]">View all &nbsp; <img
+                    class="m-0" src="assets/images/arrow-icon.svg" alt="view all" /></a>
+                <div class="profile-wrap m-0">
+                  <ng-container *ngFor="let user of project.project.assigned_to_users | slice:0:3; let i = index;">
+                    <figure>
+                      <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                        title="{{user?.first_name}} {{user?.last_name}}">
+                        {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                      <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                        title="{{user?.first_name}} {{user?.last_name}}" />
+                    </figure>
+                  </ng-container>
+                  <div class="tooltip userlist" *ngIf="project?.project?.assigned_to_users?.length > 3">
+                    <span class="tt_text">
+                      <span class="tt_text" *ngFor="let user of project.project.assigned_to_users | slice:3">
+                        {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                      </span>
+                    </span>
+                    <figure class="more-user">
+                      <span>+{{project.project.assigned_to_users.length - 3}}</span>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Desktop stop drag & drop ends here-->
+
+        <!--Mobile stop drag & drop-->
+        <div class="card-row flex info-card-list flex-start" *ngIf="isMobile">
+          <div class="card no_prior" *ngFor="let project of arrProject"
+            [class.low_prior]="project.project?.importance === 1" [id]="project?.project?.id"
+            [class.medium_prior]="project.project?.importance === 2"
+            [class.high_prior]="project.project?.importance === 3">
+            <div class="card-block">
+              <div class="card-title mb-0">
+                <h6 class="mb-0" (click)="goToProjectDetail(project.project?.id)"> {{project.project?.name}} </h6>
+                <span class="flex">
+                  <span class="ml-0"><b>Due:</b> {{project?.project?.due_date | utcTime }} </span>
+                  <span class="mr-0 uname"> {{project.project?.owner?.first_name}}
+                    {{project.project?.owner?.last_name}}
+                  </span>
+                </span>
+              </div>
+              <div class="card-body">
+                <div class="chart-info">
+                  <app-pie-chart [properties]="project.chartProperties">
+                  </app-pie-chart>
+                  <div class="chart-detail">
+                    <span><strong>{{project.project?.task?.completed_task || 0}} /
+                        {{project.project?.task?.total_task || 0}}</strong> tasks complete</span>
+                    <span><strong
+                        *ngIf="project.project?.task?.total_task">{{getCompleted(project.project?.task?.total_task, project.project?.task?.completed_task)}}%
+                        complete</strong></span>
+                    <span class="overdue" *ngIf="project.project?.task?.passed_due">
+                      {{project.project?.task?.passed_due}}
+                      overdue &nbsp;<img src="assets/images/arrow-down-right.svg" height="15" width="6" alt=""
+                        class="m-0"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="card-collapse"
+                *ngIf="isProjectExpand && project?.project?.workflow && project?.project?.workflow.length > 0">
+                <h6>Up Next</h6>
+                <div class="ttable-row">
+                  <div class="flex-ttable-item" *ngFor="let workflow of project.project.workflow"
+                    [class.ttable-success]="workflow.importance === 1" [class.ttable-warn]="workflow.importance === 2"
+                    [class.ttable-danger]="workflow.importance === 3">
+                    <div class="ttable-rank">
+                      <span>2</span>
+                    </div>
+                    <div class="ttable-full">
+                      <div class="ttable-caption">
+                        <a> {{workflow.name}} </a>
+                      </div>
+                      <div class="ttable-status"> {{ getWorkflowDueDateText(workflow.due_date) }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-foot flex ai-center">
+              <a class="m-0 sm-text" [routerLink]="['/main/projects/',project.project.id ]">View all &nbsp; <img
+                  class="m-0" src="assets/images/arrow-icon.svg" alt="view all" /></a>
+              <div class="profile-wrap m-0">
+                <ng-container *ngFor="let user of project.project.assigned_to_users | slice:0:3; let i = index;">
+                  <figure>
+                    <span class="no-img" *ngIf="!user.user_avatar_thumb"
+                      title="{{user?.first_name}} {{user?.last_name}}">
+                      {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                    <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                      title="{{user?.first_name}} {{user?.last_name}}" />
+                  </figure>
+                </ng-container>
+                <div class="tooltip userlist" *ngIf="project?.project?.assigned_to_users?.length > 3">
+                  <span class="tt_text">
+                    <span class="tt_text" *ngFor="let user of project.project.assigned_to_users | slice:3">
+                      {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                    </span>
+                  </span>
+                  <figure class="more-user">
+                    <span>+{{project.project.assigned_to_users.length - 3}}</span>
+                  </figure>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Mobile stop drag & drop ends here-->
+
+        <div class="block-row pg-not-found" *ngIf="(arrProject && !arrProject.length) || !arrProject">
+          <div class="sm-container">
+            <div class="pg-type pos-relative">
+              <img src="assets/images/Projects.png" alt="">
+            </div>
+            <div class="not-found-msg flex mt-30">
+              <span><strong> You are not assigned to any projects.</strong></span>
+              <span class="mt-20 text-center"> Once you have been assigned to a project, <br /> they will show
+                here.</span>
+            </div>
+          </div>
+        </div>
+
+        <pagination [viewBy]="defaultParam.limit" [isTwelve]="true" [totalRecords]="projectTotal" type="Project"
+          (changePerPage)="setPerPage($event)" (getPageCount)="loadMoreProjects($event)">
+        </pagination>
+
+        <!--Drag & Drop sample-->
+        <!-- <div id="taskList" class="sm-block-row task-main-pg">
+          <div class="container">
+            <div class="card-title flex ai-center head mb-10">
+              <div class="left-cap-area m-0">
+                <h5 class="m-0">My Projects ({{arrProject?.length}})</h5>
+              </div>
+            </div>
+            <div class="card-row flex info-card-list flex-start" cdk-scrollable cdkDropList
+              (cdkDropListDropped)="drop($event)">
+              <div class="card no_prior" *ngFor="let project of arrProject; let i = index;" cdkDrag
+                [cdkDragStartDelay]="200" style="width:100%; background: red; padding: 10px; margin-bottom: 5px;">
+                {{i + 1}}
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <!--Drag & Drop sample ends here-->
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="block-row pg-not-found"
+  *ngIf="!permisionList?.project_project_view &&  !permisionList?.project_project_view_all">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/Projects.png" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition intro-slide-modal" [ngClass]="{'in': showModal?.isIntro}">
+  <app-intro-slides [module]="module" [slides]="slides" (onClose)="onClose($event)">
+  </app-intro-slides>
+</div>

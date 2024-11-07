@@ -1,0 +1,18 @@
+<div class="nav-dropdown">
+  <input type="text" class="search_input" placeholder="{{ searchPlaceholder }}" [(ngModel)]="searchValue"
+    (keyup)="onSearchKeyup($event)" />
+  <perfect-scrollbar style="max-width: 100%; max-height: 330px;">
+    <div class="check-list">
+      <span class="fitem-check" *ngFor="let item of displaySubItem">
+        <input type="checkbox" id="item-{{item.id}}" [checked]="item.checked" class="fitem-ck-input"
+          (change)="changeSelection($event, item.id)" />
+        <label class="fitem-ck-txt" for="item-{{item.id}}">
+          {{ item && item.name ? item.name: item.tag }}
+        </label>
+      </span>
+      <span class="fitem-check" *ngIf="displaySubItem.length === 0">
+        <label class="fitem-ck-txt text-center">No data found</label>
+      </span>
+    </div>
+  </perfect-scrollbar>
+</div>

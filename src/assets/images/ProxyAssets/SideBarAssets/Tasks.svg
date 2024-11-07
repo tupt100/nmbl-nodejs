@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="22px" viewBox="0 0 21 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59.1 (86144) - https://sketch.com -->
+    <title>Tasks</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Tasks" transform="translate(2.000000, 2.500000)">
+            <g id="crosshair" stroke="#485CC7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <circle id="Oval" cx="8.5" cy="8.5" r="9.5"></circle>
+                <line x1="17" y1="8.5" x2="13.6" y2="8.5" id="Path"></line>
+                <line x1="3.4" y1="8.5" x2="0" y2="8.5" id="Path"></line>
+                <line x1="8.5" y1="3.4" x2="8.5" y2="0" id="Path"></line>
+                <line x1="8.5" y1="17" x2="8.5" y2="13.6" id="Path"></line>
+            </g>
+            <circle id="Oval" fill="#485CC7" cx="8.5" cy="8.5" r="5.44871795"></circle>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,8 @@
+<span class="flex-start">&nbsp; <a title="Edit" (click)="isEditVisible = !isEditVisible"><img src="assets/images/ProxyAssets/UserManagementAssets/Edit-Icon.svg" /></a></span>
+<div class="nav-dropdown dropdown-menu" *ngIf="isEditVisible">   
+    <ul class="m-0">
+        <li class="fitem-ck-txt" (click)="edit();">Edit User</li>            
+        <li class="fitem-check" (click)="notifications();">Notifications</li>            
+        <li class="fitem-check" (click)="deleteUserConfirm();">Delete User</li>    
+    </ul>          
+</div>

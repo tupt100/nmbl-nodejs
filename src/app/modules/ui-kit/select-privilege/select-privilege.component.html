@@ -1,0 +1,17 @@
+<div class="multiselect-text" [ngClass]="{'disable': isDisabled }" [class.open]="showDropdown"
+  (click)="!isDisabled && show()">
+  <span class="badge badge-primary mr-8" [title]="checkedPrivilege?.length ? getTitle() : ''">
+    <span *ngIf="getTitle() != 'undefined'">{{ getTitle() }} </span>
+  </span>
+</div>
+<div class="md-filter nav-dropdown" *ngIf="showDropdown">
+  <div class="check-list">
+    <span class="fitem-check" *ngFor="let item of arrPrivilege">
+      <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input" [checked]="item.checked"
+        [disabled]="item.checked && item.id === ''" (change)="select($event, item)" />
+      <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+        {{ item.title }}
+      </label>
+    </span>
+  </div>
+</div>

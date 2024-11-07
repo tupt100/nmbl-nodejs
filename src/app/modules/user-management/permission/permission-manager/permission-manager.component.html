@@ -1,0 +1,88 @@
+<app-notifier></app-notifier>
+<div class="sm-block-row sm-hidden">
+  <div class="container">
+    <a href="javascript:void();" [routerLink]="['/main/users-and-permissions']" class="mb-10 flex flex-start"><img
+        class="r90 m-0" src="assets/images/Chevron-Icon.svg" alt=""> &nbsp;Back to&nbsp;Users And Permissions</a>
+    <div class="title-row flex">
+      <div class="left-cap-area">
+        <h3>
+          Permission Manager <br>
+          <span class="subtitle">Permissions are what allow your users to do things - and not do things! These are
+            dangerous controls, and should be operated by someone fearless. Company Admin and the General Counsel have
+            full control, always. But remember, changing the permissions here will affect the abilities and access of
+            all users assigned to that role!</span>
+        </h3>
+      </div>
+      <div class="flex-width right-cap-area">
+        <a class="btn btn-lg" (click)="addNewPermission()">Add New Permission</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="">
+        <table class="table">
+          <thead>
+            <tr>
+              <th><span>Permission Name <img (click)="sortUsersBy('name')"
+                    src="assets/images/ProxyAssets/UserManagementAssets/Sort-Icon.svg" alt=""></span></th>
+              <th><span>Members</span></th>
+              <th><span>Projects</span></th>
+              <th><span>Workflow</span></th>
+              <th><span>Tasks</span></th>
+              <th *ngIf="templateFeatureIsOn"><span>Task Templates</span></th>
+              <th>&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let permission of arrPermissionManager">
+              <td> {{permission.name}} </td>
+              <td class="opacity6">
+                <span *ngIf="permission.users_count === 0">No Member</span>
+                <span *ngIf="permission.users_count === 1">{{ permission.users_count }} Member</span>
+                <span *ngIf="permission.users_count > 1">{{ permission.users_count }} Members</span>
+              </td>
+              <td class="opacity6"> {{ permission.has_project_permissions }}/{{ permission.total_project_permissions}}
+              </td>
+              <td class="opacity6">
+                {{ permission.has_workflow_permissions }}/{{ permission.total_workflow_permissions }} </td>
+              <td class="opacity6"> {{ permission.has_task_permissions }}/{{ permission.total_task_permissions }} </td>
+              <td class="opacity6" *ngIf="templateFeatureIsOn"> {{ permission.has_tasktemplate_permissions }}/{{
+                permission.total_tasktemplate_permissions
+                }} </td>
+              <td class="actions opacity-hidden"><span class="flex-start"><a title="Edit"
+                    (click)="editPermission(permission.id);"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/edit-square.svg" /></a> &nbsp; <a
+                    title="Remove" (click)="removePermissionNavigate(permission)"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/trash-square.svg" /></a></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <pagination [viewBy]="defaultParams.limit" [totalRecords]="totalRecords" type="Permissions"
+      (changePerPage)="setPerPage($event)" (getPageCount)="loadMorePermission($event)">
+    </pagination>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemovePermission}">
+  <app-confirm-modal message1="Remove Permission" message2="Are you sure you want to remove this permission?"
+    message3="users will be notified that their permission levels have been altered. To use this permission type in future, you would have to create a new core permission."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="removePermissionConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<!--not accessible in mobile-->
+<div class="sm-visible">
+  <div class="block-row pg-not-found">
+    <div class="sm-container">
+      <div class="pg-type pos-relative">
+        <img src="assets/images/Company Management.png" alt="">
+      </div>
+      <div class="flex mt-30 not-found-msg">
+        <span class="text-center">
+          <strong>Mobile view does not support this page</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

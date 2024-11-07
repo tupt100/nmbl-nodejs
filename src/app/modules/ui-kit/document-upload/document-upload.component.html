@@ -1,0 +1,117 @@
+<div class="modal-dialog modal-md">
+  <div class="alert-cont modal-content">
+    <div class="modal-header text-center" *ngIf="!isStandAloneTag || submitRequest">
+      <h5>Attach Documents </h5>
+      <a href="javascript:void(0);" class="close" (click)="cancel()">esc</a>
+    </div>
+    <div class="modal-body">
+      <div class="file-wrap">
+        <ngx-dropzone (change)="dropped($event)"
+          class="align-items-center d-flex justify-content-center upload-file-lbl" [accept]="allowedFormats">
+          <ngx-dropzone-label>Drag & drop your files here <br /> or <b>Browse</b></ngx-dropzone-label>
+        </ngx-dropzone>
+      </div>
+      <div class="uplist" *ngIf="uploadedFile && uploadedFile.length && !isStandAloneTag && !submitRequest">
+        <div *ngFor="let file of uploadedFile; let idx = index;" class="form-group">
+          <div class="fitem half-fitem flex flex-start">
+            <div class="fitem half-fitem ">
+              <figure>
+                <img [src]="file?.name | image" alt="file type" />
+              </figure>
+              <input [value]="file?.name" (keyup)="changeDocName($event, idx)" />
+            </div>
+            <div class="doc-tag-filter half-fitem ddown-item">
+              <div class="flex" *ngIf="!isStandAloneTag">
+                <label>Assigned to Tag(s)</label>
+                <app-multiselect-dropdown [isTag]="true" [isFilter]="false" [title]="tagTitle[idx]"
+                  [displaySubItem]="tagsList[idx]" [searchPlaceholder]="tagSearchPlaceholder"
+                  (search)="getTagList($event, idx)" (selectionChanged)="onFilterSelected($event, idx)">
+                </app-multiselect-dropdown>
+              </div>
+              <figure (click)="removeFile(idx)">
+                <img src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg" alt="" />
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mscroll-height mt-10"
+        *ngIf="uploadedFile && uploadedFile.length && ( isStandAloneTag || submitRequest)">
+        <div class="ai-center flex view-doc-list mt-20" *ngFor="let file of uploadedFile; let idx = index;">
+          <div class="doc-info">
+            <figure>
+              <img [src]="file?.name | image" alt="file type">
+            </figure>
+            <span class="sm-text name-box" [title]="file?.name"> {{ file?.name }} </span>
+          </div>
+          <a href="javascript:void(0)" class="m-0 cpointer" (click)="removeFile(idx)"><img height="18"
+              src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg"></a>
+        </div>
+      </div>
+      <!-- Google Docs -->
+      <div *ngIf="externalDocumentIsEnabled">
+        <div class="doc-upload-divider inline-row-col flex">
+          <div class="inline-col-4">
+            <hr />
+          </div>
+          <div class="inline-col-2 ">
+            OR
+          </div>
+          <div class="inline-col-4">
+            <hr />
+          </div>
+        </div>
+        <div class="mt-10">
+          <form [formGroup]="external_document_form">
+            <div class="form-group ">
+              <div class="fitem">
+                <div class="fitem">
+                  <label>External Document URL (Google Docs)</label>
+                  <div>
+                    <input id="external_document_url" placeholder="Paste URL" type="text"
+                      formControlName="external_document_url" />
+                    <div *ngIf="external_document_form.controls.external_document_url.status!=='VALID'">
+                      <span class="text-danger">Invalid google docs URL </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="fitem">
+                  <label>Document Name</label>
+                  <div>
+                    <input id="external_url_name" placeholder="Enter Document Name (For example readme.txt)" type="text"
+                      formControlName="external_url_name" />
+                    <div *ngIf="external_document_form.controls.external_url_name.status!=='VALID'">
+                      <span class="text-danger">Invalid document file name</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- End Google docs -->
+      <div class="btn-group text-right mt-30" *ngIf="!isStandAloneTag || submitRequest">
+        <a href="javascript:void(0)" class="btn btn-bdr" (click)="cancel()">Cancel</a>
+
+        <Button *ngIf="(external_document_form.value.external_url_name &&
+        external_document_form.value.external_document_url &&
+        external_document_form.status==='VALID') || uploadedFile.length>0" href="javascript:void(0)" class="btn"
+          (click)="upload()">Attach</Button>
+        <!-- disabled button -->
+        <Button *ngIf="(!external_document_form.value.external_url_name ||
+        !external_document_form.value.external_document_url ||
+        external_document_form.status!=='VALID') && uploadedFile.length===0" href="javascript:void(0)" class="btn"
+          [ngClass]="{'btn-gray': true}" [attr.disabled]="true">Attach</Button>
+      </div>
+
+      <div class="btn-group text-right mt-30" *ngIf="(isStandAloneTag && !submitRequest) && uploadedFile?.length">
+        <button href="javascript:void(0)" class="btn" (click)="upload()">Attach</button>
+      </div>
+
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+#profileImage {
+  .popupHeader {
+    .popupbuttons {
+      top: 13px;
+      .row {
+        display: block;
+        .pinkThemeButton {
+          border: 0 none;
+          outline: 0;
+          background: #5672ff;
+          color: #fff;
+        }
+      }
+    }
+  }
+  .title {
+    color: #042232;
+    font-size: 14px;
+    /* font-weight: 500; */
+    font-family: "stolzlregular";
+    margin: 0 0 10px;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .cropContainer {
+    padding: 15px 0;
+
+    .uploadedContainer {
+      text-align: center;
+    }
+
+    img.img-responsive {
+      max-width: 100%;
+    }
+
+    .customFileUPload {
+      position: relative;
+      height: 40px;
+      width: 100%;
+
+      button.btn {
+        position: relative;
+        z-index: 1;
+      }
+
+      input.fileInput {
+        cursor: pointer;
+        display: block;
+        height: 100%;
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 9;
+      }
+    }
+
+    .uploadedContainer {
+      .cropperButtons {
+        button.btn {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+.mat-dialog-container {
+  box-shadow: none;
+  background: none;
+  color: transparent;
+  padding: 0 !important;
+  overflow: hidden !important;
+}

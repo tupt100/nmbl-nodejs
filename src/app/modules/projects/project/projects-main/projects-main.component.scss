@@ -1,0 +1,115 @@
+.info-card-list {
+  .card-title {
+    h6 + span + span {
+      float: right;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: inline-block;
+      max-width: 50%;
+    }
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 15px 0!important;
+    .card-block {
+      flex: 1;
+      margin: 0;
+    }
+    .card-foot {
+      margin: 0;
+      padding: 0 20px;
+    }
+  }
+}
+.main-filter-head {
+  &.twp-filter {
+    border-bottom: 2px solid #d4d7f0;
+  }
+}
+/**/
+.card-column {display: flex;flex-direction: row;}
+.card-row.info-card-list {    flex-direction: column;
+  max-width: 100%;
+  flex: 1;  
+  // padding: 0 10px;
+  // width: 33.33%;
+}
+  .info-card-list .card {
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .board {
+    width: 700px;
+    border: 1px solid saddlebrown;
+    height: 600px;
+    display: flex;
+    justify-content: space-evenly;
+  }
+  
+  .lane {
+    border: 1px solid black;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task {
+    padding: 0.75em 1.5em 0.75em 1em;
+    margin-bottom: 0.5em;
+    background: #cfcfcf;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: "Roboto Slab", sans-serif;
+  }
+  .task:hover {
+    outline: 3px solid #205081;
+  }
+  
+  .heading {
+    padding: 1em 0;
+    font-weight: bolder;
+    background: #ffffff;
+    color: #000000;
+    border-bottom: 0.5em solid #ffffff;
+    text-align: center;
+    font-family: "Roboto Slab", sans-serif;
+  }
+  
+  .todo {
+    background: #3572b0;
+  }
+  
+  .doing {
+    background: #f6c342;
+  }
+  
+  .done {
+      background: #14892c;
+  }
+  .main-filter-head {
+    .filter-group-wrap {
+      .filter-right {
+        width: 35%;
+      }
+    }
+  }
+  @media (max-width: 1199px) {
+    .card-row.info-card-list { 
+      padding: 0 10px;
+      width: 33.33%;
+    }
+  }
+  @media (max-width: 767px) {
+    .card-column {flex-direction: column;}
+    .card-row.info-card-list {     
+      width: 100%;      padding: 0 ;
+
+    }
+  }

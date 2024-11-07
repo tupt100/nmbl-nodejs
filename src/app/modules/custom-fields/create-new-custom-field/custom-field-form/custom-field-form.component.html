@@ -1,0 +1,152 @@
+<form [formGroup]='form' (ngSubmit)="next(form.valid,form.value)">
+
+  <div class="card">
+    <div class="card-title card-bdr sm-hidden">
+      <h5 *ngIf="!preview">Custom Fields</h5>
+      <h5 *ngIf="preview">Save & Review</h5>
+    </div>
+    <div class="card-body">
+      <p *ngIf="!preview">Add custom fields to your task template</p>
+      <p *ngIf="preview">
+        Review the inputs and make edits on the previous screen or save and continue.
+      </p>
+      <div formArrayName="fields" style="margin-bottom: 1rem"
+        *ngFor="let item of form.get('fields')['controls']; let i = index;">
+        <div [formGroupName]="i">
+          <div *ngIf="item.controls['deleted'].value!==true">
+            <div class="form-group">
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label>Custom Field Name</label>
+                  <input 
+                    type="text"
+                    class=""
+                    formControlName="label" 
+                    name="field_name" 
+                    placeholder="Name your Field" 
+                    [attr.disabled]="preview ? 'disabled' : null"
+                  />
+                </div>
+                <div class="fitem half-fitem">
+                  <label>Default Value</label>
+                  <input
+                    type="text"
+                    class=""
+                    formControlName="defaultValue"
+                    name="field_name"
+                    placeholder="Default Value" 
+                    [attr.disabled]="preview ? 'disabled' : null"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Field Type</label>
+                    <select
+                      class="type-select"
+                      formControlName="fieldType"
+                      [attr.disabled]="preview ? 'disabled' : null"
+                    >
+                      <option [value]="'Number'">Number</option>
+                      <option [value]="'Text'">Text</option>
+                    </select>
+                  </div>
+                  <div class="fitem-check half-fitem field-check-wrapper">
+                    <input
+                      type="checkbox"
+                      formControlName="isRequired"
+                      [id]="i"
+                      name="selfAssign"
+                      class="fitem-ck-input"
+                      [attr.disabled]="preview ? 'disabled' : null"
+                    >
+                    <label [for]="i" class="fitem-ck-txt">Is Required</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea formControlName="description" [attr.disabled]="preview ? 'disabled' : null"></textarea>
+            </div>
+            <div class="form-group displayed-root">
+              <label>Field Displayed On</label>
+              <div class="checkboxes-root">
+                <div class="fitem-check field-check-wrapper">
+                  <input
+                    type="checkbox"
+                    formControlName="displayedOnProjects"
+                    [id]="i + 'projects'"
+                    name="projects"
+                    class="fitem-ck-input"
+                    [attr.disabled]="preview ? 'disabled' : null"
+                  >
+                  <label [for]="i + 'projects'" class="fitem-ck-txt">Projects</label>
+                </div>
+                <div class="fitem-check field-check-wrapper">
+                  <input
+                    type="checkbox"
+                    formControlName="displayedOnWorkflows"
+                    [id]="i + 'workflows'"
+                    name="workflows"
+                    class="fitem-ck-input"
+                    [attr.disabled]="preview ? 'disabled' : null"
+                  >
+                  <label [for]="i + 'workflows'" class="fitem-ck-txt">Workflows</label>
+                </div>
+                <div class="fitem-check field-check-wrapper">
+                  <input
+                    type="checkbox"
+                    formControlName="displayedOnTasks"
+                    [id]="i + 'tasks'"
+                    name="tasks"
+                    class="fitem-ck-input"
+                    [attr.disabled]="preview ? 'disabled' : null"
+                  >
+                  <label [for]="i + 'tasks'" class="fitem-ck-txt">Tasks</label>
+                </div>
+                <div class="fitem-check field-check-wrapper">
+                  <input
+                    type="checkbox"
+                    [id]="i + 'all'"
+                    name="all"
+                    class="fitem-ck-input"
+                    (change)="selectAllFields($event, i)"
+                    [attr.disabled]="preview ? 'disabled' : null"
+                  >
+                  <label [for]="i + 'all'" class="fitem-ck-txt">All</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="!preview && !fieldId">
+              <button (click)="removeItem(item)" style="background: #fff;border:red;color:red;" type="button"
+                class="btn remove">- Remove Field
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="card" *ngIf="!preview && !fieldId">
+    <div class="card-body">
+      <div class="form-group">
+        <button (click)="addItem()" type="button" class="btn">+ Add Field</button>
+      </div>
+    </div>
+  </div>
+  <div class="btn-group text-right fx-btm" *ngIf="!preview">
+    <button class="btn btn-md" type="submit">
+      Continue
+    </button>
+  </div>
+
+  <div class="btn-group text-right fx-btm" *ngIf="preview">
+    <a class="btn btn-md btn-bdr" (click)="back()" href="javascript:void(0);">Back</a>
+    <button class="btn btn-md" (click)="save()">
+      Save
+    </button>
+  </div>
+</form>

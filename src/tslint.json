@@ -1,0 +1,87 @@
+{
+  "extends": "../tslint.json",
+  "rules": {
+    "class-name": true,
+    "comment-format": false,
+    "curly": true,
+    "eofline": true,
+    "forin": true,
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "label-position": true,
+    "label-undefined": true,
+    "max-line-length": [
+      true,
+      700
+    ],
+    "directive-selector": [
+      true,
+      "attribute",
+      "app",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "app",
+      "kebab-case"
+    ],
+    "no-trailing-whitespace": false,
+    "no-irregular-whitespace": false,
+    "space-before-function-paren": false,
+    "space-within-parens": false,
+    "no-string-literal": false,
+    "no-duplicate-variable": true,
+    "no-empty": false,
+    "no-eval": true,
+    "no-inferrable-types": false,
+    "no-shadowed-variable": true,
+    "no-switch-case-fall-through": true,
+    "no-unused-expression": true,
+    "no-unused-variable": true,
+    "no-unreachable": true,
+    "no-use-before-declare": true,
+    "no-var-keyword": true,
+    "object-literal-sort-keys": false,
+    "one-line": [
+      true,
+      "check-open-brace",
+      "check-catch",
+      "check-else",
+      "check-whitespace"
+    ],
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "radix": true,
+    "semicolon": [
+      "always"
+    ],
+    "triple-equals": [
+      true,
+      "allow-null-check"
+    ],
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      }
+    ],
+    "variable-name": false,
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-separator",
+      "check-type"
+    ]
+  }
+}

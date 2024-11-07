@@ -1,0 +1,25 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    <div class="intro-row">
+      <div class="intro-wrap" id="myElement">
+        <div class="intro-item" *ngFor="let slide of slides" [class.intro-active]="slide?.slide?.selected">
+          <div class="intro-img">
+            <figure>
+              <img src="{{slide?.slide?.image}}" alt="">
+            </figure>
+          </div>
+          <div class="intro-caption">
+            <h3 class="accent">{{slide?.slide?.title}}</h3>
+            <p>{{slide?.slide?.message}}</p>
+          </div>
+        </div>
+      </div>
+      <button class="intro-btn intro-prev" (click)="slide(-1)"><img src="assets/images/intro-prev.svg" alt=""></button>
+      <button class="intro-btn intro-next" (click)="slide(1)"><img src="assets/images/intro-next.svg" alt=""></button>
+      <div class="intro-dots">
+        <a href="javascript:void(0);" *ngFor="let slide of slides; let i = index" (click)="selectSlide(i)"
+          [class.active]="slide.slide.selected"><i></i></a>
+      </div>
+    </div>
+  </div>
+</div>

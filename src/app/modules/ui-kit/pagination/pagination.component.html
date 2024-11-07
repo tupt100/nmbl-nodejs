@@ -1,0 +1,43 @@
+<div class="paginate flex" *ngIf="totalRecords > viewBy">
+  <div class="sm-hidden ai-center m-0 pagi-area ">
+    <p>View by</p>
+    <ul class="pagi-list">
+      <li class="cpointer">
+        <a *ngIf="!isTwelve" [class.active]="viewBy === 10" (click)="setPerPage(10)">10</a>
+        <a *ngIf="isTwelve" [class.active]="viewBy === 12" (click)="setPerPage(12)">12</a>
+      </li>
+      <li class="cpointer">
+        <a [class.active]="viewBy === 25" (click)="setPerPage(25)">25</a>
+      </li>
+      <li class="cpointer">
+        <a [class.active]="viewBy === 50" (click)="setPerPage(50)">50</a>
+      </li>
+    </ul>
+  </div>
+  <div class="flex ai-center pagi-area flex-end" *ngIf="totalRecords > viewBy">
+    <p>Showing {{recordsStart}} - {{totalViewRecords}} of {{totalRecords}} {{type}}</p>
+    <ul class="pagi-list">
+      <li *ngIf="totalViewRecords > 12 && (type == 'Project' || type == 'Group')"> <a class="prev"
+          href="javascript:void(0);" (click)="getPreviousPage()"> </a> </li>
+      <li *ngIf="totalViewRecords > 10 && type != 'Project' && type != 'Group'"> <a class="prev"
+          href="javascript:void(0);" (click)="getPreviousPage()"> </a> </li>
+      <ng-container class="outer"
+        *ngFor="let page of arrTotalPages ; let first = first; let last = last; let i = index;">
+        <li
+          *ngIf="first || i < currentPage-3 &&i > currentPage -5 && !first || i < currentPage+ 2 &&i > currentPage -4 && !first || i-1 < currentPage+ 2 &&i > currentPage+1  && !last ||  last && currentPage < page-2 ">
+          <a [class.active]="currentPage === page" *ngIf="first" href="javascript:void(0);" (click)="getPage(page)">
+            {{page}} </a>
+          <a class="no-bg" *ngIf="i < currentPage-3 &&i > currentPage -5 && !first" href="javascript:void(0);">..</a>
+          <a [class.active]="currentPage === page" *ngIf="i < currentPage + 2 && i > currentPage - 4 && !first"
+            href="javascript:void(0);" (click)="getPage(page)"> {{ page }} </a>
+          <a class="no-bg" *ngIf="i-1 < currentPage+ 2 &&i > currentPage+1  && !last" href="javascript:void(0);">..</a>
+          <a [class.active]="currentPage === page" *ngIf="last && currentPage < page-2" href="javascript:void(0);"
+            (click)="getPage(page)"> {{page}}</a>
+        </li>
+      </ng-container>
+      <li *ngIf="totalViewRecords != totalRecords"><a class="next" href="javascript:void(0);"
+          (click)="getNextPage()"></a>
+      </li>
+    </ul>
+  </div>
+</div>

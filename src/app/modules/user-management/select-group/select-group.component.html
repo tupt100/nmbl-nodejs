@@ -1,0 +1,19 @@
+<div class="select-box lg-field" [class.open]="isGroupBoxOpen" (click)="isGroupBoxOpen = !isGroupBoxOpen;">
+  {{groupName}}
+</div>
+<form [formGroup]='usersForm'>
+  <div class="nav-dropdown no-scroll" *ngIf="isGroupBoxOpen">
+    <input type="text" class="search_input" placeholder="Search permission" formControlName="assignToSearch">
+    <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+      <div class="check-list rbtn mscroll-height">
+        <span class="fitem-check" *ngFor="let group of arrGroups">
+          <input id="{{group.id}}" type="checkbox" class="fitem-ck-input" [checked]="group.checked"
+            (change)="selectGroup(group)" />
+          <label for="{{group.id}}" class="fitem-ck-txt">
+            {{group.name}}
+          </label>
+        </span>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</form>

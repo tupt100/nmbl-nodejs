@@ -1,0 +1,36 @@
+<div class="modal-dialog modal-sm">
+  <div class="alert-cont modal-content">
+    <div class="modal-header text-center">
+      <h5>Upload Document</h5>
+    </div>
+    <div class="modal-body">
+      <a href="javascript:void(0)" class="flex-end bg-text">
+        <div class="doc-upld-wrap pos-relative">
+          <input type="file" id="files" (change)="uploadFile($event)" /><span>Upload Another Document</span>
+        </div>
+      </a>
+      <div class="doc-scroll">
+        <div class="doc-detail upld-doc">
+          <div class="view-doc-list flex ai-center mb-10" *ngFor="let doc of arrTempFile; let i = index;">
+            <div class="doc-info">
+              <figure><img [src]="doc?.name | image" alt="FileExtension" /></figure>
+              <span>{{doc.name}}</span>
+            </div>
+            <span class="sr-only" *ngIf="doc.display">{{percentageComplete}}%</span>
+            <a class="m-0" href="javascript:void(0)" (click)="removeLocalDocument(i)" *ngIf="!doc.display"> <img
+                src="assets/images/Trash-Icon-active.SVG" /> </a>
+          </div>
+          <div class="progress" *ngIf="hideLoader()">
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+              [style.width.%]="percentageComplete">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-group flex mt-20">
+        <button class="btn btn-half btn-bdr btn-md" (click)="handleUpload()"> Cancel </button>
+        <button class="btn btn-half btn-md" (click)="handleUpload(true)"> Upload </button>
+      </div>
+    </div>
+  </div>
+</div>

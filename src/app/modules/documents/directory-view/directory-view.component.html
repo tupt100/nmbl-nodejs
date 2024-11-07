@@ -1,0 +1,259 @@
+<app-notifier></app-notifier>
+<div class="search-bar">
+  <div class="container flex ai-center">
+    <img src="/assets/images/search-icon-dark.svg" *ngIf="!searchText" />
+    <img src="/assets/images/btn-close.png" *ngIf="searchText" (click)="clearSearch()" />
+    <input type="text" class="in-search" placeholder="Search Documents..." [(ngModel)]="searchText" (ngModelChange)="searchDocument($event)" />
+  </div>
+</div>
+<div class="sm-block-row doc-list directory-view">
+  <div class="container">
+    <div class="flex aside-area row-inline ai-stretch">
+      <div class="aside-full-block">
+        <div class="flex title-row ai-center">
+          <div class="left-cap-area flex ai-center flex-start">
+            <h5 class="mb-0">Documents</h5>
+            <div class="tabs tab-hide">
+              <a href="javascript:void(0)" class="tname" [routerLink]="['/main/documents']">View all</a>
+              <a href="javascript:void(0)" class="active tname"
+                [routerLink]="['/main/documents-directory']">Directory</a>
+            </div>
+          </div>
+          <div class="flex-width right-cap-area">
+            <div class="form-group">
+              <div class="fitem half-fitem flex-end">
+                <div class="fitem lg-half-fitem mr-0 pos-relative">
+                  <app-tag-filter (selectionChanged)="selectionChanged($event)"></app-tag-filter>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Directory view section starts here-->
+        <div class="card ">
+          <div class="card-body no-pad">
+            <perfect-scrollbar style="max-width: 100%; max-height: 645px;">
+              <div class="dir-cols">
+                <div class="dir-col">
+                  <!-- active -->
+                  <div class="dir-folder dir-cont flex ai-center flex-start" *ngFor="let project of arrProjects"
+                    [class.active]="project?.project?.id === projectId">
+                    <figure><img src="assets/images/folder.svg" alt="" /></figure>
+                    <span class="sm-text" (click)="selectProject(project)"> {{project?.project.name}} </span>
+                    <a href="javascript:void(0)">
+                      <img class="show" src="assets/images/chevron-right.svg" alt="" />
+                      <img src="assets/images/chevron-close.svg" alt="" />
+                    </a>
+                  </div>
+                </div>
+
+                <div class="dir-col">
+                  <div class="dir-folder dir-cont flex ai-center flex-start" *ngFor="let workflow of arrWorkflow"
+                    [class.active]="workflow?.id === workflowId">
+                    <figure><img src="assets/images/folder.svg" alt="" /></figure>
+                    <span class="sm-text" (click)="selectWorkflow(workflow)"> {{workflow.name}} </span>
+                    <a href="javascript:void(0)">
+                      <img class="show" src="assets/images/chevron-right.svg" alt="" />
+                      <img src="assets/images/chevron-close.svg" alt="" />
+                    </a>
+                  </div>
+                  <div class="dir-file dir-cont flex ai-center flex-start" *ngFor="let attachment of projectAttachments"
+                    (click)="getDocumentDetails(attachment.id, 'project')">
+                    <figure><img src="{{attachment.document_name | image}}" alt="" /></figure>
+                    <span class="sm-text"> {{attachment.document_name}} </span>
+                  </div>
+                </div>
+                <div class="dir-col not-found" *ngIf="type === 'project' && arrWorkflow && arrWorkflow.length === 0">
+                  <span>No data found</span>
+                </div>
+
+                <div class="dir-col">
+                  <div class="dir-folder dir-cont flex ai-center flex-start" *ngFor="let task of arrTasks"
+                    [class.active]="task?.id === taskId">
+                    <figure><img src="assets/images/folder.svg" alt="" /></figure>
+                    <span class="sm-text" (click)="selectTask(task)"> {{task.name}} </span>
+                    <a href="javascript:void(0)">
+                      <img class="show" src="assets/images/chevron-right.svg" alt="" />
+                      <img src="assets/images/chevron-close.svg" alt="" />
+                    </a>
+                  </div>
+                  <div class="dir-file dir-cont flex ai-center flex-start" *ngFor="let attachment of workflowAttachments"
+                    (click)="getDocumentDetails(attachment.id, 'workflow')">
+                    <figure><img src="{{attachment.document_name | image}}" alt="" /></figure>
+                    <span class="sm-text"> {{attachment.document_name}} </span>
+                  </div>
+                </div>
+                <div class="dir-col not-found"
+                  *ngIf="type === 'workflow' && (arrTasks && arrTasks.length === 0 || !arrTasks)">
+                  <span>No data found</span>
+                </div>
+                <div class="dir-col">
+                  <div class="dir-file dir-cont flex ai-center flex-start" *ngFor="let attachment of taskAttachments"
+                    (click)="getDocumentDetails(attachment.id, 'task')">
+                    <figure><img src="{{attachment.document_name | image}}" alt="" /></figure>
+                    <span class="sm-text"> {{attachment.document_name}} </span>
+                  </div>
+                  <div class="dir-file dir-cont flex ai-center flex-start not-found"
+                    *ngIf="type === 'task' && taskAttachments && taskAttachments.length === 0">
+                    <span>No data found</span>
+                  </div>
+                </div>
+              </div>
+            </perfect-scrollbar>
+            <div class="block-row pg-not-found" *ngIf="arrProjects.length === 0">
+              <div class="sm-container">
+                <div class="pg-type pos-relative">
+                  <img src="assets/images/Documents.png" alt="">
+                </div>
+                <div class="not-found-msg flex mt-30">
+                  <span><strong> You have no documents to view </strong></span>
+                  <span class="mt-20 text-center">Once a document is uploaded to project, workflow or task that is
+                    assigned to you, it will appear here.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card side-card">
+          <div class="card-bdr card-title">
+            <h5>Upload & View</h5>
+          </div>
+          <div class="card-body no-pad" *ngIf="!objDocument">
+
+            <div class="doc-scroll">
+
+              <div class="file-wrap" DragDrop (onFileDropped)="uploadFile($event)">
+                <input type="file" id="files" (change)="uploadFile($event)">
+                <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center">
+                  <p>Drag & drop your files here<strong> or <b>Browse</b> </strong></p>
+                </label>
+              </div>
+
+
+              <div class="doc-detail">
+                <div class="associate-docs" *ngIf="myFileArray.length > 0">
+                  <blockquote class="flex flex-start"> <span title="{{displayTitle}}">{{displayTitle}}</span> <a
+                      (click)="displayPWT = !displayPWT" href="javascript:void(0)"
+                      class="secondary-link active">Associate
+                      <img src="assets/images/ProxyAssets/TasksAssets/Chevron-Icon.svg" alt="">
+                    </a>
+                    <app-select-pwt *ngIf="displayPWT" (onValueSelected)="onValueSelected($event)"></app-select-pwt>
+                  </blockquote>
+                </div>
+
+                <div class="view-doc-list flex ai-center" *ngFor="let doc of myFileArray; let i = index;">
+                  <div class="doc-info">
+                    <figure><img [src]="doc?.name | image" alt="FileExtension" /></figure>
+                    <input type="text" name="inputField" [ngModel]="doc.name" class="name-box ml-10" />
+                  </div>
+                  <a class="m-0" href="javascript:void(0)" (click)="removeLocalDocument(i)"> <img
+                      src="assets/images/Trash-Icon-active.SVG" /> </a>
+                </div>
+
+                <div class="filter-docs form-group" *ngIf="myFileArray.length > 0">
+                  <div class="fitem half-fitem flex flex-start">
+                    <div class="doc-tag-filter ddown-item half-fitem">
+                      <div class="flex flex-column" *ngIf="!isStandAloneTag">
+                        <label>Tag(s)</label>
+                        <app-multiselect-dropdown searchPlaceholder="Search Tags" [isTag]="true" [isFilter]="false"
+                          [title]="tagTitle" [displaySubItem]="tagsList" (search)="$event && listTags($event)"
+                          (selectionChanged)="setFilterTitle($event)">
+                        </app-multiselect-dropdown>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="btn-group flex ai-center mt-10" *ngIf="myFileArray.length > 0">
+              <button type="button" class="btn btn-bdr btn-md" (click)="cancelUpload();">Cancel</button>
+              <button type="button" class="btn btn-md" (click)="uploadDoc()">Update</button>
+            </div>
+          </div>
+          <div class="card-body no-pad" *ngIf="objDocument">
+            <div class="doc-scroll">
+              <div class="file-wrap main-full-head-task" DragDrop (onFileDropped)="uploadFile($event)">
+                <input type="file" id="files" (change)="uploadFile($event)">
+                <label for="files" class="upload-file-lbl d-flex align-items-center justify-content-center">
+                  <p>Drag & drop your files here<strong> or <b>Browse</b> </strong></p>
+                </label>
+              </div>
+
+              <div class="doc-detail">
+                <div class="associate-docs">
+                  <blockquote class="flex flex-start"> <span title="{{displayTitle}}">{{displayTitle}}</span> <a
+                      (click)="displayPWT = !displayPWT" href="javascript:void(0)"
+                      class="secondary-link active">Associate
+                      <img src="assets/images/ProxyAssets/TasksAssets/Chevron-Icon.svg" alt="">
+                    </a>
+                    <app-select-pwt *ngIf="displayPWT" (onValueSelected)="updatePWT($event)" [selected]="objDocument">
+                    </app-select-pwt>
+                  </blockquote>
+                </div>
+                <div class="view-doc-list flex ai-center" *ngIf="objDocument && objDocument.document_name">
+                  <div class="doc-info">
+                    <figure><img [src]="objDocument?.document_name | image" alt="FileExtension" /></figure>
+                    <span class="name-box" [title]="objDocument?.document_name"> {{objDocument?.document_name}} </span>
+                  </div>
+                  <figure class="nmb-thumb-dp">
+                    <img *ngIf="objDocument?.created_by?.user_avatar_thumb"
+                      src="{{objDocument?.created_by?.user_avatar_thumb}}"
+                      title="{{objDocument?.created_by?.first_name}} {{objDocument?.created_by?.last_name}}" alt="" />
+                    <span class="no-img" *ngIf="!objDocument?.created_by?.user_avatar_thumb"
+                      title="{{objDocument?.created_by?.first_name}} {{objDocument?.created_by?.last_name}}">{{sharedService.displayInitial(objDocument?.created_by?.first_name, objDocument?.created_by?.last_name)}}</span>
+                  </figure>
+                </div>
+
+                <div class="filter-docs form-group">
+                  <div class="fitem flex flex-start">
+                    <div class="doc-tag-filter ddown-item">
+                      <div class="flex flex-column" *ngIf="!isStandAloneTag">
+                        <label>Tag(s)</label>
+                        <app-multiselect-dropdown searchPlaceholder="Search Tags" [isTag]="true" [isFilter]="false"
+                          [title]="tagTitle" [displaySubItem]="tagsList" (search)="$event && listTags($event)"
+                          (selectionChanged)="setFilterTitleUpdate($event)">
+                        </app-multiselect-dropdown>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <app-audit-trail-history *ngIf="idDisplayDetail" [list]="arrAuditTrail"></app-audit-trail-history>
+            </div>
+            <div class="btn-group flex ai-center mt-10" *ngIf="myFileArray.length === 0 && objDocument">
+              <button type="button" class="btn btn-md" (click)="downloadFile(objDocument);">Download</button>
+              <button type="button" class="btn-box pos-relative text-left action-dropdown visible" (click)="isOpen = !isOpen;"
+                *ngIf="objDocument && objDocument.id > 0"><img src="assets/images/more-horizontal.svg" alt="">
+                <div class="nav-dropdown sm-filter" *ngIf="isOpen">
+                  <button type="button" class="no-btn" (click)="showModal.isShareDocument=true;">Share</button>
+                  <button type="button" class="no-btn" (click)="showModal.isCopyDocument = true">Copy</button>
+                  <button type="button" class="no-btn" (click)="showModal.isRemoveDocument=true;">Delete</button>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveDocument}">
+  <app-confirm-modal message1="Delete Document"
+    message2="Once you have deleted this document, this action cannot be reversed." cancelButtonText="Cancel"
+    okButtonText="Remove" (onClose)="removeDocumentConfirm($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isShareDocument}">
+  <app-share-document [isPrivate]="objDocument?.uploaded_to?.is_private" (onClose)="shareDocument($event)"></app-share-document>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isCopyDocument}">
+  <app-copy-document (onValueSelected)="onValueSelected($event)" (onClose)="copyDocument($event)"></app-copy-document>
+</div>

@@ -1,0 +1,359 @@
+<app-notifier></app-notifier>
+<app-menu class="m-header"></app-menu>
+<div class="sm-block-row acc-setting">
+  <div class="container">
+    <h3 class="sm-hidden">Account Settings</h3>
+    <div class="card-row flex">
+      <div class="card">
+        <div class="card-bdr card-title">
+          <h6 class="mb-0"> Settings </h6>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="settingsForm">
+            <div class="form-group">
+              <div class="fitem">
+                <label for="">Company Email<sup>*</sup></label>
+                <input type="text" placeholder="Enter Email" formControlName="email" readonly />
+              </div>
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label for="">Name<sup>*</sup></label>
+                  <input type="text" placeholder="Enter First Name" formControlName="firstName" required />
+                  <label for="" *ngIf="settingsForm.controls.firstName.invalid" class="error">First name cannot be
+                    blank.</label>
+                </div>
+                <div class="fitem half-fitem">
+                  <label for="">&nbsp;</label>
+                  <input type="text" placeholder="Enter Last Name" formControlName="lastName" required />
+                  <label for="" *ngIf="settingsForm.controls.lastName.invalid" class="error">Last
+                    name cannot be blank.</label>
+                </div>
+              </div>
+              <div class="fitem">
+                <label for="">Title</label>
+                <input type="text" placeholder="Enter Title" formControlName="title" />
+              </div>
+              <div class="fitem">
+                <label for="">Role/Permission<sup>*</sup></label>
+                <input type="text" placeholder="Enter Title" formControlName="group" readonly />
+              </div>
+            </div>
+          </form>
+          <div class="btn-group text-right mt-10">
+            <button type="button" class="btn btn-md" (click)="updateSettings()">Update Settings</button>
+          </div>
+        </div>
+      </div>
+      <div class="card avatar">
+        <div class="card-bdr card-title">
+          <h6 class="mb-0"> Avatar </h6>
+        </div>
+        <div class="card-body">
+          <div DragDrop class="user-img" (onFileDropped)="uploadFile($event)" *ngIf="userAvatar.length > 0">
+            <img src="{{userAvatar}}" alt="" />
+          </div>
+          <div DragDrop class="user-img no-img" (onFileDropped)="uploadFile($event)" *ngIf="userAvatar.length === 0">
+            <span class="mt-0"> {{nameInitial}} </span>
+          </div>
+
+          <span class=""><strong>Replace your photo here.</strong></span>
+          <p class="opacity6">The photo can be a GIF, PNG or JPG type file. <br> We will resize it for you
+            to a width and height of 170 pixels.</p>
+          <div class="btn-group text-right">
+            <button type="button" class="btn btn-md btn-warning" (click)="showModal.isRemoveAvatar = true;"
+              *ngIf="userAvatar">Remove Photo</button>
+            <button type="button" class="btn btn-md" (click)="fileUserAvatar.click()">Upload New
+              Avatar</button>
+            <input hidden #fileUserAvatar type="file" (change)="uploadFile($event)" class="fileType"
+              accept="image/x-png,image/gif,image/jpeg" />
+          </div>
+          <span class="error" *ngIf="avatarPhotobig">Photo could not be uploaded. It was too large. <br>
+            Please try another photo under 2MB,</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-bdr card-title">
+          <h6 class="mb-0"> Change Password </h6>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <form [formGroup]="changepwdForm">
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label for="">Current Password<sup>*</sup></label>
+                  <input type="password" placeholder="Current Password" formControlName="currentPassword"
+                    [ngClass]="{'error': submitted && changepwdForm.controls.currentPassword.errors }" />
+                  <label for="" class="error"
+                    *ngIf="submitted && changepwdForm.controls.currentPassword.errors && changepwdForm.controls.currentPassword.errors.required ">Current
+                    password cannot be blank.
+                  </label>
+                </div>
+              </div>
+
+              <div class="fitem half-fitem">
+                <div class="fitem half-item flex warn-text m-0">
+                  <strong>Your new password must:</strong>
+                  <span
+                    [ngClass]="!changepwdForm.controls.password.errors?.required ? (changepwdForm.controls.password.hasError('minlength') ? 'error' : 'success'): 'warning'"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/{{ !changepwdForm.controls.password.errors?.required ? changepwdForm.controls.password.hasError('minlength') ? 'CrossRed-Icon.svg': 'CheckGreen-Icon.svg' : 'Cross-Icon-60.svg'}}"
+                      alt="" /> Minimum of 8 characters</span>
+                  <span
+                    [ngClass]="!changepwdForm.controls.password.errors?.required ? (changepwdForm.controls.password.errors?.hasOwnProperty('camelCase') ? 'error' : 'success'): 'warning'"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/{{ !changepwdForm.controls.password.errors?.required ? changepwdForm.controls.password.errors?.hasOwnProperty('camelCase') ? 'CrossRed-Icon.svg': 'CheckGreen-Icon.svg' : 'Cross-Icon-60.svg'}}"
+                      alt="" /> Include both upper and lower case</span>
+                  <span
+                    [ngClass]="!changepwdForm.controls.password.errors?.required ? (changepwdForm.controls.password.errors?.hasOwnProperty('specialCharacter') ? 'error' : 'success'): 'warning'"><img
+                      src="assets/images/ProxyAssets/UserManagementAssets/{{ !changepwdForm.controls.password.errors?.required ? changepwdForm.controls.password.errors?.hasOwnProperty('specialCharacter') ? 'CrossRed-Icon.svg': 'CheckGreen-Icon.svg' : 'Cross-Icon-60.svg'}}"
+                      alt="" /> Include 1 symbol - !@£$%^&*()</span>
+                </div>
+              </div>
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label for="">New Password<sup>*</sup></label>
+                  <div class="input-wrap">
+                    <input type="{{newPasswordType}}" placeholder="New Password" formControlName="password"
+                      [ngClass]="{'error': submitted && changepwdForm.controls.password.errors }" />
+                    <a href="javascript:void(0)" [class.ihide]="!isNewPassword" (click)="visibleNewPassword();"><img
+                        src="assets/images/ProxyAssets/UserManagementAssets/Eye-Icon-Active.svg" alt="" /></a>
+                  </div>
+                  <label for="" class="error"
+                    *ngIf="submitted && changepwdForm.controls.password.errors && changepwdForm.controls.password.errors.required ">New
+                    password cannot be blank.
+                  </label>
+                </div>
+                <div class="fitem half-fitem">
+                  <label for="">Confirm Password<sup>*</sup></label>
+                  <div class="input-wrap">
+                    <input type="{{confirmPasswordType}}" placeholder="Confirm New Password"
+                      formControlName="confirmPassword"
+                      [ngClass]="{'error': submitted && changepwdForm.controls.confirmPassword.errors }" />
+                    <a href="javascript:void(0)" [class.ihide]="!isConfirmPassword"
+                      (click)="visibleConfirmPassword();"><img
+                        src="assets/images/ProxyAssets/UserManagementAssets/Eye-Icon-Active.svg" alt="" /></a>
+                  </div>
+                  <label for="" class="error"
+                    *ngIf="submitted && changepwdForm.controls.confirmPassword.errors && changepwdForm.controls.confirmPassword.errors.required ">
+                    Confirm password cannot be blank. </label>
+                  <label for="" class="error"
+                    *ngIf="submitted && changepwdForm.controls.confirmPassword.errors && changepwdForm.controls.confirmPassword.errors.pattern ">Confirm
+                    password is not as per pattern</label>
+                  <label for="" class="error"
+                    *ngIf="submitted && changepwdForm.controls.confirmPassword.errors && changepwdForm.controls.confirmPassword.errors.passwordsNotMatching && !changepwdForm.controls.confirmPassword.errors.pattern">Confirm
+                    password doesn't match with new password.</label>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="btn-group text-right mt-10">
+            <button type="button" class="btn btn-md" (click)="changePassword()">Change Password</button>
+          </div>
+        </div>
+      </div>
+      <div class="card notification-tab">
+        <div class="card-bdr card-title">
+          <h6 class="mb-0"> Notification Settings</h6>
+        </div>
+        <div class="card-body">
+          <div class="tabs">
+            <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'task'"
+              (click)="modelType = 'task'">Tasks</a>
+            <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'project'"
+              (click)="modelType = 'project'">Projects</a>
+            <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'workflow'"
+              (click)="modelType = 'workflow'">Workflows</a>
+            <a href="javascript:void(0)" class="tname" [class.active]="modelType === 'account'"
+              (click)="modelType = 'account'">Account</a>
+          </div>
+          <div class="inline-row-col flex">
+            <div class="inline-col-6">&nbsp;</div>
+            <div class="inline-col-3">
+              <span class="opacity6 xs-text">In-App <br /> <span class="sm-hidden opacity6">Notifications</span></span>
+            </div>
+            <div class="inline-col-3">
+              <span class="opacity6 xs-text">Email <br /> <span class="sm-hidden opacity6">Notifications</span></span>
+            </div>
+          </div>
+
+          <!--Task-->
+          <div class="tab-column" *ngIf="modelType === 'task'">
+            <div class="inline-row-col flex">
+              <div class="inline-col-6">&nbsp;</div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="task-app" class="fitem-ck-input"
+                    (change)="selectAllTaskAppNotification($event)" />
+                  <label for="task-app" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="task-email" class="fitem-ck-input"
+                    (change)="selectAllTaskEmailNotification($event)" />
+                  <label for="task-email" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+            <div class="inline-row-col flex" *ngFor="let notification of arrTaskNotifications">
+              <div class="inline-col-6"><span> {{notification.name}} </span></div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="task-app-{{notification.id}}" [checked]="notification.in_app_notification"
+                    (change)="changeAppSettings($event, notification)" class="fitem-ck-input" />
+                  <label for="task-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="task-email-{{notification.id}}" [checked]="notification.email_notification"
+                    (change)="changeEmailSettings($event, notification)" class="fitem-ck-input" />
+                  <label for="task-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--Project-->
+          <div class="tab-column" *ngIf="modelType === 'project'">
+            <div class="inline-row-col flex">
+              <div class="inline-col-6">&nbsp;</div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="project-app" class="fitem-ck-input"
+                    (change)="selectAllProjectAppNotification($event)" />
+                  <label for="project-app" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="project-email" class="fitem-ck-input"
+                    (change)="selectAllProjectEmailNotification($event)" />
+                  <label for="project-email" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+            <div class="inline-row-col flex" *ngFor="let notification of arrProjectNotifications">
+              <div class="inline-col-6"><span> {{notification.name}} </span></div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="project-app-{{notification.id}}"
+                    [checked]="notification.in_app_notification" (change)="changeAppSettings($event, notification)"
+                    class="fitem-ck-input" />
+                  <label for="project-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="project-email-{{notification.id}}"
+                    [checked]="notification.email_notification" (change)="changeEmailSettings($event, notification)"
+                    class="fitem-ck-input" />
+                  <label for="project-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--Workflow-->
+          <div class="tab-column" *ngIf="modelType === 'workflow'">
+            <div class="inline-row-col flex">
+              <div class="inline-col-6">&nbsp;</div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="workflow-app" class="fitem-ck-input"
+                    (change)="selectAllWorkflowAppNotification($event)" />
+                  <label for="workflow-app" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="workflow-email" class="fitem-ck-input"
+                    (change)="selectAllWorkfllowEmailNotification($event)" />
+                  <label for="workflow-email" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+            <div class="inline-row-col flex" *ngFor="let notification of arrWorkflowNotifications">
+              <div class="inline-col-6"><span> {{notification.name}} </span></div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="workflow-app-{{notification.id}}"
+                    [checked]="notification.in_app_notification" (change)="changeAppSettings($event, notification)"
+                    class="fitem-ck-input" />
+                  <label for="workflow-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="workflow-email-{{notification.id}}"
+                    [checked]="notification.email_notification" (change)="changeEmailSettings($event, notification)"
+                    class="fitem-ck-input" />
+                  <label for="workflow-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!--Account-->
+          <div class="tab-column" *ngIf="modelType === 'account'">
+            <div class="inline-row-col flex">
+              <div class="inline-col-6">&nbsp;</div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="account-app" class="fitem-ck-input"
+                    (change)="selectAllAccountAppNotification($event)" />
+                  <label for="account-app" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="account-email" class="fitem-ck-input"
+                    (change)="selectAllAccountEmailNotification($event)" />
+                  <label for="account-email" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+            <div class="inline-row-col flex" *ngFor="let notification of arrAccountNotifications">
+              <div class="inline-col-6"><span> {{notification.name}} </span></div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="account-app-{{notification.id}}"
+                    [checked]="notification.in_app_notification" (change)="changeAppSettings($event, notification)"
+                    class="fitem-ck-input" />
+                  <label for="account-app-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+              <div class="inline-col-3">
+                <div class="fitem-check">
+                  <input type="checkbox" id="account-email-{{notification.id}}"
+                    [checked]="notification.email_notification" (change)="changeEmailSettings($event, notification)"
+                    class="fitem-ck-input" />
+                  <label for="account-email-{{notification.id}}" class="fitem-ck-txt f-left"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-group text-right mt-30">
+            <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+            <button type="button" class="btn btn-lg" (click)="upddateNotificationSettings();">Update
+              Notification</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isRemoveAvatar}">
+  <app-confirm-modal message1="Remove User Avatar"
+    message2="If you cancel, your changes won't be saved. If you wish to save your changes, click Remove."
+    cancelButtonText="Cancel" okButtonText="Remove" (onClose)="confirrmRemoveUserAvatar($event)">
+  </app-confirm-modal>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.isFileUpload}">
+  <app-upload-user-avatar [imageChangedEvent]="fileObj" (onClose)="uploadUserAvatar($event)">
+  </app-upload-user-avatar>
+</div>

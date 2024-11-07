@@ -1,0 +1,70 @@
+<form [formGroup]='form' (ngSubmit)="next(form.valid,form.value)">
+
+  <div class="card">
+    <div class="card-title card-bdr sm-hidden">
+      <h5>New Task Template</h5>
+    </div>
+    <div class="card-body">
+      <p>Add custom fields to your task template</p>
+      <div formArrayName="fields" style="margin-bottom: 1rem"
+        *ngFor="let item of form.get('fields')['controls']; let i = index;">
+        <div [formGroupName]="i">
+          <div *ngIf="item.controls['deleted'].value!==true">
+            <div class="form-group">
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label>Custom Field Name</label>
+                  <input type="text" class="" maxlength="40" formControlName="label" name="field_name" placeholder="Name your Field" />
+                </div>
+                <div class="fitem half-fitem">
+                  <label>Default Value</label>
+                  <input type="text" class="" formControlName="defaultValue" name="field_name"
+                    placeholder="Default Value" />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="fitem half-fitem">
+                  <div class="fitem half-fitem">
+                    <label>Field Type</label>
+                    <select formControlName="fieldType">
+                      <option [value]="'Number'">Number</option>
+                      <option [value]="'Text'">Text</option>
+                    </select>
+                  </div>
+                  <div class="fitem-check half-fitem field-check-wrapper">
+                    <input type="checkbox" formControlName="isRequired" [id]="i" name="selfAssign"
+                      class="fitem-ck-input">
+                    <label [for]="i" class="fitem-ck-txt">Is Required</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea formControlName="description"></textarea>
+            </div>
+            <div class="form-group">
+              <button (click)="removeItem(item)" style="background: #fff;border:red;color:red;" type="button"
+                class="btn remove">- Remove Field
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="form-group">
+        <button (click)="addItem()" type="button" class="btn">+ Add Field</button>
+      </div>
+    </div>
+  </div>
+  <div class="btn-group text-right fx-btm">
+    <a class="btn btn-md btn-bdr" (click)="stepBack()" href="javascript:void(0);">Back</a>
+    <button class="btn btn-md" type="submit">
+      Continue
+    </button>
+  </div>
+</form>

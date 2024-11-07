@@ -1,0 +1,50 @@
+.btn-switch-wrap input.btn-switch ~ label:before {
+  background: gray;
+}
+.btn-switch-wrap input.btn-switch.is-checked ~ label:before,
+.btn-switch-wrap input.btn-switch:checked ~ label:before,
+.btn-switch-wrap input.btn-switch.btn-switch[checked="true"] ~ label:before {
+  background: #485cc7;
+}
+.field-with-description {
+  display: inline-flex;
+  align-items: center;
+}
+.field-description {
+  font-size: 18px;
+  color: black;
+}
+
+.btn-box {
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  border: 50%;
+  background: none;
+}
+.btn-box img {
+  margin-top: -3px;
+}
+.btn-box:hover {
+  background: none;
+}
+.btn-box:hover img {
+  filter: none;
+}
+
+:host {
+  .accordion-btn {
+    border: none;
+    background-color: transparent;
+    background-image: url(../../../../../assets/images/ProxyAssets/TasksAssets/Chevron-Icon.svg) !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0px center !important;
+    color: rgba(0, 0, 0, 0.9);
+    padding: 4px 20px 4px 0;
+    font-size: 16px;
+    font-weight: 100;
+    &:focus {
+      outline: none;
+    }
+  }
+}

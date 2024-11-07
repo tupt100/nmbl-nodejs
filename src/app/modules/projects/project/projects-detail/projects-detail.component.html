@@ -1,0 +1,466 @@
+<app-menu class="m-header"></app-menu>
+<div class="detail-pg"
+  *ngIf="permisionList && (permisionList.project_project_view || permisionList.project_project_view_all)">
+  <div class="main-full-head">
+    <div class="container">
+      <div class="task-header-wrap flex">
+        <div class="prty-wrap" *ngIf="permisionList?.task_set_importance">
+          <app-importance [checkedImportance]="importance" (selectedImportance)="updateProject('importance', $event)"
+            [isDisabled]="!permisionList?.project_set_importance || project?.project?.status != 1">
+          </app-importance>
+        </div>
+        <div class="title-row">
+          <div class="edit_name active">
+            <h2 class="test-class" *ngIf="!showProjectNameEdit"
+              [ngStyle]="permisionList?.project_project_edit_name && project?.project?.status == 1 && {'cursor': 'pointer'}"
+              [title]="permisionList?.project_project_edit_name && project?.project?.status == 1 ? 'Double click to edit' : project?.project?.name"
+              (dblclick)="permisionList?.project_project_edit_name && project?.project?.status == 1 && showProjectNameInput()">
+              {{ project?.project?.name }}</h2>
+            <div class="input-wrap"
+              *ngIf="showProjectNameEdit && permisionList?.project_project_edit_name && project?.project?.status == 1">
+              <input type="text" placeholder="Enter project name" [(ngModel)]="projectName"
+                (keyup.enter)="renameProjectTitle()" class="reNameInput" />
+              <a href="javascript:void(0);" class="close" (click)="projectName = ''">
+                <img src="assets/images/btn-close-icon.png" alt="">
+              </a>
+            </div>
+          </div>
+          <div class="title-btm-wrap flex ai-center">
+            <div class="due-startdate-wrap">
+              <div class="due-date pos-relative">
+                <a class="date-btn" href="javascript:void(0);"
+                  (click)="showCalendar = []; showCalendar['due'] = !showCalendar['due']"
+                  [ngClass]="{'disable': !permisionList?.project_set_due_date || project?.project?.status != 1}"><strong>Due:</strong>
+                  {{ project?.project?.due_date ? 
+                          momentObj(project?.project?.due_date).format('MM/DD/YYYY') : ''
+                      }}
+                </a>
+                <span
+                  *ngIf="showCalendar['due'] && permisionList?.project_set_due_date  && project?.project?.status == 1">
+                  <bs-datepicker-inline [(bsValue)]="dueDate" (bsValueChange)="updateProject('dueDate', $event)"
+                    [minDate]="startDate" [bsConfig]=" { showWeekNumbers: false }">
+                  </bs-datepicker-inline>
+                </span>
+              </div>
+              <div class="start-date pos-relative">
+                <a class="date-btn" href="javascript:void(0);" [ngClass]="{'disable': project?.project?.status != 1}"
+                  (click)="showCalendar = []; showCalendar['start'] = !showCalendar['start']">
+                  <strong>Start:</strong>
+                  {{ project?.project?.start_date ? 
+                        momentObj(project?.project?.start_date).format('MM/DD/YYYY') : '--'
+                      }}
+                </a>
+                <span *ngIf="showCalendar['start'] && project?.project?.status == 1">
+                  <bs-datepicker-inline [(bsValue)]="startDate" (bsValueChange)="updateProject('startDate', $event)"
+                    [maxDate]="dueDate" [bsConfig]=" { showWeekNumbers: false }">
+                  </bs-datepicker-inline>
+                </span>
+              </div>
+            </div>
+            <div class="btn-switch-wrap">
+              <input type="checkbox" class="btn-switch" id="switch" [(ngModel)]="isPrivate"
+                (change)="updateProject('private')" [disabled]="project?.project?.status != 1">
+              <label for="switch"> Private </label>
+            </div>
+          </div>
+        </div>
+        <div class="btn-wrap flex">
+          <div class="user-wrap pos-relative md-filter">
+            <div class="profile-wrap fig-lg">
+              <div class="wf-owner" *ngIf="project?.project?.owner?.first_name">
+                <div class="tooltip">
+                  <span class="tt_text">Owner,
+                    {{ project?.project?.owner?.first_name + ' ' + project?.project?.owner?.last_name }}</span>
+                  <figure>
+                    <img [src]="project?.project?.owner?.user_avatar_thumb"
+                      *ngIf="project?.project?.owner?.user_avatar_thumb" alt="">
+                    <span *ngIf="!project?.project?.owner?.user_avatar_thumb"
+                      class="no-img">{{sharedService.displayInitial(project?.project?.owner?.first_name, project?.project?.owner?.last_name)}}</span>
+                  </figure>
+                </div>
+                <a (click)="showProjectMembers = false; changeOwner = !changeOwner" href="javascript:void(0);"
+                  class="add-user-btn"
+                  *ngIf="permisionList?.project_assign_owner && project?.project?.status == 1">+</a>
+              </div>
+              <div *ngIf="changeOwner">
+                <div class="nav-dropdown mt-10">
+                  <input type="text" class="search_input" placeholder="Search User"
+                    (keyup)="getLists('user', $event, 'membersList')">
+                  <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+                    <div class="check-list">
+                      <span class="fitem-check" *ngFor="let item of membersList | orderBy">
+                        <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input"
+                          [checked]="item?.id === project?.project?.owner?.id"
+                          [disabled]="item?.id === project?.project?.owner?.id" (change)="changeProjectOwner(item)" />
+                        <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                          {{ item.name }}
+                        </label>
+                      </span>
+                      <span class="fitem-check" *ngIf="!membersList?.length">No record found</span>
+                    </div>
+                  </perfect-scrollbar>
+                </div>
+              </div>
+              <ng-container *ngFor="let user of assignedTo | slice:0:3; let i = index;">
+                <figure>
+                  <span class="no-img" *ngIf="!user.user_avatar_thumb" title="{{user?.first_name}} {{user?.last_name}}">
+                    {{sharedService.displayInitial(user?.first_name, user?.last_name)}}</span>
+                  <img *ngIf="user?.user_avatar_thumb" src="{{user?.user_avatar_thumb}}"
+                    title="{{user?.first_name}} {{user?.last_name}}" />
+                </figure>
+              </ng-container>
+              <div class="tooltip userlist" *ngIf="assignedTo?.length > 3">
+                <span class="tt_text">
+                  <span class="tt_text" *ngFor="let user of assignedTo | slice:3">
+                    {{ user?.first_name }} {{ user?.last_name }}<sub>,</sub>
+                  </span>
+                </span>
+                <figure class="more-user">
+                  <span>+{{assignedTo.length - 3}}</span>
+                </figure>
+              </div>
+              <a class="add-user-btn" href="javascript:void(0);"
+                (click)="changeOwner = false; showProjectMembers = !showProjectMembers"
+                *ngIf="permisionList?.project_add_team_members && project?.project?.status == 1">+</a>
+            </div>
+            <div *ngIf="showProjectMembers">
+              <div class="nav-dropdown mt-10">
+                <input type="text" class="search_input" placeholder="Search User"
+                  (keyup)="getLists('user', $event, 'membersList')">
+                <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+                  <div class="check-list">
+                    <span class="fitem-check" *ngFor="let item of membersList | orderBy">
+                      <input id="dropcheck-{{item.id}}" type="checkbox" class="fitem-ck-input"
+                        [checked]="isAssignedUser(item?.id)" (change)="changeAssignUser($event, item)" />
+                      <label for="dropcheck-{{item.id}}" class="fitem-ck-txt">
+                        {{ item.name }}
+                      </label>
+                    </span>
+                    <span class="fitem-check" *ngIf="!membersList?.length">No record found</span>
+                  </div>
+                </perfect-scrollbar>
+              </div>
+            </div>
+          </div>
+          <ul class="btn-group">
+            <li class="sm-hidden" (click)="updateProject('status', 2)"
+              *ngIf="permisionList?.project_mark_as_completed && project?.project?.status == 1">
+              <a class="btn-box tooltip" href="javascript:void(0);">
+                <span class="tt_text">Mark as Done</span>
+                <img src="assets/images/check-icon-b.svg" alt="">
+              </a>
+            </li>
+            <li class="pos-relative action-dropdown" (click)="deleteToggle = !deleteToggle"
+              *ngIf="permisionList?.project_project_delete && project?.project?.status == 1 && !isMobile">
+              <a class="btn-box text-left" href="javascript:void(0);">
+                <img src="assets/images/more-horizontal.svg" alt="">
+              </a>
+              <div class="nav-dropdown sm-filter mt-10 r-0" *ngIf="deleteToggle">
+                <button type="button" class="no-btn" (click)="updateProject('status', 3)">
+                  Archive
+                </button>
+              </div>
+            </li>
+            <li class="pos-relative action-dropdown" (click)="deleteToggle = !deleteToggle" *ngIf="isMobile">
+              <a class="btn-box text-left" href="javascript:void(0);">
+                <img src="assets/images/more-horizontal.svg" alt="">
+              </a>
+              <div class="nav-dropdown sm-filter mt-10 r-0" *ngIf="deleteToggle">
+                <button type="button" class="no-btn"
+                  [ngClass]="{'sm-disable': !permisionList?.project_mark_as_completed || project?.project?.status == 2 || project?.project?.status == 3}"
+                  (click)="permisionList?.project_mark_as_completed && project?.project?.status == 1 && updateProject('status', 2)">Mark
+                  as Done</button>
+                <button type="button" class="no-btn"
+                  [ngClass]="{'sm-disable': !permisionList?.project_project_delete || project?.project?.status == 2 || project?.project?.status == 3}"
+                  (click)="permisionList?.project_project_delete && project?.project?.status == 1 && updateProject('status', 3)">Archive</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main-filter-head pr-head">
+    <div class="container">
+      <div class="flex filter-group-wrap ai-center">
+        <div class="form-group flex">
+          <div class="ddown-item">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label>Groups</label>
+            <app-multiselect-dropdown [isFilter]="false" [title]="groupTitle" [displaySubItem]="workGroupList"
+              [isDisabled]="project?.project?.status != 1" searchPlaceholder="Search Groups"
+              (search)="$event && getLists('group', $event)" (selectionChanged)="onFilterSelected($event, 'group')"
+              (isOpened)="isOpened($event)">
+            </app-multiselect-dropdown>
+          </div>
+          <div class="ddown-item privilege_filter">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label for="">Privilege: </label>
+            <app-select-privilege [checkedPrivilege]="privilege"
+              (selectedPrivilege)="updateProject('privilege', $event)"
+              [isDisabled]="!permisionList?.project_create_edit_privilege_selector || project?.project?.status != 1"
+              (isOpened)="isOpened($event)">
+            </app-select-privilege>
+          </div>
+          <div class="ddown-item">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label for="">Tags: </label>
+            <app-multiselect-dropdown [isTag]="true" [isFilter]="false" [title]="tagTitle" [displaySubItem]="tagsList"
+              [isDisabled]="project?.project?.status != 1" searchPlaceholder="Search Tags"
+              (search)="$event && getLists('tag', $event)" (selectionChanged)="onFilterSelected($event, 'tag')"
+              (isOpened)="isOpened($event)">
+            </app-multiselect-dropdown>
+          </div>
+          <div class="ddown-item">
+            <span class="sm-head" [class.hidden]="!isDropdownOpened">
+              <a href="javascript:void(0)" class="flex-start" (click)="isDropdownOpened=false;">
+                <img src="assets/images/select-icons.png" alt="" class="ml-0 mr-10 r90">Back
+              </a>
+            </span>
+            <label for="">Status: </label>
+            <app-multiselect-dropdown [isFilter]="false" [isMultiple]="false" [title]="statusTitle"
+              [displaySubItem]="statusList" [isSearch]="false" [isDisabled]="true" (isOpened)="isOpened($event)">
+            </app-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="filter-right flex-end">
+          <div class="btn-group flex mb-0 pos-relative">
+            <button type="button" class="btn btn-md assignWorkflow"
+              [ngClass]="permisionList?.workflow_associate_to_project && project?.project?.status == 1 ? 'btn-bdr' : 'btn-gray'"
+              (click)="permisionList?.workflow_associate_to_project && project?.project?.status == 1 && openWorkflowFilter()">Assign
+              Workflow </button>
+            <app-multiselect-dropdown *ngIf="showWorkflowAssignedFilter" [isFilter]="false" [showTitle]="false"
+              [title]="workFlowTitle" [displaySubItem]="workFlowList" searchPlaceholder="Search Workflows"
+              (search)="$event && getLists('workflow', $event)"
+              (selectionChanged)="onFilterSelected($event, 'workflow')">
+            </app-multiselect-dropdown>
+            <button type="button" class="btn btn-md ml-10"
+              [ngClass]="permisionList?.workflow_workflow_create && project?.project?.status == 1 ? 'btn-bdr' : 'btn-gray'"
+              (click)="permisionList?.workflow_workflow_create && project?.project?.status == 1 && goToCreateWorkflow()">Add
+              New Workflow </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex filter-group-custom-fields ai-center mt-10">
+
+        <div class=" form-group flex">
+          <div class="ddown-item" *ngFor="let custom_field of this.project?.custom_fields">
+            <label for="">{{custom_field.label}}</label>
+            <div class="edit_name active">
+              <label class="test-class" *ngIf="!custom_field.showEdit"
+                [ngStyle]="permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4 && {'cursor': 'pointer'}"
+                [title]="permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4 ? 'Double click to edit' : project?.project?.name"
+                (dblclick)="permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4 && showEditForGlobalCustomField(custom_field)">
+                {{ custom_field.value || '--' }}
+              </label>
+              <div class="input-wrap"
+                *ngIf="custom_field.showEdit && permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4">
+                <input [type]="custom_field.controlType" [placeholder]="custom_field.label"
+                  [(ngModel)]="custom_field.valueToEdit" (keyup.enter)="updateCustomField()"
+                  class="editCustomFieldInput" />
+                <a href="javascript:void(0);" class="close" (click)="custom_field.valueToEdit= ''"><img
+                    src="assets/images/btn-close-icon.png" alt=""></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex filter-group-custom-fields ai-center mt-10">
+        <div class=" form-group flex">
+          <div class="ddown-item" *ngFor="let custom_field of project?.project?.global_custom_fields">
+            <label for="">{{custom_field.label}}</label>
+            <div class="edit_name active">
+              <label class="test-class" *ngIf="!custom_field.showEdit"
+                [ngStyle]="permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4 && {'cursor': 'pointer'}"
+                [title]="permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4 ? 'Double click to edit' : project?.project?.name"
+                (dblclick)="permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4 && showEditForGlobalCustomField(custom_field)">
+                {{ custom_field.value || '--' }}
+              </label>
+              <div class="input-wrap"
+                *ngIf="custom_field.showEdit && permisionList?.project_project_edit_name && project?.project?.status != 3 && project?.project?.status != 4">
+                <input [type]="custom_field.controlType" [placeholder]="custom_field.label"
+                  [(ngModel)]="custom_field.valueToEdit" (keyup.enter)="updateGlobalCustomField(custom_field)"
+                  class="editCustomFieldInput" />
+                <a href="javascript:void(0);" class="close" (click)="custom_field.valueToEdit= ''"><img
+                    src="assets/images/btn-close-icon.png" alt=""></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sm-block-row">
+    <div class="container">
+      <app-notifier></app-notifier>
+      <span class="bklink">
+        <a href="javascript:void(0);" (click)="goBack()" class="mb-10 flex flex-start">
+          <img class="r90 m-0" src="assets/images/Chevron-Icon.svg" alt="" /> &nbsp; <b class="m-0">Back</b>
+        </a>
+      </span>
+      <h5>Workflows</h5>
+      <div class="ctable-row">
+        <div class="wf-tab" *ngFor="let workflow of arrWorkflow">
+          <div class="flex-ctable-item ctable-danger" [class.ctable-success]="workflow.workflow?.importance == 1"
+            [class.ctable-warn]="workflow.workflow?.importance == 2"
+            [class.ctable-danger]="workflow.workflow?.importance == 3">
+            <div class="ctable-full" (click)="workflowDetail(workflow.workflow?.id)"> {{workflow.workflow?.name}} </div>
+            <div class="ctable-date-name">
+              <p><strong>Due:</strong> {{workflow.workflow?.due_date | utcTime }}</p>
+              <p>Owner: <a href="javascript:void(0)"
+                  title="{{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}}">
+                  {{workflow.workflow?.owner?.first_name}} {{workflow.workflow?.owner?.last_name}} </a></p>
+            </div>
+            <div class="ctable-progress">
+              <div class="ctable-progress-wrap">
+                <span [style.width.%]="workflow.width"></span>{{workflow.workflow?.completed_task}} Tasks
+                <p>{{workflow.workflow?.total_task}} Total Tasks</p>
+              </div>
+            </div>
+            <div class="ctable-btn">
+              <a href="javascript:void(0);" [class.active]="workflow.expand">
+                <img (click)="getWorkflowTasks(workflow.workflow?.id);" class="open"
+                  src="/assets/images/plus-icon-black.svg" alt="">
+                <img (click)="closeWorkflowTab(workflow)" class="close" src="/assets/images/minus-square.svg" alt="">
+              </a>
+            </div>
+          </div>
+
+          <!--Task list of worklow starts here-->
+          <div class="ttable-row" *ngIf="workflow.expand">
+            <div class="titem-row-head titem-bg">
+              <span class="titem ttable-rank" (click)="orderByChange('rank')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'rank' }">Rank
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-full" (click)="orderByChange('task__name')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__name' }">Task Name
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-date" (click)="orderByChange('task__due_date')"
+                [ngClass]="{ 'active': taskDefaultParams.ordering === 'task__due_date' }">Due Date
+                <a href="javascript:void(0)">
+                  <img src="assets/images/s-arrow1.png" alt="" [ngClass]="{'hover' : !reverse }" />
+                  <img src="assets/images/s-arrow2.png" alt="" [ngClass]="{'hover' : reverse }" />
+                </a>
+              </span>
+              <span class="titem ttable-status pos-relative">Status <a href="javascript:void(0)"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                    (click)="handleFilterShow('showStatusFilter', 'showUserAssignedFilter')" alt="sort"></a>
+                <app-select-task-status *ngIf="showStatusFilter" [isFilter]="true" [checkedStatus]="arrCheckedStatus"
+                  (selectedStatus)="selectTaskStatus($event)">
+                </app-select-task-status>
+              </span>
+              <span class="titem ttable-assign">Assigned To <a href="javascript:void(0)"><img
+                    src="assets/images/ProxyAssets/UserManagementAssets/Filter-Icon.svg"
+                    (click)="handleFilterShow('showUserAssignedFilter', 'showStatusFilter')" alt="sort"></a>
+                <app-multiselect-dropdown *ngIf="showUserAssignedFilter" [title]="userTitle" [showTitle]="false"
+                  [displaySubItem]="usersList" searchPlaceholder="Search Users"
+                  (search)="$event && getLists('user', $event)"
+                  (allClear)="clearSelections('user', 'usersList', 'userTitle')"
+                  (selectionChanged)="onAssignedUserSelected($event, 'user')">
+                </app-multiselect-dropdown>
+              </span>
+            </div>
+            <div class="flex-ttable-item" *ngFor="let task of arrTasks"
+              [ngClass]="(task?.task?.importance == 1) ? 'ttable-success' : ((task?.task?.importance == 2) ? 'ttable-warn' : 'ttable-danger')">
+              <div class="ttable-rank">
+                <app-rank-number [rankId]="task.id" [oldRank]="task.rank" [tempOldRank]="task.rank"
+                  resourceType="my-task" [isDisabled]="true">
+                </app-rank-number>
+              </div>
+              <div class="ttable-full"> <a [routerLink]="['/main/projects/tasks/', task.task.id ]"> {{task.task?.name}}
+                </a> </div>
+              <div class="ttable-date"> {{task.task?.due_date | utcTime }}</div>
+              <div class="ttable-status">{{sharedService.taskStatus(task?.task?.status)}}</div>
+              <div class="ttable-assign">
+                <div class="profile-wrap" *ngIf="task?.task?.assigned_to">
+                  <figure *ngIf="task?.task?.user_avatar_thumb">
+                    <img src="{{task.task?.assigned_to?.user_avatar_thumb}}" alt="">
+                  </figure>
+                  <span
+                    class="no-img">{{sharedService.displayInitial(task.task.assigned_to?.first_name, task.task.assigned_to?.last_name)}}</span>
+                  <p> {{task.task?.assigned_to?.first_name}} {{task.task?.assigned_to?.last_name}} </p>
+                </div>
+              </div>
+            </div>
+            <div class="not-found" *ngIf="!arrTasks.length">
+              <p> {{ tasksLoading ? 'Loading...' : 'No record found' }} </p>
+            </div>
+            <div class="flex-ttable-item" *ngIf="taskTotalCount > 5">
+              <a href="javascript:void(0)" class="secondary-link" (click)="workflowDetail(workflow?.workflow?.id)"> View
+                all tasks </a>
+            </div>
+          </div>
+          <!--Task list of worklow starts here-->
+        </div>
+        <pagination *ngIf="totalworkFlowRecords > 10" [totalRecords]="totalworkFlowRecords" type="Workflow"
+          (getPageCount)="loadMoreData($event)">
+        </pagination>
+        <div class="not-found" *ngIf="!arrWorkflow.length">
+          <p> {{ loading ? 'Loading...' : 'No record found' }} </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="sm-block-row">
+    <div class="container">
+      <div class="aside-area">
+        <div class="mtabs">
+          <a href="javascript:void(0)" [class.active]="activeTab === 'discussions'"
+            (click)="activeTab = 'discussions'">Discussions</a>
+          <a href="javascript:void(0)" [class.active]="activeTab === 'documents'"
+            (click)="activeTab = 'documents'">documents</a>
+          <a href="javascript:void(0)" [class.active]="activeTab === 'trail'" (click)="activeTab = 'trail'">Audit
+            Trail</a>
+        </div>
+     
+        <app-discussions class="aside-full-block" modalType="project" [modalId]="projectId" [detail]="project" [message_inbound_email]="project?.project?.message_inbound_email"
+          (refresh)="refreshPage()" style="width: 100%" (onSuccess)="onSuccess($event)" [class.display]="activeTab === 'discussions'"></app-discussions>
+        <aside>
+          <app-documents modalType="project" [modalId]="projectId" [attachments]="project?.project?.attachments"
+            [detail]="project" (updateModal)="updateProject('documents', $event)"
+            [class.display]="activeTab === 'documents'"></app-documents>
+          <app-audit-trail-history modalType="project" [modalId]="projectId" [class.display]="activeTab === 'trail'">
+          </app-audit-trail-history>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="block-row pg-not-found"
+  *ngIf="permisionList && !permisionList.project_project_view && !permisionList.project_project_view_all">
+  <div class="sm-container">
+    <div class="pg-type pos-relative">
+      <img src="assets/images/not-found-group.svg" alt="">
+    </div>
+    <div class="not-found-msg flex mt-30">
+      <span><strong> Access Denied!</strong></span>
+      <span class="mt-20 text-center"> You don't have permission to view this page.</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<ul class="quick-link-wrap flex dmenu">
+  <li *ngFor="let tab of list1" [routerLink]="[tab.link]" routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }">
+    <a href="javascript:void(0);">
+      <img *ngIf="tab.icon" src="assets/images/{{tab.icon}}" alt="" [width]="tab.width" [height]="tab.height" />
+      <span>{{ tab.title }}</span>
+    </a>
+  </li>
+</ul>
+
+<ul class="quick-link-wrap flex mmenu">
+  <li class="" *ngFor="let tab of list2" [routerLink]="[tab.link]" routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }">
+    <a href="javascript:void(0);">
+      <img *ngIf="tab.icon" src="assets/images/{{tab.icon}}" alt="" [width]="tab.width" [height]="tab.height" />
+      <span>{{ tab.title }}</span>
+    </a>
+  </li>
+</ul>

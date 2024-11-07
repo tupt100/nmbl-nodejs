@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="-397 279.4 46 22" style="enable-background:new -397 279.4 46 22;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{filter:url(#qpvud);}
+	.st2{opacity:0.1;fill:#DCAE0A;}
+	.st3{fill:#FDFAF2;}
+	.st4{clip-path:url(#SVGID_2_);}
+	.st5{fill:#FFFFFF;fill-opacity:0;stroke:#DCAE0A;stroke-width:2;stroke-miterlimit:50;}
+	.st6{filter:url(#qpvug);}
+	.st7{fill:#EDF0F8;}
+	.st8{fill:#DCAE0A;}
+</style>
+<filter  height="68" width="60" id="qpvug" filterUnits="userSpaceOnUse" y="527" x="270">
+	<feOffset  result="FeOffset1296Out" in="SourceGraphic" dy="8"></feOffset>
+	<feGaussianBlur  stdDeviation="6.4 6.4" result="FeGaussianBlur1297Out" in="FeOffset1296Out"></feGaussianBlur>
+</filter>
+<filter  height="80" width="72" id="qpvud" filterUnits="userSpaceOnUse" y="521" x="264">
+	<feOffset  result="FeOffset1277Out" in="SourceGraphic" dy="8"></feOffset>
+	<feGaussianBlur  stdDeviation="6.4 6.4" result="FeGaussianBlur1278Out" in="FeOffset1277Out"></feGaussianBlur>
+</filter>
+<path class="st0" d="M-101,828.4h8v8h-8V828.4z"/>
+<g>
+	<path id="qpvuc" d="M-101,830.4c0-1.1,0.9-2,2-2h4c1.1,0,2,0.9,2,2v4c0,1.1-0.9,2-2,2h-4c-1.1,0-2-0.9-2-2V830.4z"/>
+</g>
+<path class="st0" d="M-107,822.4h20v20h-20V822.4z"/>
+<g>
+	<path id="qpvua" d="M-107,828.4c0-3.3,2.7-6,6-6h8c3.3,0,6,2.7,6,6v8c0,3.3-2.7,6-6,6h-8c-3.3,0-6-2.7-6-6V828.4z"/>
+</g>
+<g>
+	<g transform="translate(-277 -542)">
+		<g>
+			<g class="st1">
+				<g>
+					<g id="qpvua_5_">
+						<path class="st2" d="M-107,828.4c0-3.3,2.7-6,6-6h8c3.3,0,6,2.7,6,6v8c0,3.3-2.7,6-6,6h-8c-3.3,0-6-2.7-6-6V828.4z"/>
+					</g>
+				</g>
+			</g>
+			<g>
+				<path id="qpvua_3_" class="st3" d="M-107,828.4c0-3.3,2.7-6,6-6h8c3.3,0,6,2.7,6,6v8c0,3.3-2.7,6-6,6h-8c-3.3,0-6-2.7-6-6V828.4
+					z"/>
+			</g>
+			<g>
+				<defs>
+					<path id="SVGID_1_" d="M-108,843.4v-22h22v22H-108z M-107,836.4c0,3.3,2.7,6,6,6h8c3.3,0,6-2.7,6-6v-8c0-3.3-2.7-6-6-6h-8
+						c-3.3,0-6,2.7-6,6V836.4z"/>
+				</defs>
+				<clipPath id="SVGID_2_">
+					<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+				</clipPath>
+				<g class="st4">
+					<path id="qpvua_4_" class="st5" d="M-107,828.4c0-3.3,2.7-6,6-6h8c3.3,0,6,2.7,6,6v8c0,3.3-2.7,6-6,6h-8c-3.3,0-6-2.7-6-6
+						V828.4z"/>
+				</g>
+			</g>
+		</g>
+		<g>
+			<g class="st6">
+				<g>
+					<path id="qpvuc_4_" class="st7" d="M-101,830.4c0-1.1,0.9-2,2-2h4c1.1,0,2,0.9,2,2v4c0,1.1-0.9,2-2,2h-4c-1.1,0-2-0.9-2-2
+						V830.4z"/>
+				</g>
+			</g>
+			<g>
+				<path id="qpvuc_3_" class="st8" d="M-101,830.4c0-1.1,0.9-2,2-2h4c1.1,0,2,0.9,2,2v4c0,1.1-0.9,2-2,2h-4c-1.1,0-2-0.9-2-2V830.4
+					z"/>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>

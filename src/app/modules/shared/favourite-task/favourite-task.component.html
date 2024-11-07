@@ -1,0 +1,23 @@
+<div class="modal-dialog modal-sm">
+  <div class="alert-cont modal-content">
+    <div class="modal-header text-center">
+      <h5>Your Top 25 is full! </h5>
+      <a href="javascript:void(0);" class="close" (click)="cancel()">esc</a>
+    </div>
+    <div class="modal-body">
+      <p>To add <b> {{taskName}}</b> to your Top 25, you need to drop one task.</p>
+      <div class="fitem  half-fitem">
+        <select [(ngModel)]="taskId">
+          <option [value]="0" selected>Select Task</option>
+          <option *ngFor="let task of arrTask" [value]="task.id">{{task?.name}}</option>
+        </select>
+      </div>
+      <br />
+      <p>Change your mind? Click 'Return to Task List' to keep your Top 25 intact</p>
+      <div class="btn-group flex">
+        <a class="btn btn-half btn-bdr btn-lg" href="javascript:void(0);" (click)="cancel()">Return to Task List</a>
+        <a class="btn btn-half btn-lg" href="javascript:void(0);" (click)="onSubmit()">Confirm Task Drop</a>
+      </div>
+    </div>
+  </div>
+</div>

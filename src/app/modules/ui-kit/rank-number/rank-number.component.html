@@ -1,0 +1,4 @@
+<span class="ranking" [ngClass]="{'disable': isDisabled}">
+  <input type="text" name="rank" [(ngModel)]="oldRank" (keyup.enter)="updateRank($event)" (focus)="clear()"
+    (focusout)="unClear()" [disabled]="isDisabled" autocomplete="off" />
+</span>

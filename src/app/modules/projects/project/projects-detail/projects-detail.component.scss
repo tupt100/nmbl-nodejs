@@ -1,0 +1,84 @@
+.main-full-head .btn-switch-wrap {
+  display: none;
+}
+
+@media (max-width: 1440px) and (min-width: 1221px) {
+  .user-wrap .nav-dropdown {
+    right: 15px;
+    left: auto;
+  }
+}
+.main-filter-head {
+  &.twp-filter {
+    border-bottom: 2px solid #d4d7f0;
+  }
+}
+@media (max-width: 1023px) {
+  .task-header-wrap {
+    background: #fff;
+    padding: 10px;
+    .btn-group {    display: flex;}
+  }
+  .main-filter-head {
+    .filter-group-wrap {
+      .form-group {
+        .ddown-item {
+          max-width: 33.33%;
+        }
+      }
+    }
+  }
+  .sm-block-row {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    .container {
+      > a,
+      h5 {
+        padding: 0 10px;
+      }
+    }    
+  }
+  app-discussions,
+  app-documents,
+  app-audit-trail-history {
+    display: none;
+    &.display {
+      display: block;
+    }
+    app-discussions,
+    app-documents,
+    app-audit-trail-history {
+      display: none;
+      &.display {
+        display: block;
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .task-header-wrap .btn-group li:last-child {
+    display: block;
+  }
+}
+
+.main-filter-head {
+  .filter-group-custom-fields {
+    margin-top: 10px;
+    justify-content: flex-start;
+    .form-group {
+      margin: 0;
+
+      .ddown-item {
+        margin-bottom: 0;
+        margin-right: 30px;
+        .edit_name {
+          min-height: 30px;
+          .editCustomFieldInput {
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+}

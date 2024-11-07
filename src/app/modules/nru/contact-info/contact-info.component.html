@@ -1,0 +1,175 @@
+<div class="nru-main-wrap">
+  <app-sidebar></app-sidebar>
+  <div class="sm-block-row">
+    <div class="container ml-0">
+      <app-notifier class="mb-20"></app-notifier>
+
+      <div class="auth-block">
+        <div class="btn-row" *ngIf="firstStep">
+          <a class="btn-back" href="javascript:void(0);" (click)="showModal.viewMyRequest = true;">View My Pending
+            Requests</a>
+        </div>
+        <div class="card">
+          <div class="card-bdr card-title">
+            <div class="flex">
+              <h5 class="mb-0">{{ firstStep ? 'Contact Info' : 'Requests' }}</h5>
+              <div class="right-cap-area">
+                <p>Step {{ firstStep ? '1' : '2' }} of 2</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body" *ngIf="firstStep">
+            <p class="sm-text">To access your account, login with your workspace account information</p>
+            <form class="form-group" [formGroup]="stepOneForm">
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label for="">Your Name<sup>*</sup></label>
+                  <input type="text" placeholder="Add your name" name="name" formControlName="name"
+                    (keypress)="allowOnlyText($event)" />
+                </div>
+                <div class="fitem half-fitem">
+                  <label for="">Email<sup>*</sup></label>
+                  <input type="text" placeholder="Add your email" name="email" formControlName="email" />
+                </div>
+              </div>
+              <div class="fitem">
+                <p class="sm-text">We need your email address to send you status updates of your request, and to request
+                  any further information.</p>
+              </div>
+              <div class="fitem half-fitem">
+                <div class="fitem half-fitem">
+                  <label for=""> Phone Number </label>
+                  <input type="text" placeholder="Add your phone number" name="phone" formControlName="phone"
+                    (keypress)="numberOnly($event)" />
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- for 2nd Steps code here  -->
+          <div class="card-body" *ngIf="!firstStep">
+            <p class="sm-text">This information will be shared with the {{companyName}} team to follow-up on. If we need
+              anything, we’ll
+              contact you! </p>
+            <form class="form-group" [formGroup]='stepTwoForm'>
+              <div class="fitem partition-items">
+                <div class="fitem">
+                  <label for="">Subject / Issue<sup>*</sup></label>
+                  <input type="text" placeholder="Issue name" name="subject" formControlName="subject" required />
+                </div>
+                <div class="fitem">
+                  <label>Importance</label>
+                  <div class="task-header-wrap flex">
+                    <div class="prty-wrap">
+                      <div class="high">
+                        <app-importance [checkedImportance]="importance"
+                          (selectedImportance)="updateImportance($event)">
+                        </app-importance>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="fitem">
+                <label for="">Details / Instructions <sup>*</sup></label>
+                <textarea placeholder="Add the details of your issue" name="detail" formControlName="detail"
+                  required></textarea>
+              </div>
+              <div class="fitem half-fitem mb-0">
+                <div class="fitem half-fitem pr-10">
+                  <div class="fitem">
+                    <label for="">Requested Due Date</label>
+                    <input readonly type="text" placeholder="" formControlName="due_date"
+                      class="date-input create-date">
+                  </div>
+                  <div class="fitem">
+                    <label for="">For the Attention of</label>
+                    <input type="text" placeholder="Name a team member if known" name="teammember"
+                      formControlName="teammember" />
+                  </div>
+                  <div class="fitem">
+                    <label for="">Attachments</label>
+                    <div class="file-wrap main-full-head-task" DragDrop (onFileDropped)="uploadFile($event)">
+                      <input type="file" id="files" (change)="uploadFile($event)" />
+                      <label for="files"
+                        class="upload-file-lbl d-flex align-items-center justify-content-center sm-hidden">
+                        <p>Drag & drop your files here<strong> or <b>Browse</b> </strong></p>
+                      </label>
+                      <label for="files"
+                        class="upload-file-lbl d-flex align-items-center justify-content-center sm-visible">Upload
+                        Document</label>
+                    </div>
+
+                    <div class="mscroll-height mt-10" *ngIf="fileList && fileList.length">
+                      <div class="ai-center flex view-doc-list mt-20" *ngFor="let file of fileList; let idx = index;">
+                        <div class="doc-info">
+                          <figure>
+                            <img [src]="file?.name | image" alt="file type">
+                          </figure>
+                          <span class="sm-text name-box" [title]="file?.name"> {{ file?.name }} </span>
+                        </div>
+                        <a href="javascript:void(0)" class="m-0" (click)="removeFile(idx)"><img height="18"
+                            src="assets/images/ProxyAssets/TasksAssets/Trash-Icon.svg"></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="fitem">
+                <label for="">Captcha</label>
+                <div class="g-recaptcha">
+                  <re-captcha (resolved)="onCaptchaComplete($event)" [siteKey]="catpachaKey">
+                  </re-captcha>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="btn-group text-right" *ngIf="firstStep">
+          <button class="btn btn-slg full-btn" (click)="stepOneComplete()">Next</button>
+        </div>
+
+        <div class="btn-group text-right" *ngIf="!firstStep">
+          <button class="btn btn-slg btn-bdr full-btn" (click)="backToStepOne()">Back</button>
+          <button class="btn btn-slg full-btn" (click)="submitStepOne()">Send Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal transition" [ngClass]="{'in': showModal?.viewMyRequest}">
+  <div class="modal-dialog modal-sm">
+    <div class="alert-cont modal-content">
+      <div class="modal-header text-center">
+        <h5>View Pending Requests </h5>
+        <a href="javascript:void(0);" class="close" (click)="showModal.viewMyRequest = false;">esc</a>
+      </div>
+      <div class="modal-body">
+        <p>Please enter the same e-mail address that was used to submit your previous request(s), and we will send you a
+          link via e-mail to grant you access to view your pending request(s).</p>
+
+        <div class="form_field" *ngIf="emailNotExist">
+          <span class="error">
+            Sorry, but that e-mail address doesn't have any pending request. Please try
+            again or contact the {{companyName}} Legal Team
+          </span>
+        </div>
+        <div class="form-group mb-20">
+          <div class="fitem">
+            <input type="text" placeholder="Enter Email Address" [(ngModel)]="userEmail" />
+            <span class="error" *ngIf="isInvalidEmail && userEmail === ''">Please enter email address</span>
+            <span class="error" *ngIf="isInvalidEmail && userEmail !== ''">Please enter valid email address</span>
+          </div>
+        </div>
+        <div class="btn-group flex">
+          <a class="btn btn-half btn-bdr btn-lg" href="javascript:void(0);" (click)="showModal.viewMyRequest = false;">
+            Cancel</a>
+          <a class="btn btn-half btn-lg" href="javascript:void(0);" (click)="onSubmit()">Send Email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

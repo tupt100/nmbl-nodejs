@@ -1,0 +1,55 @@
+<app-notifier></app-notifier>
+<div class="block-row member_form sm-hidden">
+    <div class="sm-block-row">
+        <div class="container">
+            <div class="card-row flex">
+                <div class="card">
+                    <div class="card-bdr card-title flex">
+                        <h5 class="m-0">Add New Member</h5>                        
+                        <a class="secondary_btn m-0" (click)="massInvite()"><img src="assets/images/ProxyAssets/UserManagementAssets/PlusSquare-Icon.svg" /> MASS INVITE USERS </a>                    
+                    </div>
+                    <div class="card-body">
+                        <span class="subtitle">To add a new team member, we require their name, email, and permission set. They'll receive an email which will lead them to set up their account with their personal information, and get running on Proxy!</span>
+                        <div class="form-group">
+                            <div class="fitem half-fitem" *ngFor="let user of arrNewUser; let i = index; let last = last">
+                                <div class="icon-fitem" *ngIf="arrNewUser.length > 1"><a > <img (click)="removeUser(i)" src="assets/images/ProxyAssets/UserManagementAssets/MinusCircle-Icon-30.svg" /> </a></div>
+                                <div class="fitem md-half-fitem">
+                                    <input type="text" placeholder="Email Address" class="lg-field" [(ngModel)]="user.email" />
+                                </div>
+                                <div class="fitem sub-half-fitem">
+                                    <input type="text" placeholder="First Name" class="lg-field" [(ngModel)]="user.first_name" />
+                                </div>
+                                <div class="fitem sub-half-fitem">
+                                    <input type="text" placeholder="Last Name" class="lg-field" [(ngModel)]="user.last_name" />
+                                </div>
+                                <div class="fitem  half-fitem">
+                                    <select-group (invitedBy)="invitedBy($event, i)"></select-group>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group text-right">
+                            <button type="button" class="btn btn-bdr btn-lg" (click)="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-gray btn-lg" *ngIf="!isFormFilled()">Add Member</button>
+                            <button type="button" class="btn btn-lg" *ngIf="isFormFilled()" (click)="sendBulkInvite()">Add Member</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--not accessible in mobile-->
+<div class="sm-visible">
+    <div class="block-row pg-not-found">
+        <div class="sm-container">
+        <div class="pg-type pos-relative">
+            <img src="assets/images/Company Management.png" alt="">
+        </div>
+        <div class="flex mt-30 not-found-msg">
+            <span class="text-center">
+            <strong>Mobile view does not support this page</strong>
+            </span>         
+        </div>
+        </div>
+    </div>
+    </div>

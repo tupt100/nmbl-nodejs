@@ -1,0 +1,33 @@
+<div class="select-box lg-field" [class.open]="isGroupOpen" (click)="isGroupOpen = !isGroupOpen">
+  Group(s): {{arrSelectedGroupNames.length === 0 ? 'All' : displayGroups(2)}}
+  {{arrSelectedGroupNames.length > 2 ? '...' : '' }}
+</div>
+<form [formGroup]='usersForm'>
+  <div class="nav-dropdown no-scroll" *ngIf="isGroupOpen">
+    <input type="text" class="search_input" placeholder="Search User" formControlName="assignToSearch" />
+    <perfect-scrollbar style="max-width: 100%; max-height: 150px;">
+      <div class="mscroll-height">
+        <div class="checked_list">
+          <div class="check-list">
+            <span class="fitem-check" *ngFor="let group of arrGroups | isTrue">
+              <input id="grp-{{group.id}}" type="checkbox" class="fitem-ck-input" [checked]="group.checked"
+                (change)="selectGroup($event, group)" />
+              <label for="grp-{{group.id}}" class="fitem-ck-txt">
+                {{group.name}}
+              </label>
+            </span>
+          </div>
+        </div>
+        <div class="check-list">
+          <span class="fitem-check" *ngFor="let group of arrGroups | isFalse">
+            <input id="grp-{{group.id}}" type="checkbox" class="fitem-ck-input" [checked]="group.checked"
+              (change)="selectGroup($event, group)" />
+            <label for="grp-{{group.id}}" class="fitem-ck-txt">
+              {{group.name}}
+            </label>
+          </span>
+        </div>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</form>

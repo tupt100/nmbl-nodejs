@@ -1,0 +1,39 @@
+<div class="mainsidebar-flex">
+  <nav class="aside-main-menu">
+    <ul>
+      <li *ngFor="let tab of pages" [ngClass]="{ active: currentRoute === tab.link }" title="{{ tab.title }}" class="flex pos-relative">
+        <a class="nav-link" (click)="openLink(tab)"> <i><img *ngIf="tab.icon"
+              src="assets/images/ProxyAssets/SideBarAssets/{{tab.icon}}" alt=""></i> {{ tab.title }}</a>
+        <a class="create-link">
+          <img *ngIf="tab.icon2 && hasPermission(tab.title)" (click)="goToCreatePage(tab.title)" src="assets/images/ProxyAssets/SideBarAssets/{{tab.icon2}}"
+            alt="" >
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="aside-nav-footer">
+    <ul class="ftr-nav">
+      <li class="unread-ping">
+        <a href="javascript:void(0)" (click)="openLink({link:'/main/notifications'})">
+          <i *ngIf="unreadMessagegCount > 0">
+            <img src="assets/images/notification.svg" alt="" />
+          </i>
+          <img src="assets/images/notification.svg" alt="" *ngIf="unreadMessagegCount === 0" />
+          <span>
+            <small>You have {{unreadMessagegCount}} unread notifications</small><br>
+            Check them out
+          </span>
+          <span class="unread-ping" *ngIf="unreadMessagegCount > 0"></span>
+        </a>
+      </li>
+      <li [ngClass]="{ active: currentRoute === '/main/account-settings' }">
+        <a href="javascript:void(0)" (click)="openLink({link:'/main/account-settings'});"> <i><img
+              src="assets/images/ProxyAssets/SideBarAssets/Setting-White.svg" alt=""></i> Account Settings</a>
+      </li>
+      <li>
+        <a href="javascript:void(0)" (click)="logout()"> <i><img
+              src="assets/images/ProxyAssets/SideBarAssets/Logout-White.svg" alt=""></i> Logout</a>
+      </li>
+    </ul>
+  </div>
+</div>

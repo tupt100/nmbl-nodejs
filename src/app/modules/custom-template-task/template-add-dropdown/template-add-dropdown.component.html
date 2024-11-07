@@ -1,0 +1,14 @@
+<div class="task-add-dropdown" *ngIf="permisionList?.tasktemplate_tasktemplate_create">
+  <button type="button" class="btn btn-sm task-add-toggle" (click)="toggleAddTaskDropdown()">
+    <img src="/assets/images/select-icon-b-white.svg" alt="" width="14" /></button>
+  <div class="nav-dropdown fix-filter mt-20 " *ngIf="showAddTaskDropdown">
+    <div class="task-add-dropdown-actions">
+      <a href="javascript:void(0)" (click)="goToAddTaskTemplate()"
+        *ngIf="permisionList?.tasktemplate_tasktemplate_create"
+        class="plus-icon grayblue-icon task-add-dropdown-action">
+        <img src="/assets/images/ProxyAssets/TasksAssets/Plus-Icon.svg" alt="">
+        <span>Add New Task Template</span>
+      </a>
+    </div>
+  </div>
+</div>
